@@ -209,3 +209,11 @@ def test_python_dash_m_entry_point() -> None:
         check=True,
     )
     assert out.stdout.strip() == f"touchstone {__version__}"
+
+
+def test_ui_in_colab_points_to_launch(monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("uvicorn")
+    monkeypatch.setenv("COLAB_RELEASE_TAG", "release-colab-test")
+    result = runner.invoke(app, ["ui", "--no-open"])
+    assert result.exit_code != 0
+    assert "from touchstone_llm.colab import launch" in result.output

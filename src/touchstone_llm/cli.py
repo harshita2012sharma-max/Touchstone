@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from datetime import date
 from pathlib import Path
 
@@ -279,6 +280,12 @@ def ui(
         from touchstone_llm.server.app import create_app
     except ImportError:
         raise _fail('The web UI needs extra packages: pip install "touchstone-llm[ui]"') from None
+    if os.environ.get("COLAB_RELEASE_TAG"):
+        raise _fail(
+            "This looks like Google Colab, where `touchstone ui` cannot be reached. "
+            "Run this in a Python cell instead: "
+            "from touchstone_llm.colab import launch; launch()"
+        )
     load_env(env_file)
     runs_dir.mkdir(parents=True, exist_ok=True)
     drafts = drafts_dir if drafts_dir and drafts_dir.is_dir() else default_drafts_dir()

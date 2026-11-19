@@ -89,6 +89,25 @@ To update later: `python -m pip install -U "touchstone-llm[ui]"`.
 > The questions are still being reviewed, so tests use the **draft questions** that ship with touchstone and results are marked as practice runs. Please do not publish those numbers yet.
 
 <details>
+<summary><b>Using Google Colab? (click to open)</b></summary>
+
+`touchstone ui` cannot be reached from a Colab notebook, so start the same web UI from a Python cell instead:
+
+```python
+!pip install -q "touchstone-llm[ui]"
+from touchstone_llm.colab import launch
+launch()
+```
+
+Click **Open touchstone**. The same UI opens in a new tab: pick a provider, paste your key, pick or type a model, press **Start test**. Nothing else to type in the notebook.
+
+- The link is private: only the Google account running the notebook can open it.
+- Keys you save live on the Colab machine and are wiped when the Colab session ends. Do not save keys inside the notebook itself if you share it.
+- Results are saved in the `runs/` folder on the Colab machine; download them from the Files panel before the session ends.
+
+</details>
+
+<details>
 <summary><b>Prefer the terminal? (click to open)</b></summary>
 
 ```bash

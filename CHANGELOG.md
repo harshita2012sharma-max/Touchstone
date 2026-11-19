@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-19
+
+### Added
+- Google Colab: `from touchstone_llm.colab import launch; launch()` opens the full web UI through Colab's private link, so Colab users enter their key and model in the UI like everyone else. Only the one proxy hostname Colab gives that port is trusted.
+- `touchstone ui` inside Colab now explains to use `launch()` instead.
+
 ## [0.2.0] - 2026-11-19
 
 ### Added

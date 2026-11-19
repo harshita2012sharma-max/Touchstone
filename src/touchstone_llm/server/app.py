@@ -3,6 +3,7 @@
 Security for a local tool:
 - The CLI binds to 127.0.0.1 only.
 - Requests must use Host ``127.0.0.1`` or ``localhost`` (blocks DNS rebinding).
+  In Google Colab, the one proxy hostname Colab gives this port is also allowed.
 - State-changing requests from another web origin are refused (blocks CSRF).
 - API keys are never returned; only "set / not set".
 """
@@ -133,18 +134,26 @@ def create_app(
     static_dir: Path | None = DEFAULT_STATIC_DIR,
     backend_factory: Callable[[str], Backend] | None = None,
     use_cache: bool = True,
+    extra_hosts: tuple[str, ...] = (),
 ) -> FastAPI:
-    """Build the app. ``backend_factory`` is injectable for tests."""
+    """Build the app. ``backend_factory`` is injectable for tests.
+
+    ``extra_hosts`` are exact hostnames trusted besides 127.0.0.1 and localhost
+    (used for the Colab proxy). Wildcards are refused.
+    """
+    if any(not h or "*" in h for h in extra_hosts):
+        raise ValueError("extra_hosts must be exact hostnames.")
+    trusted = (*LOCAL_HOSTS, *extra_hosts)
     make_backend = backend_factory or (lambda provider: get_backend(provider))
     jobs = JobManager(runs_dir, use_cache=use_cache)
     app = FastAPI(title="touchstone", version=__version__, docs_url=None, redoc_url=None)
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(LOCAL_HOSTS))
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(trusted))
 
     @app.middleware("http")
     async def same_origin_writes(request: Request, call_next: Any) -> Any:
         origin = request.headers.get("origin")
         is_write = request.method not in ("GET", "HEAD", "OPTIONS")
-        if is_write and origin and urlparse(origin).hostname not in LOCAL_HOSTS:
+        if is_write and origin and urlparse(origin).hostname not in trusted:
             return JSONResponse({"detail": "Cross-origin request refused."}, status_code=403)
         return await call_next(request)
 

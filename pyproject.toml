@@ -50,9 +50,9 @@ dev = [
 touchstone = "touchstone_llm.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/harshita2012sharma-max/touchstone-llm"
-Issues = "https://github.com/harshita2012sharma-max/touchstone-llm/issues"
-Changelog = "https://github.com/harshita2012sharma-max/touchstone-llm/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/harshita2012sharma-max/Touchstone"
+Issues = "https://github.com/harshita2012sharma-max/Touchstone/issues"
+Changelog = "https://github.com/harshita2012sharma-max/Touchstone/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]
 path = "src/touchstone_llm/__init__.py"

@@ -1,83 +1,260 @@
+<div align="center">
+
 # touchstone
 
-**Small, reproducible tests for LLMs in Hindi and Hinglish. One command, one clear report.**
+**Small, reproducible tests for LLMs in Hindi and Hinglish.**<br>
+One command. A clear report. Every prompt and reply saved.
 
-A touchstone is the dark stone jewellers use to test gold. touchstone does the same for language models in Hindi and Hinglish. Think of it as a pytest for Indic LLMs: point it at a model, pick tasks, and get a score table, a shareable HTML report, and every prompt and reply saved for anyone to check.
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
+[![Status: pre-release](https://img.shields.io/badge/status-pre--release-orange)](CHANGELOG.md)
+[![Data: CC-BY-4.0](https://img.shields.io/badge/data-CC--BY--4.0-green)](DATASETS.md)
 
-> **Status: pre-release (0.1.0.dev).** Not on PyPI yet. The dataset is still being reviewed, so no official results are published.
+</div>
 
-<!-- TODO: add a short GIF of `touchstone run` and the web UI here, e.g. docs/demo.gif -->
-> *Demo GIF coming soon.*
+> [!NOTE]
+> **Pre-release (0.1.0.dev).** Not on PyPI yet. The questions are still being reviewed by people, so no official results are published.
 
-## 30-second quickstart
+---
 
-```bash
-pip install "touchstone-llm[ui]"          # after the first release; until then: pip install -e ".[ui]"
-cp .env.example .env                # add one free API key (Gemini, Groq or OpenRouter)
-touchstone list-models groq            # model ids change; always pick from the live list
-touchstone run --model groq/<model-id> --tasks hinglish_understanding,translation_hi_en
-touchstone ui                          # optional: local web UI at http://127.0.0.1:7860
+## What is this, in one picture?
+
+A touchstone is the dark stone jewellers use to test gold. This project does the same for AI models: it gives them a small exam in Hindi and Hinglish and checks their answers.
+
+| In an exam | In touchstone |
+|---|---|
+| Question paper | Our own written questions (the dataset) |
+| Student | The AI model you choose (Gemini, Llama, Qwen, ...) |
+| Teacher checking answers | Fixed scoring rules, no AI judge |
+| Report card | A score table, an HTML report, and a JSON file with everything |
+
+## How one test run works
+
+```mermaid
+flowchart TD
+    A([You start a run<br/>command or web UI]) --> B[1. Load questions<br/>only ones reviewed by 2 people]
+    B --> C[2. Build the prompt<br/>same format for every model]
+    C --> D[3. Ask the AI model<br/>Gemini · Groq · OpenRouter · Ollama]
+    D --> E[4. Check the answer<br/>fixed rules, no AI judge]
+    E --> F([5. Save the report<br/>table · HTML · JSON])
+    D -. reply saved at once .-> G[(Local cache)]
+    G -. rerun resumes here .-> D
 ```
 
-No key? `touchstone run --model mock/fixed --tasks all` runs offline with a fake model.
+<details>
+<summary><b>What happens in each step? (click to open)</b></summary>
 
-Every run prints a table and saves three files in `runs/`: the full result as JSON, a Markdown summary, and a self-contained HTML report.
+1. **Load questions.** Only questions approved by two reviewers (other than the author) are used. Drafts are never scored.
+2. **Build the prompt.** Every model gets the exact same text and the same settings: temperature 0, seed 42, top_p 1.
+3. **Ask the model.** Free APIs allow only a few requests a minute, so touchstone waits between calls and retries politely. Each reply is saved straight away, so if your internet or quota runs out, the same command continues where it stopped.
+4. **Check the answer.** Multiple choice understands `B`, `(b)`, `Answer: B`, `उत्तर: B` and similar. If the model names two options or none, the answer is marked **unparsed** and counted wrong. Translation uses chrF. Instructions use rule checks.
+5. **Save the report.** You get a table in the terminal and three files in `runs/`.
 
-## What it tests (v1)
+</details>
 
-| Task | What the model does | Scoring |
+## Quickstart
+
+Pick the way that suits you:
+
+<details open>
+<summary><b>Option A: command line</b></summary>
+
+```bash
+pip install "touchstone-llm[ui]"   # after the first release; until then, from a clone: pip install -e ".[ui]"
+cp .env.example .env               # put ONE free API key in .env (Gemini, Groq or OpenRouter)
+touchstone list-models groq        # model ids change often, so pick from the live list
+touchstone run --model groq/<model-id> --tasks all
+```
+
+</details>
+
+<details>
+<summary><b>Option B: web UI (no commands after starting it)</b></summary>
+
+```bash
+touchstone ui
+```
+
+Your browser opens at `http://127.0.0.1:7860`. Choose a provider, a model and tasks, then press **Start run**. You see live progress and then a results page. The **Compare** page shows up to three runs side by side. The UI only runs on your own computer.
+
+</details>
+
+<details>
+<summary><b>Option C: try it without any API key</b></summary>
+
+```bash
+touchstone run --model mock/fixed --tasks all
+```
+
+`mock/fixed` is a fake model that always answers "A". It is only for seeing how the tool works.
+
+</details>
+
+<details>
+<summary><b>Where do I get a free API key?</b></summary>
+
+| Provider | Get a key | Put this line in `.env` |
 |---|---|---|
-| `hindi_comprehension` | Reads a short Hindi passage, answers a multiple-choice question | exact option match |
-| `hinglish_understanding` | Understands Roman-script Hindi-English chat text, including sarcasm | exact option match |
-| `translation_hi_en` | Translates Hindi into English | chrF against 1-2 references |
-| `codemixed_instructions` | Follows Hinglish instructions with checkable formats | rule checks, all must pass |
-| `hindi_reasoning` | Solves arithmetic and logic word problems in Hindi | numeric exact match |
-| `cultural_context` | Answers neutral, factual questions on festivals, food, geography and institutions | exact option match |
+| Gemini | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | `GEMINI_API_KEY=...` |
+| Groq | [console.groq.com/keys](https://console.groq.com/keys) | `GROQ_API_KEY=...` |
+| OpenRouter | [openrouter.ai/keys](https://openrouter.ai/keys) | `OPENROUTER_API_KEY=...` |
+| Ollama (local) | no key needed | uses `http://localhost:11434` |
 
-No LLM is used as a judge. Answers that can't be parsed count as wrong and are reported separately as "unparsed".
+Free-tier limits and terms change, so check the provider's page. Never paste keys into issues or chats.
 
-## How results stay fair and reproducible
+</details>
 
-- **Same settings for every model:** temperature 0, seed 42, top_p 1, and the same prompt templates. The CLI does not let you change temperature or seed.
-- **Everything is recorded:** the model you asked for, the model id the provider actually used, the date, settings, number of items, touchstone version, and every exact prompt and reply.
-- **One-command reproduction:** `touchstone reproduce runs/<result>.json` reruns with identical config and reports whether prompts and settings match.
-- **Resumable on free tiers:** replies are cached locally, so a run stopped by a rate limit continues where it left off.
-- **Neutral wording:** reports show numbers, sample sizes and limitations. touchstone never declares a "best" model.
+## What it tests
+
+Six small tasks. Click a task to see a real example question.
+
+<details>
+<summary><b>hindi_comprehension</b>: read a short Hindi passage, answer a question</summary>
+
+> **Passage:** मीना हर रविवार अपनी दादी के साथ बाज़ार जाती है। ...
+> **Question:** मीना अपनी दादी के साथ बाज़ार कब जाती है?
+> A. हर सोमवार · **B. हर रविवार** · C. हर शनिवार · D. हर दिन
+
+Scoring: the chosen letter must match exactly.
+</details>
+
+<details>
+<summary><b>hinglish_understanding</b>: understand Roman-script chat, including sarcasm</summary>
+
+> **Message:** Kabir (bus chhootne ke baad): Wah, kya perfect timing hai meri!
+> **Question:** Kabir asal mein kya keh raha hai?
+> **A. Woh frustrated hai kyunki uski bus chhoot gayi** · B. Woh khush hai ki time pe pahuncha · ...
+
+Scoring: the chosen letter must match exactly.
+</details>
+
+<details>
+<summary><b>translation_hi_en</b>: translate Hindi into English</summary>
+
+> **Hindi:** कृपया दरवाज़ा बंद कर दीजिए।
+> **Accepted English:** "Please close the door." / "Please shut the door."
+
+Scoring: chrF (character overlap with the best reference), from 0 to 100%.
+</details>
+
+<details>
+<summary><b>codemixed_instructions</b>: follow a Hinglish instruction exactly</summary>
+
+> **Instruction:** Teen Indian sweets ke naam batao, comma se alag karke. Sirf naam likhna, aur kuch nahi.
+
+Scoring: rule checks (exactly 3 comma-separated items, at most 10 words). All rules must pass. Writing 5 sweets fails.
+</details>
+
+<details>
+<summary><b>hindi_reasoning</b>: solve a word problem</summary>
+
+> **Question:** एक कमीज़ की कीमत 800 रुपये है। उस पर 25 प्रतिशत की छूट मिल रही है। छूट के बाद कमीज़ कितने रुपये की पड़ेगी?
+> **Answer:** 600
+
+Scoring: the final number must match. Devanagari digits (६००) and Indian grouping (1,00,000) are understood.
+</details>
+
+<details>
+<summary><b>cultural_context</b>: neutral facts about everyday India</summary>
+
+> **Question:** इडली बनाने में मुख्य रूप से किन चीज़ों का इस्तेमाल होता है?
+> A. गेहूँ और बेसन · B. मक्का और सूजी · C. जौ और चना · **D. चावल और उड़द दाल**
+
+Only neutral facts: festivals, food, geography, institutions. No religion comparisons, caste, politics or stereotypes.
+</details>
+
+## How the questions are made
+
+Trust in a benchmark starts with its questions. Every question goes through this path, and the code enforces it:
+
+```mermaid
+flowchart LR
+    A[Draft question<br/>datasets/pending] --> B[Review sheet<br/>ok · fix · reject]
+    B --> C{2 approvals<br/>from people other<br/>than the author?}
+    C -- no --> A
+    C -- yes --> D[Shipped data<br/>now it can be scored]
+```
+
+<details>
+<summary><b>The rules every question follows</b></summary>
+
+- Written for this project. Nothing is copied from exams, books or websites.
+- Licensed **CC-BY-4.0**, so anyone can reuse it with credit.
+- Approved by **at least two reviewers who are not the author**. The test suite fails if this is not true.
+- Some first drafts were written with help from an AI assistant. A human author edits and fact-checks every item, and two humans review it. This is stated openly in [DATASETS.md](DATASETS.md).
+
+Want to help review? See the [review guide](datasets/README.md). No coding needed, just a spreadsheet.
+
+</details>
+
+## How results stay fair
+
+| Promise | How it is kept |
+|---|---|
+| Same test for every model | Fixed temperature 0, seed 42, top_p 1 and identical prompts. The CLI cannot change temperature or seed. |
+| Nothing hidden | Every result saves the model you asked for, the model id the provider actually used, the date, settings, number of items, and every exact prompt and reply. |
+| Anyone can check | `touchstone reproduce runs/<file>.json` reruns the same config and reports whether the prompts and settings match. |
+| No hype | Reports show numbers, sample sizes and limitations. touchstone never names a "best" model, and ties are shown as ties. |
 
 ## Results
 
-No official results yet. They will be published here only after every item has been reviewed by two people, with the date, model ids, settings, n and prompts for each run.
+No official results yet. They will be published here only after every question has been reviewed, and each result will show the date, the model id, settings, the number of items and the prompts.
 
 ## Limitations
 
-Please read [LIMITATIONS.md](LIMITATIONS.md). In short:
+> [!WARNING]
+> Please read these before using any number from touchstone.
+> - **Small dataset** (about 25 questions per task). A few points of difference is often noise.
+> - **Hindi is not all of India.** Other Indian languages and many dialects are not covered.
+> - **Hinglish has no standard spelling**, so rule-based scoring can miss valid answers.
+> - **chrF is a rough signal** for translation and can penalise good paraphrases.
+> - **API models change** behind the same name. Always check the date and the reported model id.
+>
+> Full list: [LIMITATIONS.md](LIMITATIONS.md).
 
-- The dataset is small (about 25 items per task). Small differences are often noise.
-- **Hindi does not represent all of India.** Other Indian languages and many dialects are not covered.
-- Hinglish has no standard spelling, so rule-based scoring can miss valid answers.
-- chrF is a rough translation signal. API models can change behind the same name.
+## FAQ
 
-## Data, licenses and safety
+<details>
+<summary><b>Does it need a GPU or a powerful laptop?</b></summary>
 
-- Code: [Apache-2.0](LICENSE). Dataset items: CC-BY-4.0, written for this project. Nothing is copied from exams, books or websites. Some first drafts had AI assistance; every item is checked by its author and approved by **at least two other people** before it is scored. See [DATASETS.md](DATASETS.md).
-- Cultural items stay neutral and factual: no religion comparisons, caste, politics, or regional stereotypes.
-- API keys live only in your local `.env`. touchstone never logs them and collects no telemetry. The web UI only listens on `127.0.0.1`.
+No. It was built on an Intel i3 laptop with 8 GB RAM and no GPU. Models run on the provider's servers, or locally through Ollama if you use a small model.
+</details>
+
+<details>
+<summary><b>Is it free?</b></summary>
+
+touchstone itself is free and open source. Gemini, Groq and OpenRouter have free tiers (with limits), and Ollama is free and runs on your machine.
+</details>
+
+<details>
+<summary><b>Are my API keys safe?</b></summary>
+
+Keys are read only from your local `.env` file, which git ignores. touchstone never prints, logs or saves them, sends no telemetry, and the web UI only listens on `127.0.0.1`. See [SECURITY.md](SECURITY.md).
+</details>
+
+<details>
+<summary><b>Why can the same model get different scores on different days?</b></summary>
+
+Providers can update a model without changing its name, and some ignore the seed. That is why every result records the date and the exact model id the provider reported.
+</details>
+
+<details>
+<summary><b>Can I add my own task or model provider?</b></summary>
+
+Yes. Tasks and providers are plugins (`touchstone_llm.tasks` and `touchstone_llm.backends` entry points). See [CONTRIBUTING.md](CONTRIBUTING.md).
+</details>
 
 ## Related work
 
 touchstone is a small, laptop-first tool, not a replacement for these larger efforts. It shares no data or code with them.
 
-- **MILU** (AI4Bharat and IBM Research India): a multi-task Indic language understanding benchmark with multiple-choice questions across 11 Indic languages. Verma et al., NAACL 2025. [arXiv:2411.02538](https://arxiv.org/abs/2411.02538)
-- **IndicGenBench** (Google Research India): evaluates LLM generation (summarization, translation, QA) across 29 Indic languages. Singh et al., ACL 2024. [arXiv:2404.16816](https://arxiv.org/abs/2404.16816) · [code and data](https://github.com/google-research-datasets/indic-gen-bench)
-- **indic_eval** (GitHub: adithya-s-k): an evaluation suite for Indic LLMs built on Hugging Face LightEval, with translated versions of ARC, HellaSwag, BoolQ and MMLU. [github.com/adithya-s-k/indic_eval](https://github.com/adithya-s-k/indic_eval). (This project was first planned as "indic-eval"; it was renamed so the two are not confused.)
-- **HinglishEval**: tests code-generation models on Hinglish programming prompts. COMPUTE 2024. [github.com/mrigankpawagi/HinglishEval](https://github.com/mrigankpawagi/HinglishEval)
+- **MILU** (AI4Bharat and IBM Research India): multiple-choice Indic language understanding across 11 languages. Verma et al., NAACL 2025. [arXiv:2411.02538](https://arxiv.org/abs/2411.02538)
+- **IndicGenBench** (Google Research India): generation tasks across 29 Indic languages. Singh et al., ACL 2024. [arXiv:2404.16816](https://arxiv.org/abs/2404.16816) · [code and data](https://github.com/google-research-datasets/indic-gen-bench)
+- **indic_eval** (GitHub: adithya-s-k): an Indic LLM evaluation suite built on Hugging Face LightEval. [github.com/adithya-s-k/indic_eval](https://github.com/adithya-s-k/indic_eval). This project was first planned as "indic-eval" and renamed so the two are not confused.
+- **HinglishEval**: code-generation models on Hinglish prompts, COMPUTE 2024. [github.com/mrigankpawagi/HinglishEval](https://github.com/mrigankpawagi/HinglishEval)
 
-How touchstone differs: it focuses on Hindi and Hinglish everyday tasks, uses only original reviewed items, runs on free APIs or tiny local models, and ships a CLI plus a local UI for reproducible runs.
+## Cite, contribute, license
 
-## How to cite
-
-If you use touchstone, please cite it using [CITATION.cff](CITATION.cff) (GitHub shows a "Cite this repository" button).
-
-## Contributing
-
-Contributions are welcome, especially new items and reviews from fluent Hindi and Hinglish speakers. See [CONTRIBUTING.md](CONTRIBUTING.md), the [review guide](datasets/README.md), and the [Code of Conduct](CODE_OF_CONDUCT.md).
+- **Cite:** use [CITATION.cff](CITATION.cff), or GitHub's "Cite this repository" button.
+- **Contribute:** see [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Reviews from fluent Hindi and Hinglish speakers are the most valuable help right now.
+- **License:** code under [Apache-2.0](LICENSE), dataset items under CC-BY-4.0.

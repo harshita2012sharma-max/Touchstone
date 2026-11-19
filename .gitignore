@@ -1,0 +1,33 @@
+# Secrets: never commit API keys
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# kasauti local data
+.kasauti/
+runs/
+
+# Frontend
+ui/node_modules/
+ui/dist/
+src/kasauti/server/static/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

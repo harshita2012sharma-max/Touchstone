@@ -1,0 +1,31 @@
+name: Dataset item problem
+description: Report a wrong, unclear, biased or offensive dataset item
+labels: [dataset]
+body:
+  - type: input
+    id: item
+    attributes:
+      label: Item id
+      description: For example `hinglish_understanding-012`
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Problem type
+      options:
+        - Wrong answer
+        - More than one correct answer
+        - Unnatural language
+        - Biased or not neutral
+        - Offensive content
+        - Possibly copied from another source
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+    validations:
+      required: true

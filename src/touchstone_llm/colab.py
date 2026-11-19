@@ -8,8 +8,9 @@ In a Colab cell::
 
 The server runs in the background on the Colab machine (127.0.0.1 only).
 Colab's own proxy gives the user a private link to it; only the Google account
-running the notebook can open that link. The one proxy hostname for this port is
-trusted in addition to 127.0.0.1 and localhost.
+running the notebook can open that link. Colab's proxy rewrites the Host header,
+so the Host check is off here; changes (saving keys, starting tests) are still
+accepted only from that link's page.
 
 Keys typed into the UI are saved on the Colab machine, which Google wipes when
 the session ends.
@@ -100,7 +101,7 @@ def launch(
     load_env()
     runs = Path(runs_dir)
     runs.mkdir(parents=True, exist_ok=True)
-    app = create_app(runs_dir=runs, drafts_dir=default_drafts_dir(), extra_hosts=(host,))
+    app = create_app(runs_dir=runs, drafts_dir=default_drafts_dir(), colab_host=host)
     server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=free, log_level="warning"))
     threading.Thread(target=server.run, name="touchstone-ui", daemon=True).start()
 

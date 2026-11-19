@@ -34,7 +34,10 @@ export function NewRunPage() {
   useEffect(() => {
     if (!status) return;
     if (!provider) {
-      const first = status.providers.find((p) => p.ready && p.name !== "mock") ?? status.providers.find((p) => p.name === "mock");
+      // Start on a provider the user has set up (key or server saved). Ollama is "ready"
+      // without a key but may not be running (always the case in Colab), so it is never
+      // the default; with nothing set up, start on the keyless practice model.
+      const first = status.providers.find((p) => p.ready && p.group !== "local") ?? status.providers.find((p) => p.name === "mock");
       if (first) setProvider(first.name);
     }
     if (status.drafts_available && status.tasks.every((t) => t.items === 0)) setDrafts(true);

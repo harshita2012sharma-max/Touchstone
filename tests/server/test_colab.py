@@ -35,11 +35,15 @@ def test_launch_serves_ui_through_the_colab_proxy_host(
         assert colab.launch(port=7930, runs_dir=tmp_path / "runs") == PROXY
         assert PROXY in capsys.readouterr().out
         base = f"http://127.0.0.1:{ports[0]}"
-        ok = httpx.get(f"{base}/api/status", headers={"Host": PROXY_HOST})
-        assert ok.status_code == 200
-        assert httpx.get(f"{base}/api/status").status_code == 200
-        evil = httpx.get(f"{base}/api/status", headers={"Host": "evil.example"})
-        assert evil.status_code == 400
+        # Colab's proxy rewrites Host to something we cannot predict.
+        for host in (PROXY_HOST, "127.0.0.1", "172.28.0.12:7861"):
+            assert httpx.get(f"{base}/api/status", headers={"Host": host}).status_code == 200
+        saved = httpx.post(
+            f"{base}/api/keys",
+            json={"provider": "groq", "key": "gsk_" + "x" * 20},
+            headers={"Host": "172.28.0.12:7861", "Origin": PROXY.rstrip("/")},
+        )
+        assert saved.status_code == 200, saved.text
         write = httpx.post(
             f"{base}/api/keys",
             json={"provider": "groq", "key": "x" * 20},
@@ -58,6 +62,15 @@ def test_launch_refuses_a_non_https_proxy_link(
         colab.launch(port=7940, runs_dir=tmp_path)
 
 
-def test_extra_hosts_must_be_exact(tmp_path: Path) -> None:
+def test_colab_host_must_be_exact(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="exact"):
-        create_app(runs_dir=tmp_path, static_dir=None, extra_hosts=("*.colab.dev",))
+        create_app(runs_dir=tmp_path, static_dir=None, colab_host="*.colab.dev")
+
+
+def test_host_check_stays_on_without_colab(tmp_path: Path) -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(
+        create_app(runs_dir=tmp_path, static_dir=None), base_url="http://evil.example"
+    )
+    assert client.get("/api/status").status_code == 400

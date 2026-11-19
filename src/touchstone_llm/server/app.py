@@ -3,7 +3,9 @@
 Security for a local tool:
 - The CLI binds to 127.0.0.1 only.
 - Requests must use Host ``127.0.0.1`` or ``localhost`` (blocks DNS rebinding).
-  In Google Colab, the one proxy hostname Colab gives this port is also allowed.
+  Behind Google Colab's proxy the Host check is skipped: the proxy rewrites Host,
+  the server is only reachable through that signed-in proxy, and the user's
+  browser is not on the Colab machine, so DNS rebinding cannot reach it.
 - State-changing requests from another web origin are refused (blocks CSRF).
 - API keys are never returned; only "set / not set".
 """
@@ -134,20 +136,22 @@ def create_app(
     static_dir: Path | None = DEFAULT_STATIC_DIR,
     backend_factory: Callable[[str], Backend] | None = None,
     use_cache: bool = True,
-    extra_hosts: tuple[str, ...] = (),
+    colab_host: str | None = None,
 ) -> FastAPI:
     """Build the app. ``backend_factory`` is injectable for tests.
 
-    ``extra_hosts`` are exact hostnames trusted besides 127.0.0.1 and localhost
-    (used for the Colab proxy). Wildcards are refused.
+    ``colab_host`` is the exact hostname of the Colab proxy link. When set, the
+    Host check is skipped (see module docstring) and writes are accepted only
+    from that page or from localhost.
     """
-    if any(not h or "*" in h for h in extra_hosts):
-        raise ValueError("extra_hosts must be exact hostnames.")
-    trusted = (*LOCAL_HOSTS, *extra_hosts)
+    if colab_host is not None and (not colab_host or "*" in colab_host or "/" in colab_host):
+        raise ValueError("colab_host must be an exact hostname.")
+    trusted = (*LOCAL_HOSTS, colab_host) if colab_host else LOCAL_HOSTS
     make_backend = backend_factory or (lambda provider: get_backend(provider))
     jobs = JobManager(runs_dir, use_cache=use_cache)
     app = FastAPI(title="touchstone", version=__version__, docs_url=None, redoc_url=None)
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(trusted))
+    if colab_host is None:
+        app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(LOCAL_HOSTS))
 
     @app.middleware("http")
     async def same_origin_writes(request: Request, call_next: Any) -> Any:

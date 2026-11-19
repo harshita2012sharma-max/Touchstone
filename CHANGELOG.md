@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-19
+
+### Fixed
+- Google Colab: the UI no longer shows "Invalid host header". Colab's proxy rewrites the Host header, so the Host check is skipped in Colab mode only; saving keys and starting tests are still accepted only from the Colab link's own page. Confirmed in a real Colab session.
+- The New test page no longer starts on Ollama when no key is saved (Ollama is often not running, and never in Colab). It starts on a provider you have set up, or on Practice (mock).
+
 ## [0.2.1] - 2026-11-19
 
 ### Added

@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -61,3 +62,20 @@ class CountingMock(MockBackend):
 @pytest.fixture
 def counting_mock() -> type[Backend]:
     return CountingMock
+
+
+# --- GitHub Actions: show each failing test as an annotation on the run/PR page ---
+_FAILURES: list[str] = []
+
+
+def pytest_runtest_logreport(report: pytest.TestReport) -> None:
+    if os.environ.get("GITHUB_ACTIONS") == "true" and report.failed:
+        crash = getattr(report.longrepr, "reprcrash", None)
+        message = crash.message if crash is not None else str(report.longrepr)
+        text = f"{report.nodeid} ({report.when}): {message}"[:1500]
+        _FAILURES.append(text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))
+
+
+def pytest_terminal_summary(terminalreporter: pytest.TerminalReporter) -> None:
+    for line in _FAILURES:
+        terminalreporter.write_line(f"::error title=pytest failure::{line}")

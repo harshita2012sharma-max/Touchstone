@@ -43,7 +43,7 @@ console = Console(highlight=False)
 
 def _fail(message: str) -> typer.Exit:
     """Print a clean, redacted error (no traceback) and return an exit to raise."""
-    console.print(Text(f"Error: {redact_secrets(message)}", style="bold red"))
+    console.print(Text(f"Error: {redact_secrets(message)}", style="bold red"), soft_wrap=True)
     return typer.Exit(code=1)
 
 
@@ -185,7 +185,8 @@ def _print_summary(result: RunResult, paths: list[Path]) -> None:
             "Note: small samples; differences of a few points are often noise. "
             "See LIMITATIONS.md.",
             style="dim",
-        )
+        ),
+        soft_wrap=True,  # keep file paths on one line so they can be copied
     )
     if cfg.allow_unreviewed:
         console.print(

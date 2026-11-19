@@ -67,4 +67,4 @@ jobs:
           python -m venv /tmp/v && /tmp/v/bin/pip install dist/*.whl
           /tmp/v/bin/touchstone --version
           /tmp/v/bin/touchstone list-tasks
-          /tmp/v/bin/touchstone ui --no-open 2>&1 | grep -q 'pip install "touchstone\[ui\]"'
+          /tmp/v/bin/touchstone ui --no-open 2>&1 | grep -q 'pip install "touchstone-llm\[ui\]"'

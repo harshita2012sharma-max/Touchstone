@@ -5,7 +5,7 @@ import pytest
 from typer.testing import CliRunner
 
 from touchstone_llm import __version__
-from touchstone_llm.cli import app
+from touchstone_llm.cli import app, console
 
 runner = CliRunner()
 
@@ -13,6 +13,8 @@ runner = CliRunner()
 @pytest.fixture(autouse=True)
 def _isolate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)  # cache and runs/ go into the temp folder
+    # Same wide terminal on every OS, so rich never wraps or truncates what tests look for.
+    monkeypatch.setattr(console, "width", 200)
     for name in ("GROQ_API_KEY", "GEMINI_API_KEY", "OPENROUTER_API_KEY"):
         monkeypatch.delenv(name, raising=False)
 

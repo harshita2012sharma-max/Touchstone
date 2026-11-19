@@ -60,6 +60,12 @@ class RunConfig(BaseModel):
     tasks: list[str] = Field(min_length=1)
     settings: GenerationSettings = Field(default_factory=GenerationSettings)
     limit: int | None = Field(default=None, ge=1, description="Max samples per task.")
+    data_dir: str | None = Field(
+        default=None, description="Folder with <task>.jsonl files; default is the shipped data."
+    )
+    allow_unreviewed: bool = Field(
+        default=False, description="Accept items without two reviews (drafts only; never publish)."
+    )
 
     @field_validator("model")
     @classmethod

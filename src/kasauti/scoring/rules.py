@@ -70,6 +70,18 @@ class ContainsAll(BaseModel):
         return all(t.casefold() in lowered for t in self.terms)
 
 
+class ContainsAny(BaseModel):
+    """At least one of the terms appears (case-insensitive)."""
+
+    type: Literal["contains_any"]
+    terms: list[str] = Field(min_length=1)
+
+    def check(self, text: str) -> bool:
+        """Case-insensitive substring test; one hit is enough."""
+        lowered = text.casefold()
+        return any(t.casefold() in lowered for t in self.terms)
+
+
 class ContainsNone(BaseModel):
     """No term appears (case-insensitive)."""
 
@@ -127,7 +139,15 @@ class EndsWith(BaseModel):
 
 
 Check = Annotated[
-    ItemCount | MaxWords | MinWords | ContainsAll | ContainsNone | Script | StartsWith | EndsWith,
+    ItemCount
+    | MaxWords
+    | MinWords
+    | ContainsAll
+    | ContainsAny
+    | ContainsNone
+    | Script
+    | StartsWith
+    | EndsWith,
     Field(discriminator="type"),
 ]
 

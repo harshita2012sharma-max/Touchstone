@@ -39,6 +39,13 @@ def test_contains_all_and_none_case_insensitive() -> None:
     assert not run_checks("chai aur coffee aur samosa", checks).passed
 
 
+def test_contains_any() -> None:
+    checks = _checks([{"type": "contains_any", "terms": ["meet", "see you"]}])
+    assert run_checks("See you later!", checks).passed
+    assert run_checks("We will MEET again", checks).passed
+    assert not run_checks("I don't know.", checks).passed
+
+
 @pytest.mark.parametrize(
     "script,text,ok",
     [

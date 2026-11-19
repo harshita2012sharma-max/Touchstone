@@ -26,13 +26,12 @@ import typer
 from pydantic import ValidationError
 
 from kasauti.tasks import available_tasks, get_task
-from kasauti.tasks.base import MIN_REVIEWERS, DatasetError, ItemMeta, Task
+from kasauti.tasks.base import MIN_REVIEWERS, PLACEHOLDER_REVIEWERS, DatasetError, ItemMeta, Task
 
 DEFAULT_PENDING = Path("datasets/pending")
 CSV_FIELDS = ["id", "task", "prompt", "expected", "verdict", "comment"]
 OK_VERDICTS = {"ok", "yes", "approve", "approved"}
 OTHER_VERDICTS = {"fix", "reject", ""}
-_PLACEHOLDER_REVIEWERS = ["__pending_review_1__", "__pending_review_2__"]
 
 
 def default_shipped_dir() -> Path:
@@ -70,7 +69,7 @@ def _task_files(pending_dir: Path) -> dict[str, Path]:
 
 def _validate_content(task: Task[Any], item: dict[str, Any]) -> ItemMeta:
     """Validate everything except the review count (pending items lack reviewers)."""
-    trial = {**item, "reviewers": _PLACEHOLDER_REVIEWERS}
+    trial = {**item, "reviewers": PLACEHOLDER_REVIEWERS}
     try:
         sample = task.sample_type.model_validate(trial)
     except ValidationError as err:

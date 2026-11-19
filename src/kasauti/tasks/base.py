@@ -20,6 +20,8 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 from kasauti.errors import KasautiError
 
 MIN_REVIEWERS = 2
+PLACEHOLDER_REVIEWERS = ["__unreviewed_1__", "__unreviewed_2__"]
+"""Stand-in reviewers used only when validating items that are not reviewed yet."""
 
 
 class DatasetError(KasautiError):
@@ -84,15 +86,22 @@ class Task(ABC, Generic[S]):
         text: str = source.read_text(encoding="utf-8")
         return text.splitlines()
 
-    def load_samples(self, limit: int | None = None) -> list[S]:
-        """Load and validate items in file order; return the first ``limit`` of them."""
+    def load_samples(self, limit: int | None = None, *, allow_unreviewed: bool = False) -> list[S]:
+        """Load and validate items in file order; return the first ``limit`` of them.
+
+        ``allow_unreviewed`` skips only the reviewer requirement, for trying out
+        pending drafts. Runs that use it are marked as unreviewed in results.
+        """
         samples: list[S] = []
         seen: set[str] = set()
         for lineno, line in enumerate(self._read_lines(), start=1):
             if not line.strip():
                 continue
             try:
-                sample = self.sample_type.model_validate(json.loads(line))
+                raw = json.loads(line)
+                if allow_unreviewed and isinstance(raw, dict):
+                    raw = {**raw, "reviewers": PLACEHOLDER_REVIEWERS}
+                sample = self.sample_type.model_validate(raw)
             except (json.JSONDecodeError, ValidationError) as err:
                 raise DatasetError(f"{self.name}: invalid item on line {lineno}: {err}") from err
             if not sample.id.startswith(f"{self.name}-"):

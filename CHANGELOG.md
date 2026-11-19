@@ -15,4 +15,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Task framework with the six v1 tasks and a `kasauti.tasks` entry point for plugins. Items are validated on load: CC-BY-4.0 only, at least two reviewers besides the author, unique ids.
 - Dataset review workflow (`python -m kasauti.review check|export|import|promote`) with CSV sheets for non-technical reviewers.
 - Batch 1 drafts: 10 pending items per task (60 total), awaiting human review; none are scored yet.
+- `kasauti run`: runs tasks one sample at a time, prints a score table (score, unparsed rate, latency, settings, date) and saves the full result JSON. Any failed call stops the run; replies are cached in `.kasauti/cache.sqlite`, so the same command resumes.
+- `kasauti list-tasks` and `kasauti list-models <provider>` (live model ids from the provider).
+- `--data-dir` and `--allow-unreviewed` for trying draft items; such runs are clearly marked "UNREVIEWED".
+- `contains_any` rule check; dataset test that trivial replies ("A", "ok", "I don't know.") never pass an instruction item.
 - Result schema (`RunResult`) that saves every prompt, output, score and setting as readable UTF-8 JSON.

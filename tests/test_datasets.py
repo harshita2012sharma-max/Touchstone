@@ -34,6 +34,26 @@ def test_pending_items_are_valid() -> None:
         check_pending(PENDING)
 
 
+TRIVIAL_REPLIES = ["", "A", "ok", "Yes", "हाँ", "I don't know."]
+
+
+def _all_instruction_items() -> list:
+    task = get_task("codemixed_instructions")
+    items = list(_shipped("codemixed_instructions"))
+    pending = PENDING / "codemixed_instructions.jsonl"
+    if pending.is_file():
+        items += get_task("codemixed_instructions", data_path=pending).load_samples(
+            allow_unreviewed=True
+        )
+    return [(task, s) for s in items]
+
+
+@pytest.mark.parametrize("reply", TRIVIAL_REPLIES)
+def test_trivial_replies_never_pass_instruction_items(reply: str) -> None:
+    for task, sample in _all_instruction_items():
+        assert task.score(reply, sample).score == 0.0, (sample.id, reply)
+
+
 @pytest.mark.parametrize("name", [n for n in available_tasks() if isinstance(get_task(n), MCQTask)])
 def test_mcq_options_resolve_unambiguously(name: str) -> None:
     task = get_task(name)

@@ -60,7 +60,7 @@ path = "src/kasauti/__init__.py"
 packages = ["src/kasauti"]
 
 [tool.hatch.build.targets.sdist]
-exclude = ["/ui/node_modules", "/results", "/.github"]
+exclude = ["/ui/node_modules", "/results", "/.github", "/datasets"]
 
 [tool.ruff]
 line-length = 100
@@ -70,6 +70,9 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "D"]
 ignore = ["D203", "D213", "D100", "D104"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D"]

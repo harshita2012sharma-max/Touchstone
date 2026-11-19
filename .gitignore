@@ -31,3 +31,6 @@ src/kasauti/server/static/
 Thumbs.db
 .vscode/
 .idea/
+
+# Filled review sheets (may contain reviewer names)
+datasets/review/

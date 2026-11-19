@@ -2,7 +2,7 @@
 
 **Small, reproducible tests for LLMs in Hindi and Hinglish. One command, one clear report.**
 
-A touchstone (*kasauti*, कसौटी) is the dark stone jewellers use to test gold. touchstone does the same for language models in Hindi and Hinglish. Think of it as a pytest for Indic LLMs: point it at a model, pick tasks, and get a score table, a shareable HTML report, and every prompt and reply saved for anyone to check.
+A touchstone is the dark stone jewellers use to test gold. touchstone does the same for language models in Hindi and Hinglish. Think of it as a pytest for Indic LLMs: point it at a model, pick tasks, and get a score table, a shareable HTML report, and every prompt and reply saved for anyone to check.
 
 > **Status: pre-release (0.1.0.dev).** Not on PyPI yet. The dataset is still being reviewed, so no official results are published.
 

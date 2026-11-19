@@ -50,10 +50,9 @@ dev = [
 touchstone = "touchstone_llm.cli:app"
 
 [project.urls]
-# TODO: replace OWNER once the GitHub repository exists.
-Homepage = "https://github.com/OWNER/touchstone-llm"
-Issues = "https://github.com/OWNER/touchstone-llm/issues"
-Changelog = "https://github.com/OWNER/touchstone-llm/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/harshita2012sharma-max/touchstone-llm"
+Issues = "https://github.com/harshita2012sharma-max/touchstone-llm/issues"
+Changelog = "https://github.com/harshita2012sharma-max/touchstone-llm/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]
 path = "src/touchstone_llm/__init__.py"

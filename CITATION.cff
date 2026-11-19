@@ -8,8 +8,7 @@ authors:
 license: Apache-2.0
 version: "0.1.0.dev0"
 date-released: "2026-11-19"
-# TODO: replace OWNER once the GitHub repository exists.
-repository-code: "https://github.com/OWNER/touchstone-llm"
+repository-code: "https://github.com/harshita2012sharma-max/touchstone-llm"
 keywords:
   - llm
   - evaluation

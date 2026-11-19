@@ -43,7 +43,7 @@ export function Layout() {
       <header className="sticky top-0 z-10 border-b border-line bg-surface">
         <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-2 px-4">
           <Link to="/" className="mr-3 flex items-baseline gap-1.5 font-semibold text-primary">
-            touchstone <span className="text-xs font-normal text-muted" lang="hi">कसौटी</span>
+            touchstone
           </Link>
           <nav aria-label="Main" className="flex min-w-0 gap-1 overflow-x-auto">
             {NAV.map((item) => {

@@ -41,7 +41,6 @@ export function StoneHero({ run }: { run: RunResult }) {
           <div className="mt-2 text-sm text-on-stone-muted">
             average of {tasks.length} task score{tasks.length === 1 ? "" : "s"} · n={n}
           </div>
-          <div className="mt-1 text-xs text-on-stone-muted" lang="hi">कसौटी पर परखा गया</div>
         </div>
         <div className="space-y-2.5">
           {tasks.map((t, i) => (

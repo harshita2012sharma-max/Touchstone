@@ -11,7 +11,7 @@ export function AboutPage() {
         <Card>
           <h2 className="mb-2 font-medium">What it is</h2>
           <p className="text-sm">
-            A touchstone (<span lang="hi">कसौटी</span>, kasauti) is the dark stone used to test gold. This tool runs small,
+            A touchstone is the dark stone jewellers use to test gold. This tool runs small,
             reproducible tests of language models in Hindi and Hinglish, with fixed settings (temperature 0,
             seed 42) for every model, and saves every prompt and reply.
           </p>

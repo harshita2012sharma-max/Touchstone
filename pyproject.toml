@@ -64,7 +64,8 @@ packages = ["src/kasauti"]
 artifacts = ["src/kasauti/server/static/**"]
 
 [tool.hatch.build.targets.sdist]
-exclude = ["/ui/node_modules", "/results", "/.github", "/datasets"]
+exclude = ["/ui/node_modules", "/results", "/.github", "/datasets", "/runs", "/.kasauti"]
+artifacts = ["src/kasauti/server/static/**"]
 
 [tool.ruff]
 line-length = 100

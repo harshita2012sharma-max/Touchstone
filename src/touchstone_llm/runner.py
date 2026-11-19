@@ -78,9 +78,10 @@ class Runner:
         loaded = self._load()
         backend = self._backend or get_backend(self.config.model_ref.provider)
         model_ids: set[str] = set()
+        notes: set[str] = set()
         try:
             task_results = [
-                self._run_task(backend, task, samples, model_ids) for task, samples in loaded
+                self._run_task(backend, task, samples, model_ids, notes) for task, samples in loaded
             ]
         finally:
             if self._backend is None:
@@ -89,6 +90,7 @@ class Runner:
             update={
                 "finished_at": datetime.now(timezone.utc),
                 "provider_model_id": ", ".join(sorted(model_ids)) or None,
+                "provider_notes": sorted(notes),
             }
         )
         return RunResult(metadata=metadata, config=self.config, tasks=task_results)
@@ -99,6 +101,7 @@ class Runner:
         task: Task[Any],
         samples: list[ItemMeta],
         model_ids: set[str],
+        notes: set[str],
     ) -> TaskResult:
         total = len(samples)
         self._emit(ProgressEvent("task_start", task.name, total=total))
@@ -124,6 +127,7 @@ class Runner:
                     self._cache.put(key, completion)
             if completion.model_id:
                 model_ids.add(completion.model_id)
+            notes.update(completion.notes)
             scored = task.score(completion.text, sample)
             results.append(
                 SampleResult(

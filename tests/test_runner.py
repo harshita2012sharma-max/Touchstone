@@ -124,3 +124,16 @@ def test_missing_task_file_in_data_dir(tmp_path: Path) -> None:
     cfg = RunConfig(model="mock/echo", tasks=["hindi_reasoning"], data_dir=str(tmp_path))
     with pytest.raises(TouchstoneError, match="No data"):
         Runner(cfg, backend=CountingMock(), cache=None).run()
+
+
+def test_provider_notes_are_recorded(data_dir: Path) -> None:
+    from touchstone_llm.backends.base import Completion
+
+    class NotingMock(CountingMock):
+        def _generate(self, model_id, prompt, settings):  # type: ignore[no-untyped-def]
+            out = super()._generate(model_id, prompt, settings)
+            return out.model_copy(update={"notes": ["mock rejected 'seed', so it was not sent"]})
+
+    result = Runner(_config(data_dir), backend=NotingMock(), cache=None).run()
+    assert result.metadata.provider_notes == ["mock rejected 'seed', so it was not sent"]
+    assert isinstance(Completion(text="x").notes, list)

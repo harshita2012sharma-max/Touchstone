@@ -25,7 +25,7 @@ export function RunsPage() {
     setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length < MAX_COMPARE ? [...p, id] : p));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <PageTitle
         title="Test AI models in Hindi and Hinglish"
         sub="touchstone gives an AI model a short exam, checks every answer with fixed rules, and shows how it did. Everything stays on this computer."

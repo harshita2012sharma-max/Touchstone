@@ -106,16 +106,28 @@ Keys for the terminal can be saved once from the web UI, or put in a `.env` file
 </details>
 
 <details>
-<summary><b>Where do I get a free API key?</b></summary>
+<summary><b>Which providers and models can I test?</b></summary>
 
-| Provider | Get a key | Environment variable |
+Any model from these providers, with **your own** API key. Pick from the live model list, or type the exact model name.
+
+| Provider | Get your key | Notes |
 |---|---|---|
-| Gemini | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | `GEMINI_API_KEY` |
-| Groq | [console.groq.com/keys](https://console.groq.com/keys) | `GROQ_API_KEY` |
-| OpenRouter | [openrouter.ai/keys](https://openrouter.ai/keys) | `OPENROUTER_API_KEY` |
-| Ollama (local) | no key needed | runs at `http://localhost:11434` |
+| Google Gemini | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Free tier |
+| Groq | [console.groq.com/keys](https://console.groq.com/keys) | Free tier |
+| OpenRouter | [openrouter.ai/keys](https://openrouter.ai/keys) | Hundreds of models; `:free` ones cost nothing |
+| Hugging Face | [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) | Open models, free tier (beta) |
+| OpenAI | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | Paid (beta) |
+| Anthropic | [console.anthropic.com](https://console.anthropic.com/) | Paid (beta) |
+| Mistral | [console.mistral.ai/api-keys](https://console.mistral.ai/api-keys) | Paid, trial tier (beta) |
+| DeepSeek | [platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys) | Paid (beta) |
+| xAI | [console.x.ai](https://console.x.ai/) | Paid (beta) |
+| Together AI | [api.together.ai/settings/api-keys](https://api.together.ai/settings/api-keys) | Paid (beta) |
+| Ollama | no key | Runs a model on your computer |
+| **Custom server** | your own | Any OpenAI-compatible address: a company endpoint, LM Studio, vLLM, or another provider |
 
-Keys you save in the web UI are stored only on your computer, in `~/.touchstone/.env`. Free-tier limits and terms change, so check the provider's page. Never paste keys into issues or chats.
+"Beta" means the request format is tested but has not yet been confirmed against the live service by the maintainers; please [open an issue](https://github.com/harshita2012sharma-max/Touchstone/issues) if something fails. If a provider rejects one of the fixed settings (some models refuse `temperature`, for example), touchstone sends the request without it and **records that in the result**.
+
+Keys you paste in the web UI are stored only on your computer, in `~/.touchstone/.env`, and are sent only to the provider you chose. You can also use environment variables or a `.env` file (see `.env.example`). Never paste keys into issues or chats.
 
 </details>
 

@@ -78,6 +78,7 @@ footer { color: var(--muted); font-size: 0.85rem; margin-top: 48px; }
     <dl class="meta">
       <dt>Model (requested)</dt><dd><code>{{ cfg.model }}</code></dd>
       <dt>Model id reported</dt><dd><code>{{ meta.provider_model_id or "not reported" }}</code></dd>
+      {% if meta.provider_notes %}<dt>Provider adjustments</dt><dd>{{ meta.provider_notes | join("; ") }}</dd>{% endif %}
       <dt>Settings</dt><dd>temperature={{ s.temperature }}, top_p={{ s.top_p }}, seed={{ s.seed }}, max_tokens={{ s.max_tokens }}</dd>
       <dt>Samples</dt><dd>{{ total_n }} across {{ r.tasks | length }} task(s){% if cfg.limit %} (limit {{ cfg.limit }} per task){% endif %}</dd>
       <dt>touchstone</dt><dd>{{ meta.tool_version }}{% if meta.git_sha %} ({{ meta.git_sha }}){% endif %} &middot; Python {{ meta.python_version }}</dd>

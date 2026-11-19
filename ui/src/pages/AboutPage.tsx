@@ -6,7 +6,7 @@ import { TASK_LABELS, useLoad } from "../lib";
 export function AboutPage() {
   const { data: status } = useLoad(api.status);
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <PageTitle
         title="Help"
         sub={`What touchstone is, how to use it, and what the results mean.${status ? ` Version ${status.version}.` : ""}`}

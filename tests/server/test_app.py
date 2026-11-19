@@ -42,10 +42,11 @@ def test_status_shows_key_presence_not_value(client: TestClient) -> None:
     body = res.json()
     assert KEY not in res.text
     groq = next(p for p in body["providers"] if p["name"] == "groq")
-    assert groq == {
+    assert {k: groq[k] for k in ("name", "needs_key", "key_set", "ready", "signup_url")} == {
         "name": "groq",
         "needs_key": True,
         "key_set": True,
+        "ready": True,
         "signup_url": "https://console.groq.com/keys",
     }
     assert {t["name"] for t in body["tasks"]} >= {"hindi_reasoning", "cultural_context"}
@@ -196,3 +197,32 @@ def test_save_key_rejects_bad_input_and_cross_origin(
     )
     assert evil.status_code == 403
     assert not (tmp_path / "home" / ".env").exists()
+
+
+def test_status_lists_catalog_with_ready_flags(
+    client: TestClient, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("TOUCHSTONE_HOME", str(tmp_path / "home"))
+    monkeypatch.delenv("CUSTOM_BASE_URL", raising=False)
+    providers = {p["name"]: p for p in client.get("/api/status").json()["providers"]}
+    assert {"openai", "anthropic", "mistral", "custom", "huggingface"} <= set(providers)
+    assert providers["groq"]["ready"] is True  # key set in the fixture
+    assert providers["openai"]["ready"] is False
+    assert providers["custom"]["ready"] is False
+    assert providers["mock"]["ready"] is True
+    assert providers["anthropic"]["label"] == "Anthropic"
+
+
+def test_save_custom_server(
+    client: TestClient, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("TOUCHSTONE_HOME", str(tmp_path / "home"))
+    monkeypatch.delenv("CUSTOM_BASE_URL", raising=False)
+    monkeypatch.delenv("CUSTOM_API_KEY", raising=False)
+    secret = "custom_secret_key_123"
+    res = client.post("/api/custom", json={"base_url": "http://localhost:1234/v1", "key": secret})
+    assert res.status_code == 200, res.text
+    assert secret not in res.text
+    custom = next(p for p in client.get("/api/status").json()["providers"] if p["name"] == "custom")
+    assert custom["ready"] is True and custom["custom_url"] == "http://localhost:1234/v1"
+    assert client.post("/api/custom", json={"base_url": "not a url"}).status_code == 400

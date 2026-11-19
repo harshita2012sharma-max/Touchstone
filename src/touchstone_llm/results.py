@@ -98,6 +98,8 @@ class RunMetadata(BaseModel):
     started_at: datetime
     finished_at: datetime | None = None
     provider_model_id: str | None = None
+    provider_notes: list[str] = []
+    """Settings the provider rejected or ignored (e.g. a model that refuses temperature)."""
     python_version: str
     platform: str
     git_sha: str | None = None

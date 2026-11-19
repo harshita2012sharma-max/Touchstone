@@ -27,8 +27,16 @@ from touchstone_llm import __version__
 from touchstone_llm.backends import available_backends, get_backend
 from touchstone_llm.backends.base import Backend
 from touchstone_llm.config import GenerationSettings, RunConfig
-from touchstone_llm.env import PROVIDER_KEYS, key_status, redact_secrets, save_api_key
+from touchstone_llm.env import (
+    PROVIDER_KEYS,
+    custom_server,
+    key_status,
+    redact_secrets,
+    save_api_key,
+    save_custom_server,
+)
 from touchstone_llm.errors import TouchstoneError
+from touchstone_llm.providers import BY_NAME
 from touchstone_llm.report import render_html
 from touchstone_llm.results import RunResult
 from touchstone_llm.server.jobs import JobBusyError, JobManager
@@ -55,6 +63,34 @@ class JobRequest(BaseModel):
     limit: int | None = Field(default=None, ge=1)
     max_tokens: int = Field(default=512, ge=1, le=8192)
     drafts: bool = False
+
+
+class CustomRequest(BaseModel):
+    """Body of ``POST /api/custom``: an OpenAI-compatible server address and optional key."""
+
+    base_url: str = Field(min_length=1, max_length=300)
+    key: str | None = Field(default=None, max_length=400)
+
+
+def _provider_status(name: str, keys: dict[str, bool]) -> dict[str, Any]:
+    """Public facts about a provider. Never includes a key value."""
+    info = BY_NAME.get(name)
+    needs_key = PROVIDER_KEYS.get(name) is not None
+    key_set = keys.get(name, False)
+    url, _key = custom_server() if name == "custom" else (None, None)
+    ready = (not needs_key or key_set) if name != "custom" else url is not None
+    return {
+        "name": name,
+        "label": info.label if info else name,
+        "description": info.description if info else "",
+        "group": info.group if info else "own",
+        "verified": info.verified if info else False,
+        "needs_key": needs_key,
+        "key_set": key_set,
+        "ready": ready,
+        "signup_url": (pk.signup_url if (pk := PROVIDER_KEYS.get(name)) else None),
+        "custom_url": url,
+    }
 
 
 class KeyRequest(BaseModel):
@@ -126,15 +162,7 @@ def create_app(
         has_drafts = drafts_dir is not None and drafts_dir.is_dir()
         return {
             "version": __version__,
-            "providers": [
-                {
-                    "name": name,
-                    "needs_key": PROVIDER_KEYS.get(name) is not None,
-                    "key_set": keys.get(name, False),
-                    "signup_url": (pk.signup_url if (pk := PROVIDER_KEYS.get(name)) else None),
-                }
-                for name in available_backends()
-            ],
+            "providers": [_provider_status(name, keys) for name in available_backends()],
             "tasks": [
                 {
                     "name": name,
@@ -158,6 +186,15 @@ def create_app(
         except ValueError as err:
             raise HTTPException(400, str(err)) from None
         return {"provider": body.provider, "key_set": True}
+
+    @app.post("/api/custom")
+    def save_custom(body: CustomRequest) -> dict[str, Any]:
+        try:
+            save_custom_server(body.base_url, body.key)
+        except ValueError as err:
+            raise HTTPException(400, str(err)) from None
+        url, _key = custom_server()
+        return {"provider": "custom", "ready": True, "custom_url": url}
 
     @app.get("/api/models/{provider}")
     def models(provider: str) -> dict[str, Any]:

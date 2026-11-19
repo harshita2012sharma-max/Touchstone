@@ -41,7 +41,7 @@ export function RunPage() {
   const unparsed = run.tasks.filter((t) => t.unparsed_rate > 0);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <PageTitle
         title={`Result: ${c.model}`}
         sub={`Tested on ${when(m.started_at)}. Below: the overall score, a score for each topic, and every question with the model's answer.`}

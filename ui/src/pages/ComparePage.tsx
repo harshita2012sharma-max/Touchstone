@@ -39,7 +39,7 @@ export function ComparePage() {
   const score = (r: RunSummary, task: string) => r.tasks.find((t) => t.task === task);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <PageTitle
         title="Compare tests"
         sub={`Put up to ${MAX_COMPARE} tests side by side, topic by topic. Each test gets its own colour, and every bar shows its number.`}

@@ -15,24 +15,24 @@ export const inputClass =
   "h-10 rounded-lg border border-line-strong bg-surface px-3 text-sm text-text placeholder:text-muted";
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-2xl border border-line bg-surface p-6 ${className}`}>{children}</section>;
+  return <section className={`rounded-2xl border border-line bg-surface p-6 sm:p-8 ${className}`}>{children}</section>;
 }
 
 export function CardTitle({ children, hint }: { children: ReactNode; hint?: ReactNode }) {
   return (
-    <div className="mb-4">
-      <h2 className="text-base font-semibold text-primary">{children}</h2>
-      {hint && <p className="mt-1 text-sm text-muted">{hint}</p>}
+    <div className="mb-6">
+      <h2 className="text-lg font-semibold text-primary">{children}</h2>
+      {hint && <p className="mt-1.5 text-sm leading-relaxed text-muted">{hint}</p>}
     </div>
   );
 }
 
 export function PageTitle({ title, sub, action }: { title: string; sub?: ReactNode; action?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
       <div className="max-w-2xl">
-        <h1 className="text-2xl font-semibold text-primary">{title}</h1>
-        {sub && <p className="mt-1 text-sm text-muted">{sub}</p>}
+        <h1 className="text-3xl font-semibold tracking-tight text-primary">{title}</h1>
+        {sub && <p className="mt-3 text-base leading-relaxed text-muted">{sub}</p>}
       </div>
       {action}
     </div>

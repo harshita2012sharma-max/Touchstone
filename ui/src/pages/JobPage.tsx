@@ -33,7 +33,7 @@ export function JobPage() {
   const done = entries.reduce((a, [, p]) => a + p.done, 0);
   const total = entries.reduce((a, [, p]) => a + p.total, 0);
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <PageTitle
         title={job.state === "failed" ? "The test stopped" : "Test in progress"}
         sub={job.state === "failed"

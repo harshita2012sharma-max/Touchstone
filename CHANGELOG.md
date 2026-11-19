@@ -5,6 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-19
+
+### Added
+- Test models from any provider with your own key: Google Gemini, Groq, OpenRouter, Hugging Face, OpenAI, Anthropic (Claude), Mistral, DeepSeek, xAI, Together AI, Ollama, plus a **Custom server** option for any OpenAI-compatible address (company endpoints, LM Studio, vLLM, other providers).
+- Type any model name yourself when it is not in the provider's list.
+- If a provider rejects one of the fixed settings (for example a model that refuses `temperature`, or wants `max_completion_tokens`), the request is retried without it and the change is recorded in the result and reports ("Provider adjustments").
+- Redesigned New test page: providers grouped (free, paid, on this computer, your own server), key and server forms in place, more spacing and a calmer, more professional layout across all pages.
+
+### Notes
+- Providers marked "beta" use the standard request formats and are covered by tests, but have not yet been confirmed against the live service by the maintainers.
+
 ## [0.1.2] - 2026-11-19
 
 ### Added

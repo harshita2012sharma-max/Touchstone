@@ -8,6 +8,9 @@
 |---|---|
 | Model (requested) | `{{ cfg.model }}` |
 | Model id reported by provider | `{{ meta.provider_model_id or "not reported" }}` |
+{% if meta.provider_notes %}
+| Provider adjustments | {{ meta.provider_notes | join("; ") | md }} |
+{% endif %}
 | Date (UTC) | {{ meta.started_at.strftime("%Y-%m-%d %H:%M") }} |
 | Settings | temperature={{ s.temperature }}, top_p={{ s.top_p }}, seed={{ s.seed }}, max_tokens={{ s.max_tokens }} |
 | Samples | {{ total_n }} across {{ r.tasks | length }} task(s){% if cfg.limit %} (limit {{ cfg.limit }} per task){% endif %} |

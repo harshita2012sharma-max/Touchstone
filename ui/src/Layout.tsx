@@ -42,7 +42,7 @@ export function Layout() {
         Skip to content
       </a>
       <header className="sticky top-0 z-10 border-b border-line bg-surface">
-        <div className="mx-auto flex h-16 max-w-[1120px] items-center gap-4 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-[1080px] items-center gap-6 px-5 sm:px-8">
           <Link to="/" className="text-lg font-semibold tracking-tight text-primary">
             touchstone
           </Link>
@@ -73,7 +73,7 @@ export function Layout() {
           </div>
         </div>
       </header>
-      <main id="main" className="mx-auto max-w-[1120px] px-4 py-8 sm:px-6">
+      <main id="main" className="mx-auto max-w-[1080px] px-5 py-12 sm:px-8 sm:py-16">
         <Outlet />
       </main>
     </div>

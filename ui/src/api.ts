@@ -2,9 +2,15 @@
 
 export interface Provider {
   name: string;
+  label: string;
+  description: string;
+  group: "free" | "paid" | "local" | "own";
+  verified: boolean;
   needs_key: boolean;
   key_set: boolean;
+  ready: boolean;
   signup_url: string | null;
+  custom_url: string | null;
 }
 
 export interface TaskInfo {
@@ -139,6 +145,12 @@ export const api = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ provider, key }),
+    }),
+  saveCustom: (base_url: string, key: string | null) =>
+    request<{ provider: string; ready: boolean; custom_url: string }>("/api/custom", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ base_url, key }),
     }),
   job: (id: string) => request<Job>(`/api/jobs/${encodeURIComponent(id)}`),
   reportUrl: (id: string) => `/api/runs/${encodeURIComponent(id)}/report`,

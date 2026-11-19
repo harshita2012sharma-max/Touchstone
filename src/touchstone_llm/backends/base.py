@@ -57,6 +57,8 @@ class Completion(BaseModel):
     """Exact model id or version the provider reports, if any."""
     finish_reason: str | None = None
     latency_ms: float = 0.0
+    notes: list[str] = []
+    """Settings the provider rejected or ignored for this call (recorded in results)."""
 
 
 class Backend(ABC):

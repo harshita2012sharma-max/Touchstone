@@ -11,4 +11,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - API key loading from env or `.env`, with step-by-step messages when a key is missing and masking of keys in any shown text.
 - Model backends: Groq, OpenRouter and Ollama (one OpenAI-compatible client), Gemini (REST), and an offline `mock` backend. Plugins can add providers via the `kasauti.backends` entry point.
 - Client-side rate limiting and retries with backoff for free tiers; clear errors for retired model ids, rejected keys and an unreachable Ollama server.
+- Rule-based scorers: MCQ answer parser (many answer styles, ambiguous answers marked "unparsed"), numeric answer extraction (Devanagari digits, Indian digit grouping), dependency-free chrF verified against sacreBLEU, and instruction rule checks.
+- Task framework with the six v1 tasks and a `kasauti.tasks` entry point for plugins. Items are validated on load: CC-BY-4.0 only, at least two reviewers besides the author, unique ids.
 - Result schema (`RunResult`) that saves every prompt, output, score and setting as readable UTF-8 JSON.

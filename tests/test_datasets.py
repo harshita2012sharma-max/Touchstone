@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from kasauti.review import check_pending
-from kasauti.scoring.mcq import LETTERS
-from kasauti.tasks import available_tasks, get_task
-from kasauti.tasks.base import DatasetError
-from kasauti.tasks.mcq import MCQSample, MCQTask
+from touchstone_llm.review import check_pending
+from touchstone_llm.scoring.mcq import LETTERS
+from touchstone_llm.tasks import available_tasks, get_task
+from touchstone_llm.tasks.base import DatasetError
+from touchstone_llm.tasks.mcq import MCQSample, MCQTask
 
 PENDING = Path(__file__).resolve().parents[1] / "datasets" / "pending"
 

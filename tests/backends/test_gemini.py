@@ -4,9 +4,9 @@ import httpx
 import pytest
 import respx
 
-from kasauti.backends.base import AuthError, ModelNotFoundError
-from kasauti.backends.gemini import GEMINI_BASE_URL, GeminiBackend
-from kasauti.config import GenerationSettings
+from touchstone_llm.backends.base import AuthError, ModelNotFoundError
+from touchstone_llm.backends.gemini import GEMINI_BASE_URL, GeminiBackend
+from touchstone_llm.config import GenerationSettings
 
 KEY = "AIza_test_secret_value_123"
 
@@ -73,7 +73,7 @@ def test_404_suggests_list_models() -> None:
     respx.post(f"{GEMINI_BASE_URL}/models/old:generateContent").mock(
         return_value=httpx.Response(404, json={"error": {"message": "models/old is not found"}})
     )
-    with pytest.raises(ModelNotFoundError, match="kasauti list-models gemini"):
+    with pytest.raises(ModelNotFoundError, match="touchstone list-models gemini"):
         _backend().generate("old", "p", GenerationSettings())
 
 

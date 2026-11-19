@@ -1,4 +1,4 @@
-// Typed client for the local kasauti API (see src/kasauti/server/app.py).
+// Typed client for the local touchstone API (see src/touchstone_llm/server/app.py).
 
 export interface Provider {
   name: string;
@@ -69,7 +69,7 @@ export interface TaskResult extends TaskSummary {
 export interface RunResult {
   metadata: {
     run_id: string;
-    kasauti_version: string;
+    tool_version: string;
     started_at: string;
     finished_at: string | null;
     provider_model_id: string | null;

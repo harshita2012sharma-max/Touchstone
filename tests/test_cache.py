@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from kasauti.backends.base import Completion
-from kasauti.cache import ResponseCache, cache_key
-from kasauti.config import GenerationSettings
+from touchstone_llm.backends.base import Completion
+from touchstone_llm.cache import ResponseCache, cache_key
+from touchstone_llm.config import GenerationSettings
 
 
 def test_cache_round_trip(tmp_path: Path) -> None:

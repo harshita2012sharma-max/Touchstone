@@ -135,8 +135,8 @@ export function NewRunPage() {
                 <KeyRound aria-hidden className="mt-0.5 size-4 shrink-0" />
                 <span>
                   Add <code className="font-mono">{KEY_VARS[current.name] ?? "the API key"}=…</code> to the{" "}
-                  <code className="font-mono">.env</code> file in the folder where you started kasauti, then restart{" "}
-                  <code className="font-mono">kasauti ui</code>. Keys never leave your computer except to that provider.
+                  <code className="font-mono">.env</code> file in the folder where you started touchstone, then restart{" "}
+                  <code className="font-mono">touchstone ui</code>. Keys never leave your computer except to that provider.
                 </span>
               </p>
             )}

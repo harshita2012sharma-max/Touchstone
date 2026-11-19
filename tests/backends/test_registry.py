@@ -1,11 +1,11 @@
 import pytest
 
-from kasauti.backends import available_backends, get_backend
-from kasauti.backends.mock import MockBackend
-from kasauti.backends.openai_compat import OpenAICompatBackend
-from kasauti.config import GenerationSettings
-from kasauti.env import MissingAPIKeyError
-from kasauti.errors import KasautiError
+from touchstone_llm.backends import available_backends, get_backend
+from touchstone_llm.backends.mock import MockBackend
+from touchstone_llm.backends.openai_compat import OpenAICompatBackend
+from touchstone_llm.config import GenerationSettings
+from touchstone_llm.env import MissingAPIKeyError
+from touchstone_llm.errors import TouchstoneError
 
 
 def test_builtin_backends_listed() -> None:
@@ -13,7 +13,7 @@ def test_builtin_backends_listed() -> None:
 
 
 def test_unknown_provider_error_lists_known() -> None:
-    with pytest.raises(KasautiError, match="groq"):
+    with pytest.raises(TouchstoneError, match="groq"):
         get_backend("nope")
 
 

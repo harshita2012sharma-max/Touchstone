@@ -4,9 +4,9 @@ from typing import Any
 
 import pytest
 
-from kasauti.backends.base import Backend, Completion
-from kasauti.backends.mock import MockBackend
-from kasauti.config import GenerationSettings
+from touchstone_llm.backends.base import Backend, Completion
+from touchstone_llm.backends.mock import MockBackend
+from touchstone_llm.config import GenerationSettings
 
 META = {"author": "writer", "license": "CC-BY-4.0", "reviewers": ["rev1", "rev2"]}
 

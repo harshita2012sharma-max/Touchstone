@@ -1,6 +1,6 @@
 import pytest
 
-from kasauti.scoring.numeric import numbers_match, parse_number
+from touchstone_llm.scoring.numeric import numbers_match, parse_number
 
 
 @pytest.mark.parametrize(

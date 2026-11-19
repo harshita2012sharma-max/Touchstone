@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from kasauti.env import (
+from touchstone_llm.env import (
     MissingAPIKeyError,
     get_api_key,
     key_status,

@@ -57,7 +57,7 @@ jobs:
           python - <<'PY'
           import glob, zipfile
           names = zipfile.ZipFile(glob.glob("dist/*.whl")[0]).namelist()
-          assert "kasauti/server/static/index.html" in names, "UI missing from wheel"
+          assert "touchstone_llm/server/static/index.html" in names, "UI missing from wheel"
           assert not any(".env" in n for n in names), ".env must never ship"
           assert not any("pending" in n for n in names), "unreviewed data must not ship"
           print("wheel OK:", len(names), "files")
@@ -65,6 +65,6 @@ jobs:
       - name: Smoke test in a clean venv (core install, no UI extra)
         run: |
           python -m venv /tmp/v && /tmp/v/bin/pip install dist/*.whl
-          /tmp/v/bin/kasauti --version
-          /tmp/v/bin/kasauti list-tasks
-          /tmp/v/bin/kasauti ui --no-open 2>&1 | grep -q 'pip install "kasauti\[ui\]"'
+          /tmp/v/bin/touchstone --version
+          /tmp/v/bin/touchstone list-tasks
+          /tmp/v/bin/touchstone ui --no-open 2>&1 | grep -q 'pip install "touchstone\[ui\]"'

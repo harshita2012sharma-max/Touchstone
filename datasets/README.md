@@ -26,10 +26,10 @@ If you are unsure about a fact, mark `fix` and say so. That is better than guess
 ## For maintainers
 
 ```bash
-python -m kasauti.review check                                  # validate pending items
-python -m kasauti.review export review.csv                       # sheet for reviewers
-python -m kasauti.review import review_asha.csv --reviewer asha  # record one reviewer's verdicts
-python -m kasauti.review promote                                 # ship items with 2+ approvals
+python -m touchstone_llm.review check                                  # validate pending items
+python -m touchstone_llm.review export review.csv                       # sheet for reviewers
+python -m touchstone_llm.review import review_asha.csv --reviewer asha  # record one reviewer's verdicts
+python -m touchstone_llm.review promote                                 # ship items with 2+ approvals
 ```
 
 After `promote`, run `pytest` and open a pull request. Reviewers are credited in the README.

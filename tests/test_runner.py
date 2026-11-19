@@ -3,11 +3,11 @@ from pathlib import Path
 import pytest
 
 from conftest import CountingMock, write_jsonl
-from kasauti.backends.base import AuthError, TransientError
-from kasauti.cache import ResponseCache
-from kasauti.config import RunConfig
-from kasauti.errors import KasautiError
-from kasauti.runner import ProgressEvent, Runner, RunStopped
+from touchstone_llm.backends.base import AuthError, TransientError
+from touchstone_llm.cache import ResponseCache
+from touchstone_llm.config import RunConfig
+from touchstone_llm.errors import TouchstoneError
+from touchstone_llm.runner import ProgressEvent, Runner, RunStopped
 
 
 def _config(data_dir: Path, **kw: object) -> RunConfig:
@@ -20,7 +20,7 @@ def _config(data_dir: Path, **kw: object) -> RunConfig:
 
 
 def _replies(data_dir: Path) -> dict[str, str]:
-    from kasauti.tasks import get_task
+    from touchstone_llm.tasks import get_task
 
     task = get_task("hindi_reasoning", data_path=data_dir / "hindi_reasoning.jsonl")
     replies = {}
@@ -94,7 +94,7 @@ def test_failures_stop_run_with_resume_hint(
     msg = str(exc.value)
     assert str(error) in msg
     assert "run the same command again" in msg
-    assert isinstance(exc.value, KasautiError)
+    assert isinstance(exc.value, TouchstoneError)
 
 
 def test_unreviewed_data_needs_flag(tmp_path: Path) -> None:
@@ -112,7 +112,7 @@ def test_unreviewed_data_needs_flag(tmp_path: Path) -> None:
         ],
     )
     cfg = RunConfig(model="mock/echo", tasks=["hindi_reasoning"], data_dir=str(tmp_path))
-    with pytest.raises(KasautiError, match="reviewers"):
+    with pytest.raises(TouchstoneError, match="reviewers"):
         Runner(cfg, backend=CountingMock(), cache=None).run()
     cfg = cfg.model_copy(update={"allow_unreviewed": True})
     result = Runner(cfg, backend=CountingMock(), cache=None).run()
@@ -122,5 +122,5 @@ def test_unreviewed_data_needs_flag(tmp_path: Path) -> None:
 
 def test_missing_task_file_in_data_dir(tmp_path: Path) -> None:
     cfg = RunConfig(model="mock/echo", tasks=["hindi_reasoning"], data_dir=str(tmp_path))
-    with pytest.raises(KasautiError, match="No data"):
+    with pytest.raises(TouchstoneError, match="No data"):
         Runner(cfg, backend=CountingMock(), cache=None).run()

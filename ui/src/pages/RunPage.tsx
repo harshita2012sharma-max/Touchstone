@@ -57,7 +57,7 @@ export function RunPage() {
         <Meta label="Model id reported"><span className="font-mono text-[13px]">{m.provider_model_id ?? "not reported"}</span></Meta>
         <Meta label="Settings">temperature {c.settings.temperature} · seed {c.settings.seed} · top_p {c.settings.top_p} · max tokens {c.settings.max_tokens}</Meta>
         <Meta label="Samples">{totalN} across {run.tasks.length} task(s){c.limit ? ` (limit ${c.limit} each)` : ""}</Meta>
-        <Meta label="kasauti">{m.kasauti_version}{m.git_sha ? ` (${m.git_sha})` : ""}</Meta>
+        <Meta label="touchstone">{m.tool_version}{m.git_sha ? ` (${m.git_sha})` : ""}</Meta>
       </div>
 
       <StoneHero run={run} />

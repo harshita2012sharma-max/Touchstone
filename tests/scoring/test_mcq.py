@@ -1,6 +1,6 @@
 import pytest
 
-from kasauti.scoring.mcq import parse_choice
+from touchstone_llm.scoring.mcq import parse_choice
 
 OPTIONS = ["दिल्ली", "मुंबई", "चेन्नई", "कोलकाता"]
 

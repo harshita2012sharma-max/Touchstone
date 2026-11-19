@@ -1,7 +1,7 @@
 import pytest
 
-from kasauti.backends.base import RateLimitError, TransientError
-from kasauti.backends.ratelimit import RateLimiter, with_retries
+from touchstone_llm.backends.base import RateLimitError, TransientError
+from touchstone_llm.backends.ratelimit import RateLimiter, with_retries
 
 
 class FakeClock:

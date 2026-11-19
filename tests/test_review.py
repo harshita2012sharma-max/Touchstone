@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from kasauti.review import check_pending, export_csv, import_csv, promote
-from kasauti.tasks.base import DatasetError
+from touchstone_llm.review import check_pending, export_csv, import_csv, promote
+from touchstone_llm.tasks.base import DatasetError
 
 
 def _item(n: int, **extra: Any) -> dict[str, Any]:

@@ -8,8 +8,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: kasauti version
-      description: Output of `kasauti --version`
+      label: touchstone version
+      description: Output of `touchstone --version`
     validations:
       required: true
   - type: input

@@ -5,13 +5,13 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from kasauti.errors import KasautiError
-from kasauti.tasks import available_tasks, get_task
-from kasauti.tasks.base import DatasetError, ItemMeta
-from kasauti.tasks.instructions import CodemixedInstructions
-from kasauti.tasks.mcq import HindiComprehension, MCQSample
-from kasauti.tasks.numeric import HindiReasoning
-from kasauti.tasks.translation import TranslationHiEn
+from touchstone_llm.errors import TouchstoneError
+from touchstone_llm.tasks import available_tasks, get_task
+from touchstone_llm.tasks.base import DatasetError, ItemMeta
+from touchstone_llm.tasks.instructions import CodemixedInstructions
+from touchstone_llm.tasks.mcq import HindiComprehension, MCQSample
+from touchstone_llm.tasks.numeric import HindiReasoning
+from touchstone_llm.tasks.translation import TranslationHiEn
 
 META = {"author": "writer1", "license": "CC-BY-4.0", "reviewers": ["rev1", "rev2"]}
 
@@ -49,7 +49,7 @@ def test_builtin_tasks_registered() -> None:
 
 
 def test_unknown_task_lists_known() -> None:
-    with pytest.raises(KasautiError, match="hindi_comprehension"):
+    with pytest.raises(TouchstoneError, match="hindi_comprehension"):
         get_task("nope")
 
 

@@ -1,4 +1,4 @@
-# Contributing to kasauti
+# Contributing to touchstone
 
 Thank you for helping! Please read the [Code of Conduct](CODE_OF_CONDUCT.md) first.
 

@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from kasauti.config import GenerationSettings, ModelRef, RunConfig
+from touchstone_llm.config import GenerationSettings, ModelRef, RunConfig
 
 
 def test_model_ref_splits_on_first_slash_only() -> None:

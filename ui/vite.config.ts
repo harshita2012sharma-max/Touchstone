@@ -2,11 +2,11 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
-// The build goes straight into the Python package, which serves it from `kasauti ui`.
+// The build goes straight into the Python package, which serves it from `touchstone ui`.
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    outDir: "../src/kasauti/server/static",
+    outDir: "../src/touchstone_llm/server/static",
     emptyOutDir: true,
   },
   server: {

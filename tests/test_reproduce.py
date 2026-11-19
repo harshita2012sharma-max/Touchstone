@@ -1,9 +1,9 @@
 from pathlib import Path
 
 from conftest import CountingMock, write_jsonl
-from kasauti.config import RunConfig
-from kasauti.reproduce import compare_runs
-from kasauti.runner import Runner
+from touchstone_llm.config import RunConfig
+from touchstone_llm.reproduce import compare_runs
+from touchstone_llm.runner import Runner
 
 
 def _run(data_dir: Path):

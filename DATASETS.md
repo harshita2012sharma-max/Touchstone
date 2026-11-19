@@ -1,10 +1,10 @@
 # Datasets
 
-## Items written for kasauti
+## Items written for touchstone
 
 | Task | Source | License | Location |
 |---|---|---|---|
-| All v1 tasks | Written by kasauti contributors, each item reviewed by at least two other people | CC-BY-4.0 | `src/kasauti/tasks/data/` |
+| All v1 tasks | Written by touchstone contributors, each item reviewed by at least two other people | CC-BY-4.0 | `src/touchstone_llm/tasks/data/` |
 
 No item is copied from exams, books, websites or other datasets.
 

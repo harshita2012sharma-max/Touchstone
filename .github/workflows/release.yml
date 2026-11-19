@@ -2,9 +2,9 @@ name: Release
 
 # Publishes to PyPI with Trusted Publishing (no API token stored in GitHub).
 # Runs only when a version tag like v0.1.0 is pushed. Before the first release:
-#   1. Create the "kasauti" project on PyPI (and TestPyPI) and add this repository
+#   1. Create the "touchstone-llm" project on PyPI (and TestPyPI) and add this repository
 #      as a trusted publisher for environment "pypi" / "testpypi".
-#   2. Set the version in src/kasauti/__init__.py and move CHANGELOG "Unreleased" to it.
+#   2. Set the version in src/touchstone_llm/__init__.py and move CHANGELOG "Unreleased" to it.
 on:
   push:
     tags: ["v*.*.*"]

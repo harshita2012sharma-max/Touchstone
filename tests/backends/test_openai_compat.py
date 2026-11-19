@@ -4,14 +4,14 @@ import httpx
 import pytest
 import respx
 
-from kasauti.backends.base import (
+from touchstone_llm.backends.base import (
     AuthError,
     BackendError,
     ModelNotFoundError,
     RateLimitError,
 )
-from kasauti.backends.openai_compat import OpenAICompatBackend
-from kasauti.config import GenerationSettings
+from touchstone_llm.backends.openai_compat import OpenAICompatBackend
+from touchstone_llm.config import GenerationSettings
 
 BASE = "https://api.example.test/v1"
 KEY = "sk_test_secret_value_123"
@@ -83,7 +83,7 @@ def test_retired_or_unknown_model_suggests_list_models(status: int, payload: dic
     respx.post(f"{BASE}/chat/completions").mock(return_value=httpx.Response(status, json=payload))
     with pytest.raises(ModelNotFoundError) as exc:
         _backend().generate("old", "p", GenerationSettings())
-    assert "kasauti list-models groq" in str(exc.value)
+    assert "touchstone list-models groq" in str(exc.value)
 
 
 @respx.mock

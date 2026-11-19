@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from kasauti.config import RunConfig
-from kasauti.results import RunMetadata, RunResult, SampleResult, TaskResult
+from touchstone_llm.config import RunConfig
+from touchstone_llm.results import RunMetadata, RunResult, SampleResult, TaskResult
 
 
 def _sample(sid: str, score: float, unparsed: bool = False) -> SampleResult:
@@ -66,7 +66,7 @@ def test_run_result_round_trip_keeps_hindi(tmp_path: Path) -> None:
 def test_metadata_records_reproducibility_fields() -> None:
     config = RunConfig(model="mock/fake", tasks=["t"])
     meta = RunMetadata.new(config)
-    assert meta.kasauti_version
+    assert meta.tool_version
     assert meta.python_version
     assert meta.platform
     assert meta.started_at.tzinfo is not None

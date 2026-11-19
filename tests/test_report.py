@@ -3,10 +3,10 @@ from pathlib import Path
 import pytest
 
 from conftest import CountingMock
-from kasauti.config import RunConfig
-from kasauti.report import render_html, render_markdown, write_reports
-from kasauti.results import RunResult
-from kasauti.runner import Runner
+from touchstone_llm.config import RunConfig
+from touchstone_llm.report import render_html, render_markdown, write_reports
+from touchstone_llm.results import RunResult
+from touchstone_llm.runner import Runner
 
 EVIL = '<script>alert("x")</script> | pipe'
 

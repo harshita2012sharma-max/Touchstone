@@ -6,12 +6,12 @@ export function AboutPage() {
   const { data: status } = useLoad(api.status);
   return (
     <>
-      <PageTitle title="About kasauti" sub={status ? `Version ${status.version}` : undefined} />
+      <PageTitle title="About touchstone" sub={status ? `Version ${status.version}` : undefined} />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <h2 className="mb-2 font-medium">What it is</h2>
           <p className="text-sm">
-            <span lang="hi">कसौटी</span> (kasauti) is the touchstone used to test gold. This tool runs small,
+            A touchstone (<span lang="hi">कसौटी</span>, kasauti) is the dark stone used to test gold. This tool runs small,
             reproducible tests of language models in Hindi and Hinglish, with fixed settings (temperature 0,
             seed 42) for every model, and saves every prompt and reply.
           </p>
@@ -37,7 +37,7 @@ export function AboutPage() {
         <Card>
           <h2 className="mb-2 font-medium">Privacy</h2>
           <p className="text-sm">
-            This page runs only on your computer (127.0.0.1). kasauti collects no telemetry. Prompts go only to
+            This page runs only on your computer (127.0.0.1). touchstone collects no telemetry. Prompts go only to
             the model provider you choose, and API keys are read from your local <code className="font-mono">.env</code> file
             and never shown here.
           </p>

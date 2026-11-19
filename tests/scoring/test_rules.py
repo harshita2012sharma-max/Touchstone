@@ -1,7 +1,7 @@
 import pytest
 from pydantic import TypeAdapter
 
-from kasauti.scoring.rules import Check, run_checks
+from touchstone_llm.scoring.rules import Check, run_checks
 
 CHECKS = TypeAdapter(list[Check])
 

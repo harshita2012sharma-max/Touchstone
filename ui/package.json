@@ -1,9 +1,9 @@
 {
-  "name": "kasauti-ui",
+  "name": "touchstone-ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Web UI for kasauti. Built files are copied into the Python package.",
+  "description": "Web UI for touchstone. Built files are copied into the Python package.",
   "license": "Apache-2.0",
   "scripts": {
     "dev": "vite",

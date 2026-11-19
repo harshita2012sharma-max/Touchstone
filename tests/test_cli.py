@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from kasauti import __version__
-from kasauti.cli import app
+from touchstone_llm import __version__
+from touchstone_llm.cli import app
 
 runner = CliRunner()
 
@@ -20,7 +20,7 @@ def _isolate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 def test_version_flag_prints_version() -> None:
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
-    assert result.output.strip() == f"kasauti {__version__}"
+    assert result.output.strip() == f"touchstone {__version__}"
 
 
 def test_no_args_shows_help() -> None:
@@ -167,4 +167,4 @@ def test_report_on_bad_file(tmp_path: Path) -> None:
     bad.write_text("{}", encoding="utf-8")
     result = runner.invoke(app, ["report", str(bad)])
     assert result.exit_code == 1
-    assert "not a kasauti result" in result.output
+    assert "not a touchstone result" in result.output

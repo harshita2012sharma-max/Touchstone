@@ -9,9 +9,9 @@ pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient
 
 from conftest import CountingMock
-from kasauti.config import RunConfig
-from kasauti.runner import Runner
-from kasauti.server.app import create_app
+from touchstone_llm.config import RunConfig
+from touchstone_llm.runner import Runner
+from touchstone_llm.server.app import create_app
 
 KEY = "gsk_server_test_secret_123456"
 
@@ -124,7 +124,7 @@ def test_bad_job_request_is_400(client: TestClient) -> None:
 
 
 def test_failed_job_reports_redacted_error(runs_dir: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from kasauti.backends.base import AuthError
+    from touchstone_llm.backends.base import AuthError
 
     monkeypatch.setenv("GROQ_API_KEY", KEY)
     app = create_app(
@@ -143,11 +143,11 @@ def test_failed_job_reports_redacted_error(runs_dir: Path, monkeypatch: pytest.M
 def test_spa_fallback_when_built(tmp_path: Path, runs_dir: Path) -> None:
     static = tmp_path / "static"
     static.mkdir()
-    (static / "index.html").write_text("<!doctype html><title>kasauti</title>", "utf-8")
+    (static / "index.html").write_text("<!doctype html><title>touchstone</title>", "utf-8")
     app = create_app(runs_dir=runs_dir, static_dir=static, use_cache=False)
     c = TestClient(app, base_url="http://127.0.0.1:7860")
-    assert "kasauti" in c.get("/").text
-    assert "kasauti" in c.get("/runs/some-id").text  # client-side route
+    assert "touchstone" in c.get("/").text
+    assert "touchstone" in c.get("/runs/some-id").text  # client-side route
 
 
 def test_helpful_page_when_ui_not_built(runs_dir: Path, tmp_path: Path) -> None:

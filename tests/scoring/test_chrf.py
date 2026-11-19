@@ -1,7 +1,7 @@
 import pytest
 from sacrebleu.metrics import CHRF
 
-from kasauti.scoring.chrf import chrf
+from touchstone_llm.scoring.chrf import chrf
 
 CASES = [
     ("The cat sat on the mat.", ["The cat sat on the mat."]),

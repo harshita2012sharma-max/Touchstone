@@ -170,3 +170,29 @@ def test_report_on_bad_file(tmp_path: Path) -> None:
     result = runner.invoke(app, ["report", str(bad)])
     assert result.exit_code == 1
     assert "not a touchstone result" in result.output
+
+
+def test_find_free_port_skips_busy_port() -> None:
+    import socket
+
+    from touchstone_llm.cli import find_free_port
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as busy:
+        busy.bind(("127.0.0.1", 0))
+        busy.listen(1)
+        taken = busy.getsockname()[1]
+        found = find_free_port(taken, tries=5)
+        assert found is not None
+        assert found != taken
+        assert taken < found <= taken + 4
+
+
+def test_find_free_port_returns_none_when_all_busy() -> None:
+    import socket
+
+    from touchstone_llm.cli import find_free_port
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as busy:
+        busy.bind(("127.0.0.1", 0))
+        busy.listen(1)
+        assert find_free_port(busy.getsockname()[1], tries=1) is None

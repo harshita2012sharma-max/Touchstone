@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-19
+
+### Fixed
+- `touchstone ui` no longer fails when port 7860 is already in use (for example when the UI is already open): it picks the next free port and says which one.
+- The browser now opens only after the server is ready, so the first page load no longer shows a connection error.
+
 ## [0.1.0] - 2026-11-19
 
 First public release (alpha). Questions are still drafts under review, so no official results are published.

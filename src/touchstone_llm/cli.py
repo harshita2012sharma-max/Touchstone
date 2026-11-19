@@ -283,13 +283,58 @@ def ui(
     runs_dir.mkdir(parents=True, exist_ok=True)
     drafts = drafts_dir if drafts_dir and drafts_dir.is_dir() else default_drafts_dir()
     app_ = create_app(runs_dir=runs_dir, drafts_dir=drafts)
-    url = f"http://127.0.0.1:{port}"
-    console.print(Text(f"touchstone UI running at {url}  (Ctrl+C to stop)"))
+    free = find_free_port(port)
+    if free is None:
+        raise _fail(
+            f"Ports {port}-{port + PORT_TRIES - 1} are all busy. Close other programs "
+            "(or another touchstone ui window) or pass a different --port."
+        )
+    if free != port:
+        console.print(
+            Text(f"Port {port} is busy (maybe touchstone ui is already open), using {free}.")
+        )
+    url = f"http://127.0.0.1:{free}"
+    console.print(Text(f"touchstone UI: {url}  (keep this window open; Ctrl+C to stop)"))
     if open_browser:
-        import webbrowser
+        _open_when_ready(url, free)
+    uvicorn.run(app_, host="127.0.0.1", port=free, log_level="warning")
 
-        webbrowser.open(url)
-    uvicorn.run(app_, host="127.0.0.1", port=port, log_level="warning")
+
+PORT_TRIES = 20
+
+
+def find_free_port(start: int, tries: int = PORT_TRIES) -> int | None:
+    """Return the first port from ``start`` that can be bound on 127.0.0.1, or ``None``."""
+    import socket
+
+    for candidate in range(start, min(start + tries, 65536)):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            try:
+                sock.bind(("127.0.0.1", candidate))
+            except OSError:
+                continue
+            return candidate
+    return None
+
+
+def _open_when_ready(url: str, port: int, timeout: float = 15.0) -> None:
+    """Open the browser in the background once the server accepts connections."""
+    import socket
+    import threading
+    import time
+    import webbrowser
+
+    def wait_then_open() -> None:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            try:
+                with socket.create_connection(("127.0.0.1", port), timeout=0.5):
+                    webbrowser.open(url)
+                    return
+            except OSError:
+                time.sleep(0.2)
+
+    threading.Thread(target=wait_then_open, daemon=True).start()
 
 
 @app.command("list-tasks")

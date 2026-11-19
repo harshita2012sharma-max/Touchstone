@@ -34,3 +34,6 @@ Thumbs.db
 
 # Filled review sheets (may contain reviewer names)
 datasets/review/
+
+# Local editor/agent config
+.claude/

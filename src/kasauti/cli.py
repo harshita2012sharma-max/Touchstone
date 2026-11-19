@@ -248,6 +248,35 @@ def reproduce(
     console.print(Text("Saved: " + ", ".join(str(p) for p in paths), style="dim"))
 
 
+@app.command()
+def ui(
+    port: int = typer.Option(7860, min=1024, max=65535, help="Port on 127.0.0.1."),
+    runs_dir: Path = typer.Option(Path("runs"), help="Folder with saved runs."),
+    drafts_dir: Path = typer.Option(
+        Path("datasets/pending"), help="Draft items folder (offered as 'unreviewed')."
+    ),
+    open_browser: bool = typer.Option(True, "--open/--no-open", help="Open a browser tab."),
+    env_file: Path | None = typer.Option(None, help="Path to a .env file with API keys."),
+) -> None:
+    """Start the local web UI (only reachable from this computer)."""
+    try:
+        import uvicorn
+
+        from kasauti.server.app import create_app
+    except ImportError:
+        raise _fail('The web UI needs extra packages: pip install "kasauti[ui]"') from None
+    load_env(env_file)
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    app_ = create_app(runs_dir=runs_dir, drafts_dir=drafts_dir if drafts_dir.is_dir() else None)
+    url = f"http://127.0.0.1:{port}"
+    console.print(Text(f"kasauti UI running at {url}  (Ctrl+C to stop)"))
+    if open_browser:
+        import webbrowser
+
+        webbrowser.open(url)
+    uvicorn.run(app_, host="127.0.0.1", port=port, log_level="warning")
+
+
 @app.command("list-tasks")
 def list_tasks() -> None:
     """Show available tasks and how many reviewed items each has."""

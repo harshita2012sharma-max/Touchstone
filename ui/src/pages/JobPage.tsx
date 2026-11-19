@@ -2,7 +2,8 @@ import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, type Job } from "../api";
-import { Card, ErrorBox, Loading, PageTitle, buttonSecondary } from "../components";
+import { Card, ErrorBox, Hint, Loading, PageTitle, buttonSecondary } from "../components";
+import { taskLabel } from "../lib";
 
 export function JobPage() {
   const { jobId = "" } = useParams();
@@ -25,42 +26,48 @@ export function JobPage() {
     return () => source.close();
   }, [jobId, navigate]);
 
-  if (lost) return <ErrorBox message={`Lost contact with this run: ${lost}`} />;
+  if (lost) return <ErrorBox message={`Lost contact with this test: ${lost}`} />;
   if (!job) return <Loading label="Connecting" />;
 
   const entries = Object.entries(job.progress);
+  const done = entries.reduce((a, [, p]) => a + p.done, 0);
+  const total = entries.reduce((a, [, p]) => a + p.total, 0);
   return (
-    <>
-      <PageTitle title={job.state === "failed" ? "Run stopped" : "Running"} sub={job.model} />
+    <div className="space-y-8">
+      <PageTitle
+        title={job.state === "failed" ? "The test stopped" : "Test in progress"}
+        sub={job.state === "failed"
+          ? "Something went wrong. Answers received so far are saved, so starting the same test again continues from here."
+          : `${job.model} is answering the questions one by one. The result opens by itself when it finishes.`}
+      />
       <Card>
-        {entries.length === 0 && job.state === "running" && <Loading label="Preparing tasks" />}
-        <ul className="space-y-3" aria-live="polite">
+        {total > 0 && (
+          <p className="mb-5 text-sm font-medium">{done} of {total} questions answered</p>
+        )}
+        {entries.length === 0 && job.state === "running" && <Loading label="Preparing the questions" />}
+        <ul className="space-y-5" aria-live="polite">
           {entries.map(([task, p]) => (
             <li key={task}>
-              <div className="mb-1 flex justify-between text-sm">
-                <span className="font-mono text-[13px]">{task}</span>
+              <div className="mb-2 flex justify-between text-sm">
+                <span className="font-medium">{taskLabel(task)}</span>
                 <span className="tabular text-muted">{p.done} / {p.total}</span>
               </div>
-              <div className="h-2 rounded-sm bg-surface-2" role="progressbar" aria-label={task} aria-valuemin={0} aria-valuemax={p.total} aria-valuenow={p.done}>
-                <div className="h-full rounded-sm bg-series-1 transition-[width] duration-200" style={{ width: `${(p.done / Math.max(p.total, 1)) * 100}%` }} />
+              <div className="h-2.5 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-label={taskLabel(task)} aria-valuemin={0} aria-valuemax={p.total} aria-valuenow={p.done}>
+                <div className="h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${(p.done / Math.max(p.total, 1)) * 100}%` }} />
               </div>
             </li>
           ))}
         </ul>
-        {job.state === "running" && (
-          <p className="mt-4 text-xs text-muted">
-            You can leave this page; the run continues and appears under Runs when finished.
-          </p>
-        )}
+        {job.state === "running" && <Hint>You can leave this page; the test keeps running and appears under Results.</Hint>}
       </Card>
       {job.state === "failed" && job.error && (
-        <div className="mt-4 space-y-3">
+        <div className="space-y-4">
           <ErrorBox message={job.error} />
           <Link to="/new" className={buttonSecondary}>
-            <ArrowLeft aria-hidden className="size-4" /> Back to new run
+            <ArrowLeft aria-hidden className="size-4" /> Back to new test
           </Link>
         </div>
       )}
-    </>
+    </div>
   );
 }

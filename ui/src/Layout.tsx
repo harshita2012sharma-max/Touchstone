@@ -1,12 +1,13 @@
 import { Moon, Play, Sun } from "lucide-react";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { buttonPrimary } from "./components";
 
 const NAV = [
-  { to: "/", label: "Runs", match: (p: string) => p === "/" || p.startsWith("/runs/") || p.startsWith("/jobs/") },
-  { to: "/new", label: "New run", match: (p: string) => p === "/new" },
+  { to: "/", label: "Results", match: (p: string) => p === "/" || p.startsWith("/runs/") || p.startsWith("/jobs/") },
+  { to: "/new", label: "New test", match: (p: string) => p === "/new" },
   { to: "/compare", label: "Compare", match: (p: string) => p === "/compare" },
-  { to: "/about", label: "About", match: (p: string) => p === "/about" },
+  { to: "/about", label: "Help", match: (p: string) => p === "/about" },
 ];
 
 function ThemeToggle() {
@@ -26,7 +27,7 @@ function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
-      className="rounded-lg p-2 text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text"
+      className="flex size-10 items-center justify-center rounded-lg text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text"
     >
       {dark ? <Sun aria-hidden className="size-5" /> : <Moon aria-hidden className="size-5" />}
     </button>
@@ -41,8 +42,8 @@ export function Layout() {
         Skip to content
       </a>
       <header className="sticky top-0 z-10 border-b border-line bg-surface">
-        <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-2 px-4">
-          <Link to="/" className="mr-3 flex items-baseline gap-1.5 font-semibold text-primary">
+        <div className="mx-auto flex h-16 max-w-[1120px] items-center gap-4 px-4 sm:px-6">
+          <Link to="/" className="text-lg font-semibold tracking-tight text-primary">
             touchstone
           </Link>
           <nav aria-label="Main" className="flex min-w-0 gap-1 overflow-x-auto">
@@ -53,8 +54,8 @@ export function Layout() {
                   key={item.to}
                   to={item.to}
                   aria-current={active ? "page" : undefined}
-                  className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm transition-colors duration-150 ${
-                    active ? "bg-surface-2 font-medium text-text" : "text-muted hover:text-text"
+                  className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-colors duration-150 ${
+                    active ? "bg-surface-2 font-semibold text-primary" : "text-muted hover:text-text"
                   }`}
                 >
                   {item.label}
@@ -62,18 +63,17 @@ export function Layout() {
               );
             })}
           </nav>
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
-            <Link
-              to="/new"
-              className="hidden items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-on-accent hover:opacity-90 sm:inline-flex"
-            >
-              <Play aria-hidden className="size-4" /> New run
-            </Link>
+            <span className="hidden sm:block">
+              <Link to="/new" className={buttonPrimary}>
+                <Play aria-hidden className="size-4" /> New test
+              </Link>
+            </span>
           </div>
         </div>
       </header>
-      <main id="main" className="mx-auto max-w-[1200px] px-4 py-6">
+      <main id="main" className="mx-auto max-w-[1120px] px-4 py-8 sm:px-6">
         <Outlet />
       </main>
     </div>

@@ -11,56 +11,58 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Semantic tokens from design-system/touchstone/MASTER.md. Components use these, never raw hex. */
+/*
+ * Theme "warm paper and navy": a soft beige page, cream cards, navy text and
+ * a royal-blue/navy accent. Plain and calm on purpose: no gradients, glow or
+ * decorative motion. Contrast of every text pair is at least 5:1 (see
+ * design-system/touchstone/MASTER.md). Components use these tokens, never raw hex.
+ */
 :root {
-  /* "Paper and touchstone": warm neutrals, gold is the brand. */
-  --bg: #faf8f3;
-  --surface: #ffffff;
-  --surface-2: #f3efe6;
-  --stone: #1c1a17;
-  --stone-2: #2a2722;
-  --on-stone: #f5f1e8;
-  --on-stone-muted: #b3ab9c;
-  --text: #1c1a17;
-  --text-muted: #5c564b;
-  --border: #e6e0d4;
-  --primary: #1c1a17;
-  --accent: #1c1a17;
-  --on-accent: #f5f1e8;
-  --gold: #a8701a;
-  --gold-bright: #e0a526;
-  --warn-bg: #fdecd3;
-  --warn-text: #8a3b0c;
+  --bg: #f6efe7;
+  --surface: #fffcf8;
+  --surface-2: #f1e8dd;
+  --text: #1b2433;
+  --text-muted: #5b6474;
+  --border: #e4d8c8;
+  --border-strong: #cdbfac;
+  --primary: #14213d;
+  --accent: #1d3a8a;
+  --accent-hover: #16307a;
+  --on-accent: #ffffff;
+  --link: #1d4ed8;
+  --info-bg: #e8eefb;
+  --info-text: #1e3a8a;
+  --warn-bg: #fdf0d5;
+  --warn-text: #8a4b08;
   --danger: #b91c1c;
-  --series-1: #a8701a;
-  --series-2: #6250d6;
-  --series-3: #169e6e;
-  --focus: #6250d6;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --focus: #1d4ed8;
   color-scheme: light;
 }
 .dark {
-  --bg: #12110f;
-  --surface: #1c1a17;
-  --surface-2: #2a2722;
-  --stone: #0b0a09;
-  --stone-2: #23201c;
-  --on-stone: #f5f1e8;
-  --on-stone-muted: #b3ab9c;
-  --text: #f5f1e8;
-  --text-muted: #b3ab9c;
-  --border: #3a362f;
-  --primary: #f0e6d2;
-  --accent: #e0a526;
-  --on-accent: #1c1a17;
-  --gold: #c98500;
-  --gold-bright: #f0b93a;
-  --warn-bg: #3d2410;
-  --warn-text: #fdba74;
+  --bg: #0e1626;
+  --surface: #16213a;
+  --surface-2: #1f2c48;
+  --text: #f3eee7;
+  --text-muted: #a9b3c4;
+  --border: #2b3a5c;
+  --border-strong: #3b4d74;
+  --primary: #e8eef9;
+  --accent: #8db0f8;
+  --accent-hover: #a8c3fa;
+  --on-accent: #0e1626;
+  --link: #9cbcfa;
+  --info-bg: #1c2b4d;
+  --info-text: #c7d7fb;
+  --warn-bg: #3a2a10;
+  --warn-text: #fcd58a;
   --danger: #f87171;
-  --series-1: #c98500;
-  --series-2: #9085e9;
+  --series-1: #3987e5;
+  --series-2: #d95926;
   --series-3: #199e70;
-  --focus: #b8aef5;
+  --focus: #9cbcfa;
   color-scheme: dark;
 }
 
@@ -71,18 +73,17 @@
   --color-text: var(--text);
   --color-muted: var(--text-muted);
   --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
   --color-primary: var(--primary);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-on-accent: var(--on-accent);
+  --color-link: var(--link);
+  --color-info-bg: var(--info-bg);
+  --color-info: var(--info-text);
   --color-warn-bg: var(--warn-bg);
   --color-warn: var(--warn-text);
   --color-danger: var(--danger);
-  --color-stone: var(--stone);
-  --color-stone-2: var(--stone-2);
-  --color-on-stone: var(--on-stone);
-  --color-on-stone-muted: var(--on-stone-muted);
-  --color-gold: var(--gold);
-  --color-gold-bright: var(--gold-bright);
   --color-series-1: var(--series-1);
   --color-series-2: var(--series-2);
   --color-series-3: var(--series-3);
@@ -102,35 +103,11 @@ body {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
-button, a, select, input[type="checkbox"], input[type="radio"], summary {
+button, a, select, input[type="checkbox"], input[type="radio"], summary, label:has(input) {
   cursor: pointer;
 }
 .tabular {
   font-variant-numeric: tabular-nums;
-}
-/* Gold streak: bars sweep in like gold rubbed on a touchstone, with one shine pass. */
-@keyframes streak {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-@keyframes shine {
-  from { transform: translateX(-120%); }
-  to { transform: translateX(320%); }
-}
-.streak {
-  position: relative;
-  overflow: hidden;
-  transform-origin: left center;
-  animation: streak 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-.streak::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 35%;
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.45), transparent);
-  animation: shine 900ms ease-out both;
-  animation-delay: inherit;
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

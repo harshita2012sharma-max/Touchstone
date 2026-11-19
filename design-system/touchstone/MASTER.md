@@ -28,23 +28,26 @@ Chosen from ui-ux-pro-max results: **Data-Dense Dashboard** + **Comparative Anal
 - Code, ids, numbers in tables: `Fira Code` (tabular figures)
 - Base 14px for dense tables, 16px for body text, line-height 1.5. Devanagari needs line-height of at least 1.6.
 
-**Theme: "paper and touchstone"** (changed on request: the generic blue felt too common)
-A touchstone is a black touchstone; gold is tested by the streak it leaves. Surfaces are warm paper (light) and stone black (dark); scores are gold streaks. Results open with a stone hero panel: a large mean score that counts up, bars that sweep in with one shine pass, and highlight cards (strongest task, hardest task, toughest item). Highlights describe one model's own results, report ties as ties, and never rank models.
+**Theme: "warm paper and navy"** (v3, chosen by the maintainer: soft beige instead of pure white, royal blue / navy accent, simple, must not look like a generic "AI app", clear buttons, even spacing and symmetry)
+- No gradients, glow, sparkle icons or decorative motion. Only bar-width and colour transitions (300 ms or less), all off under reduced motion.
+- Spacing scale 8 / 16 / 24 / 32 px; cards 24 px padding and 16 px radius; sections 24-32 px apart; rows of cards use equal-width grids.
+- Buttons are 40 px tall: primary = solid navy with white text; secondary = outlined on cream. One primary action per area.
+- Every page explains itself in plain language: a one-line intro, an "info" box where numbers need reading, a hint under every form field, and a glossary (Score, n, Mean score, Unparsed, Draft questions, Model id reported). Task ids are shown with friendly names (e.g. "Hindi reading"); rule-check ids are shown in plain English.
 
-**Color tokens** (semantic; components never use raw hex; source of truth is `ui/src/styles.css`)
+**Color tokens** (source of truth: `ui/src/styles.css`; every text pair is at least 5:1 contrast)
 
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| `--bg` | `#faf8f3` | `#12110f` | page |
-| `--surface` / `--surface-2` | `#ffffff` / `#f3efe6` | `#1c1a17` / `#2a2722` | cards / muted fill |
-| `--stone` / `--stone-2` | `#1c1a17` / `#2a2722` | `#0b0a09` / `#23201c` | hero panel / bar track |
-| `--text` / `--text-muted` | `#1c1a17` / `#5c564b` | `#f5f1e8` / `#b3ab9c` | body / meta |
-| `--accent` / `--on-accent` | `#1c1a17` / `#f5f1e8` | `#e0a526` / `#1c1a17` | the Run button |
-| `--gold` / `--gold-bright` | `#a8701a` / `#e0a526` | `#c98500` / `#f0b93a` | score streaks, hero number |
-| `--warn-bg` / `--warn-text` | `#fdecd3` / `#8a3b0c` | `#3d2410` / `#fdba74` | unreviewed banner |
-| `--series-1..3` | `#a8701a`, `#6250d6`, `#169e6e` | `#c98500`, `#9085e9`, `#199e70` | compare runs 1-3 |
+| `--bg` | `#f6efe7` | `#0e1626` | page (warm beige / deep navy) |
+| `--surface` / `--surface-2` | `#fffcf8` / `#f1e8dd` | `#16213a` / `#1f2c48` | cards / table heads, muted fills |
+| `--text` / `--text-muted` | `#1b2433` / `#5b6474` | `#f3eee7` / `#a9b3c4` | body / help text |
+| `--accent` / `--on-accent` | `#1d3a8a` / `#ffffff` | `#8db0f8` / `#0e1626` | primary buttons, selected cards, progress |
+| `--link` | `#1d4ed8` | `#9cbcfa` | links |
+| `--info-bg` / `--info-text` | `#e8eefb` / `#1e3a8a` | `#1c2b4d` / `#c7d7fb` | explanation boxes, "ready" and "Correct" badges |
+| `--warn-bg` / `--warn-text` | `#fdf0d5` / `#8a4b08` | `#3a2a10` / `#fcd58a` | draft-question banner, "needs a key", "Wrong" |
+| `--series-1..3` | `#2a78d6`, `#eb6834`, `#1baf7a` | `#3987e5`, `#d95926`, `#199e70` | score bars; compare runs 1-3 |
 
-Series colors were validated with the dataviz validator (`--pairs all`): light passes every check including 3:1 contrast; dark passes every check on the stone surface. A 4th color fails, so Compare is capped at 3 runs. Every bar keeps a visible value label and Compare has a table view.
+Series colors re-validated with the dataviz validator (`--pairs all`) on the cream and navy cards: all checks pass; light series-3 is below 3:1 contrast, so every bar keeps a visible value label and Compare has a table view. A 4th color fails, so Compare stays capped at 3 runs.
 
 **Layout**
 - Top bar (56px): logo wordmark, nav (Runs, New run, Compare, About), theme toggle. Max width 1200px, 16px gutter on mobile.

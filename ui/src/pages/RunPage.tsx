@@ -2,16 +2,16 @@ import { ExternalLink } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api, type Sample } from "../api";
-import { Card, ErrorBox, Loading, Meta, PageTitle, UnreviewedBanner, buttonSecondary, inputClass } from "../components";
+import { Card, CardTitle, ErrorBox, InfoBox, Loading, Meta, PageTitle, UnreviewedBanner, buttonSecondary, inputClass } from "../components";
+import { pct, plainRules, taskLabel, useLoad, when } from "../lib";
 import { StoneHero } from "../StoneHero";
-import { pct, useLoad, when } from "../lib";
 
 const LIMITATIONS = [
-  "Small dataset: a few points of difference is often noise.",
-  "Hindi does not represent all of India.",
-  "Hinglish spelling varies, so rule-based scoring can miss valid answers.",
-  "Translation uses chrF, a rough signal that can penalise good paraphrases.",
-  "API models can change behind the same name; check the reported model id and date.",
+  "Few questions per topic, so a difference of a few percent is often just luck.",
+  "Hindi does not represent all of India; other languages are not tested.",
+  "Hinglish has no fixed spelling, so a correct answer can sometimes be marked wrong.",
+  "Translation is scored by word overlap, which can be strict on good paraphrases.",
+  "Online models can change without a new name; check the date and the model id.",
 ];
 
 function expectedText(s: Sample) {
@@ -23,7 +23,6 @@ export function RunPage() {
   const { data: run, error } = useLoad(() => api.run(runId), [runId]);
   const [task, setTask] = useState("all");
   const [onlyWrong, setOnlyWrong] = useState(false);
-  const [onlyUnparsed, setOnlyUnparsed] = useState(false);
   const [query, setQuery] = useState("");
 
   const rows = useMemo(() => {
@@ -32,95 +31,110 @@ export function RunPage() {
     return run.tasks
       .filter((t) => task === "all" || t.task === task)
       .flatMap((t) => t.samples.map((s) => ({ task: t.task, s })))
-      .filter(({ s }) => (!onlyWrong || s.score < 1) && (!onlyUnparsed || s.unparsed))
+      .filter(({ s }) => !onlyWrong || s.score < 1)
       .filter(({ s }) => !q || `${s.sample_id} ${s.prompt} ${s.output}`.toLowerCase().includes(q));
-  }, [run, task, onlyWrong, onlyUnparsed, query]);
+  }, [run, task, onlyWrong, query]);
 
   if (error) return <ErrorBox message={error} />;
   if (!run) return <Loading />;
   const { metadata: m, config: c } = run;
-  const totalN = run.tasks.reduce((a, t) => a + t.n, 0);
+  const unparsed = run.tasks.filter((t) => t.unparsed_rate > 0);
 
   return (
-    <>
+    <div className="space-y-8">
       <PageTitle
-        title={c.model}
-        sub={when(m.started_at)}
+        title={`Result: ${c.model}`}
+        sub={`Tested on ${when(m.started_at)}. Below: the overall score, a score for each topic, and every question with the model's answer.`}
         action={
           <a href={api.reportUrl(m.run_id)} target="_blank" rel="noreferrer" className={buttonSecondary}>
-            <ExternalLink aria-hidden className="size-4" /> HTML report
+            <ExternalLink aria-hidden className="size-4" /> Open shareable report
           </a>
         }
       />
       {c.allow_unreviewed && <UnreviewedBanner />}
-      <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        <Meta label="Model id reported"><span className="font-mono text-[13px]">{m.provider_model_id ?? "not reported"}</span></Meta>
-        <Meta label="Settings">temperature {c.settings.temperature} · seed {c.settings.seed} · top_p {c.settings.top_p} · max tokens {c.settings.max_tokens}</Meta>
-        <Meta label="Samples">{totalN} across {run.tasks.length} task(s){c.limit ? ` (limit ${c.limit} each)` : ""}</Meta>
-        <Meta label="touchstone">{m.tool_version}{m.git_sha ? ` (${m.git_sha})` : ""}</Meta>
-      </div>
 
       <StoneHero run={run} />
-      {run.tasks.some((t) => t.unparsed_rate > 0) && (
-        <p className="mb-4 text-sm text-muted">
-          Unparsed answers (no clear answer found, counted as wrong):{" "}
-          {run.tasks.filter((t) => t.unparsed_rate > 0).map((t) => `${t.task} ${pct(t.unparsed_rate, 0)}`).join(", ")}.
-        </p>
-      )}
+
+      <InfoBox title="How to read this">
+        The score is the share of questions answered correctly. “n” is how many questions were asked; with a small n the
+        score is only a rough trial.
+        {unparsed.length > 0 && (
+          <> Some answers were unclear and counted as wrong (“unparsed”): {unparsed.map((t) => `${taskLabel(t.task)} ${pct(t.unparsed_rate, 0)}`).join(", ")}.</>
+        )}
+      </InfoBox>
+
+      <section aria-label="Test details" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Meta label="Model you chose"><span className="font-mono text-[13px]">{c.model}</span></Meta>
+        <Meta label="Model the provider used"><span className="font-mono text-[13px]">{m.provider_model_id ?? "not reported"}</span></Meta>
+        <Meta label="Settings (same for all)">temperature {c.settings.temperature} · seed {c.settings.seed}</Meta>
+        <Meta label="Questions asked">{run.tasks.reduce((a, t) => a + t.n, 0)}{c.limit ? ` (up to ${c.limit} per topic)` : ""}</Meta>
+      </section>
+
+      <Card className="p-0">
+        <div className="p-6 pb-4">
+          <h2 className="text-base font-semibold text-primary">Every question and answer</h2>
+          <p className="mt-1 text-sm text-muted">
+            Check any answer yourself. “Expected” is the correct answer, “Read as” is what touchstone understood from the model's reply.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <label className="sr-only" htmlFor="task-filter">Topic</label>
+            <select id="task-filter" className={`${inputClass} w-auto`} value={task} onChange={(e) => setTask(e.target.value)}>
+              <option value="all">All topics</option>
+              {run.tasks.map((t) => <option key={t.task} value={t.task}>{taskLabel(t.task)}</option>)}
+            </select>
+            <label className="sr-only" htmlFor="search">Search</label>
+            <input id="search" className={`${inputClass} w-56`} placeholder="Search questions and answers" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" className="accent-[var(--accent)]" checked={onlyWrong} onChange={(e) => setOnlyWrong(e.target.checked)} /> Only mistakes
+            </label>
+            <span className="text-sm text-muted">{rows.length} shown</span>
+          </div>
+        </div>
+        <div className="overflow-x-auto border-t border-line">
+          <table className="w-full min-w-[760px] table-fixed text-sm">
+            <thead className="bg-surface-2 text-left text-xs uppercase tracking-wide text-muted">
+              <tr>
+                <th className="w-44 px-6 py-3 font-semibold">Topic</th>
+                <th className="px-3 py-3 font-semibold">Model's answer</th>
+                <th className="w-36 px-3 py-3 font-semibold">Expected</th>
+                <th className="w-28 px-3 py-3 font-semibold">Read as</th>
+                <th className="w-24 px-6 py-3 text-right font-semibold">Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ task: tn, s }) => (
+                <tr key={`${tn}-${s.sample_id}`} className="border-t border-line align-top">
+                  <td className="px-6 py-4">
+                    <div className="font-medium">{taskLabel(tn)}</div>
+                    <div className="font-mono text-[11px] text-muted break-all">{s.sample_id}</div>
+                  </td>
+                  <td className="px-3 py-4">
+                    <details>
+                      <summary className="text-xs font-medium text-link">Show the question</summary>
+                      <pre className="mt-2 whitespace-pre-wrap break-words rounded-lg bg-surface-2 p-3 font-mono text-[12px]">{s.prompt}</pre>
+                    </details>
+                    <pre className="mt-2 whitespace-pre-wrap break-words font-sans">{s.output || <span className="text-muted">(no answer)</span>}</pre>
+                  </td>
+                  <td className="px-3 py-4 break-words">{plainRules(expectedText(s))}</td>
+                  <td className="px-3 py-4 break-words">{s.parsed ? plainRules(s.parsed) : s.unparsed ? <span className="text-warn">unclear</span> : "-"}</td>
+                  <td className="px-6 py-4 text-right">
+                    <span className={`inline-block rounded-md px-2 py-0.5 text-xs font-semibold ${s.score >= 1 ? "bg-info-bg text-info" : "bg-warn-bg text-warn"}`}>
+                      {s.score >= 1 ? "Correct" : s.score > 0 ? pct(s.score, 0) : "Wrong"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
       <Card>
-        <h2 className="mb-2 font-medium">Limitations</h2>
+        <CardTitle hint="Please keep these in mind before sharing any number.">Limits of this test</CardTitle>
         <ul className="list-disc space-y-1 pl-5 text-sm text-muted">
           {LIMITATIONS.map((l) => <li key={l}>{l}</li>)}
         </ul>
       </Card>
-
-      <h2 className="mb-3 mt-8 text-lg font-medium">Items</h2>
-      <div className="mb-3 flex flex-wrap items-center gap-3">
-        <label className="sr-only" htmlFor="task-filter">Task</label>
-        <select id="task-filter" className={`${inputClass} w-auto`} value={task} onChange={(e) => setTask(e.target.value)}>
-          <option value="all">All tasks</option>
-          {run.tasks.map((t) => <option key={t.task} value={t.task}>{t.task}</option>)}
-        </select>
-        <label className="sr-only" htmlFor="search">Search prompts and outputs</label>
-        <input id="search" className={`${inputClass} w-56`} placeholder="Search text" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={onlyWrong} onChange={(e) => setOnlyWrong(e.target.checked)} /> Not full marks
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={onlyUnparsed} onChange={(e) => setOnlyUnparsed(e.target.checked)} /> Unparsed only
-        </label>
-        <span className="text-sm text-muted">{rows.length} shown</span>
-      </div>
-      <Card className="overflow-x-auto p-0">
-        <table className="w-full min-w-[720px] table-fixed text-sm">
-          <thead className="text-left text-muted">
-            <tr className="border-b border-line">
-              <th className="w-48 px-3 py-2 font-medium">Item</th>
-              <th className="px-3 py-2 font-medium">Model output</th>
-              <th className="w-36 px-3 py-2 font-medium">Expected</th>
-              <th className="w-28 px-3 py-2 font-medium">Parsed</th>
-              <th className="w-16 px-3 py-2 text-right font-medium">Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(({ task: tn, s }) => (
-              <tr key={`${tn}-${s.sample_id}`} className="border-b border-line align-top last:border-0">
-                <td className="px-3 py-2 font-mono text-[12px] break-all">{s.sample_id}</td>
-                <td className="px-3 py-2">
-                  <details>
-                    <summary className="text-xs text-muted">Show prompt</summary>
-                    <pre className="mt-1 rounded bg-surface-2 p-2 font-mono text-[12px] whitespace-pre-wrap break-words">{s.prompt}</pre>
-                  </details>
-                  <pre className="mt-1 font-sans whitespace-pre-wrap break-words">{s.output || <span className="text-muted">(empty reply)</span>}</pre>
-                </td>
-                <td className="px-3 py-2 break-words">{expectedText(s)}</td>
-                <td className="px-3 py-2 break-words">{s.parsed ?? (s.unparsed ? <span className="text-warn">unparsed</span> : "-")}</td>
-                <td className="tabular px-3 py-2 text-right">{s.score.toFixed(2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
-    </>
+    </div>
   );
 }

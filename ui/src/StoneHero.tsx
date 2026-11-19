@@ -1,10 +1,9 @@
-import { Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 import type { RunResult, Sample } from "./api";
-import { ScoreBar, useCountUp } from "./components";
-import { pct } from "./lib";
+import { Card, ScoreBar } from "./components";
+import { pct, plainRules, taskLabel } from "./lib";
 
-/** Pick one failed item to show: prefer a parsed-but-wrong answer over an unparsed one. */
-function toughestItem(run: RunResult): { task: string; s: Sample } | null {
+/** Pick one failed item to show: prefer a clear wrong answer over an unparsed one. */
+function hardestItem(run: RunResult): { task: string; s: Sample } | null {
   const misses = run.tasks.flatMap((t) => t.samples.filter((s) => s.score < 1).map((s) => ({ task: t.task, s })));
   if (misses.length === 0) return null;
   return misses.find((m) => !m.s.unparsed && m.s.output.trim()) ?? misses[0];
@@ -15,91 +14,81 @@ function short(text: string, max = 90) {
   return one.length > max ? `${one.slice(0, max)}…` : one;
 }
 
+function names(tasks: string[]) {
+  return tasks.length === 1 ? taskLabel(tasks[0]) : `${tasks.length} topics tied`;
+}
+
 /**
- * The touchstone: a dark stone panel where each task score is a gold streak.
- * Highlights describe this model's own results only; they never rank models.
+ * Results summary: the overall score, one bar per task, and three plain facts
+ * about this model's own results. Highlights never rank models, and ties are
+ * shown as ties.
  */
 export function StoneHero({ run }: { run: RunResult }) {
   const tasks = run.tasks;
   const mean = tasks.length ? tasks.reduce((a, t) => a + t.score, 0) / tasks.length : 0;
   const n = tasks.reduce((a, t) => a + t.n, 0);
-  const shown = useCountUp(mean);
+  const correct = tasks.reduce((a, t) => a + t.samples.filter((s) => s.score >= 1).length, 0);
   const top = Math.max(...tasks.map((t) => t.score));
   const bottom = Math.min(...tasks.map((t) => t.score));
-  const strongest = tasks.filter((t) => t.score === top);
-  const weakest = tasks.filter((t) => t.score === bottom);
-  const tough = toughestItem(run);
+  const best = tasks.filter((t) => t.score === top).map((t) => t.task);
+  const worst = tasks.filter((t) => t.score === bottom).map((t) => t.task);
+  const miss = hardestItem(run);
 
   return (
-    <section aria-label="Results summary" className="mb-4 overflow-hidden rounded-2xl bg-stone text-on-stone">
-      <div className="grid gap-6 p-5 md:grid-cols-[240px_minmax(0,1fr)] md:p-6">
-        <div>
-          <div className="text-xs uppercase tracking-[0.18em] text-on-stone-muted">Mean score</div>
-          <div className="tabular mt-1 text-6xl font-semibold leading-none text-gold-bright" aria-live="polite">
-            {pct(shown)}
-          </div>
-          <div className="mt-2 text-sm text-on-stone-muted">
-            average of {tasks.length} task score{tasks.length === 1 ? "" : "s"} · n={n}
-          </div>
-        </div>
-        <div className="space-y-2.5">
-          {tasks.map((t, i) => (
-            <div key={t.task} className="grid grid-cols-1 gap-1 sm:grid-cols-[230px_minmax(0,1fr)] sm:items-center">
-              <div className="font-mono text-[13px] break-all">
-                {t.task}
-                <span className="ml-2 text-xs text-on-stone-muted">n={t.n}</span>
+    <div className="mb-6 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+      <Card className="flex flex-col justify-center">
+        <p className="text-sm font-medium text-muted">Overall score</p>
+        <p className="tabular mt-2 text-5xl font-semibold text-primary">{pct(mean)}</p>
+        <p className="mt-3 text-sm text-muted">
+          About {correct} of {n} questions fully correct, across {tasks.length} topic{tasks.length === 1 ? "" : "s"}.
+        </p>
+      </Card>
+
+      <Card>
+        <h2 className="mb-1 text-base font-semibold text-primary">Score for each topic</h2>
+        <p className="mb-5 text-sm text-muted">Longer bar = more questions answered correctly. n = number of questions.</p>
+        <div className="space-y-4">
+          {tasks.map((t) => (
+            <div key={t.task} className="grid grid-cols-1 gap-1 sm:grid-cols-[240px_minmax(0,1fr)] sm:items-center sm:gap-4">
+              <div className="text-sm">
+                <span className="font-medium">{taskLabel(t.task)}</span>
+                <span className="ml-2 text-xs text-muted">n={t.n}</span>
               </div>
-              <ScoreBar
-                value={t.score}
-                label={t.task}
-                delayMs={150 + i * 110}
-                color="linear-gradient(90deg, var(--gold), var(--gold-bright))"
-                track="bg-stone-2"
-              />
+              <ScoreBar value={t.score} label={t.task} />
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {tasks.length > 1 && top !== bottom && (
-        <div className="grid gap-px bg-stone-2 sm:grid-cols-3">
-          <Highlight icon={<TrendingUp aria-hidden className="size-4" />} label="Strongest task">
-            <TaskList tasks={strongest.map((t) => t.task)} /> · {pct(top)}
-          </Highlight>
-          <Highlight icon={<TrendingDown aria-hidden className="size-4" />} label="Hardest task">
-            <TaskList tasks={weakest.map((t) => t.task)} /> · {pct(bottom)}
-          </Highlight>
-          <Highlight icon={<Sparkles aria-hidden className="size-4" />} label="Toughest item">
-            {tough ? (
+        <div className="grid gap-6 sm:grid-cols-3 lg:col-span-2">
+          <Fact label="Did best on">
+            <span className="font-medium">{names(best)}</span> · {pct(top)}
+          </Fact>
+          <Fact label="Found hardest">
+            <span className="font-medium">{names(worst)}</span> · {pct(bottom)}
+          </Fact>
+          <Fact label="Example of a mistake">
+            {miss ? (
               <>
-                <span className="block truncate">“{short(tough.s.output) || "(empty reply)"}”</span>
-                <span className="text-on-stone-muted">
-                  expected {short(Array.isArray(tough.s.expected) ? tough.s.expected[0] : tough.s.expected, 40)}
-                </span>
+                Model said <span className="font-medium">“{short(miss.s.output) || "(nothing)"}”</span>; expected{" "}
+                <span className="font-medium">{plainRules(short(Array.isArray(miss.s.expected) ? miss.s.expected[0] : miss.s.expected, 60))}</span>
               </>
             ) : (
-              "Every item scored full marks."
+              "No mistakes in this run."
             )}
-          </Highlight>
+          </Fact>
         </div>
       )}
-    </section>
-  );
-}
-
-function Highlight({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-stone px-5 py-3 text-sm">
-      <div className="mb-1 flex items-center gap-1.5 text-xs text-gold-bright">
-        {icon} {label}
-      </div>
-      <div className="min-w-0">{children}</div>
     </div>
   );
 }
 
-/** One task name, or "N tasks tied" so a tie is never shown as a single winner. */
-function TaskList({ tasks }: { tasks: string[] }) {
-  if (tasks.length === 1) return <span className="font-mono text-[13px]">{tasks[0]}</span>;
-  return <span title={tasks.join(", ")}>{tasks.length} tasks tied</span>;
+function Fact({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-line bg-surface p-5 text-sm">
+      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>
+      <p className="break-words">{children}</p>
+    </div>
+  );
 }

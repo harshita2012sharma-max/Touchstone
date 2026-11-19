@@ -37,3 +37,34 @@ export function useLoad<T>(load: () => Promise<T>, deps: unknown[] = []) {
   }, [...deps, tick]);
   return { data, error, loading: data === null && error === null, reload: () => setTick((t) => t + 1) };
 }
+
+/** Plain-language names for task ids, shown next to the technical name. */
+export const TASK_LABELS: Record<string, string> = {
+  hindi_comprehension: "Hindi reading",
+  hinglish_understanding: "Hinglish chat",
+  translation_hi_en: "Hindi to English translation",
+  codemixed_instructions: "Following Hinglish instructions",
+  hindi_reasoning: "Maths word problems in Hindi",
+  cultural_context: "Facts about everyday India",
+};
+
+export function taskLabel(id: string): string {
+  return TASK_LABELS[id] ?? id;
+}
+
+const RULE_WORDS: Record<string, string> = {
+  item_count: "right number of items",
+  max_words: "short enough",
+  min_words: "long enough",
+  contains_all: "uses the required words",
+  contains_any: "uses a key word",
+  contains_none: "avoids the banned word",
+  script: "right script",
+  starts_with: "right start",
+  ends_with: "right ending",
+};
+
+/** Turn rule-check ids (e.g. "item_count, max_words") into plain English. */
+export function plainRules(text: string): string {
+  return text.replace(/(item_count|max_words|min_words|contains_all|contains_any|contains_none|script|starts_with|ends_with)/g, (m) => RULE_WORDS[m] ?? m);
+}

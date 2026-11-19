@@ -54,7 +54,8 @@ def _read(path: Path) -> list[dict[str, Any]]:
 
 def _write(path: Path, items: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("".join(json.dumps(i, ensure_ascii=False) + "\n" for i in items), "utf-8")
+    text = "".join(json.dumps(i, ensure_ascii=False) + "\n" for i in items)
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 def _task_files(pending_dir: Path) -> dict[str, Path]:

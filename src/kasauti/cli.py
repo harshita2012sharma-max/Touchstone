@@ -25,6 +25,8 @@ from kasauti.cache import ResponseCache
 from kasauti.config import GenerationSettings, RunConfig
 from kasauti.env import load_env, redact_secrets
 from kasauti.errors import KasautiError
+from kasauti.report import write_reports
+from kasauti.reproduce import compare_runs
 from kasauti.results import RunResult
 from kasauti.runner import ProgressEvent, Runner
 from kasauti.tasks import available_tasks, get_task
@@ -105,10 +107,17 @@ def run(
     except ValidationError as err:
         raise _fail(_validation_message(err)) from None
 
+    result = _execute(config, rpm=rpm, use_cache=not no_cache)
+    paths = _save_all(result, output_dir)
+    _print_summary(result, paths)
+
+
+def _execute(config: RunConfig, *, rpm: float | None, use_cache: bool) -> RunResult:
+    """Run with a progress bar; turn expected errors into clean CLI failures."""
     try:
         overrides = {"requests_per_minute": rpm} if rpm else {}
         backend = get_backend(config.model_ref.provider, **overrides)
-        cache = None if no_cache else ResponseCache()
+        cache = ResponseCache() if use_cache else None
         with Progress(
             TextColumn("[bold]{task.description}"),
             BarColumn(),
@@ -126,19 +135,32 @@ def run(
                     progress.update(bars[event.task], completed=event.index)
 
             try:
-                result = Runner(config, backend=backend, cache=cache, on_event=on_event).run()
+                return Runner(config, backend=backend, cache=cache, on_event=on_event).run()
             finally:
                 backend.close()
-        path = result.save(output_dir)
     except KasautiError as err:
         raise _fail(str(err)) from None
     except KeyboardInterrupt:
         raise _fail("Stopped by user. Cached replies are kept; run again to resume.") from None
 
-    _print_summary(result, path)
+
+def _save_all(result: RunResult, output_dir: Path) -> list[Path]:
+    """Save the JSON result plus Markdown and HTML reports."""
+    json_path = result.save(output_dir)
+    md_path, html_path = write_reports(result, output_dir)
+    return [json_path, md_path, html_path]
 
 
-def _print_summary(result: RunResult, path: Path) -> None:
+def _load_result(path: Path) -> RunResult:
+    try:
+        return RunResult.load(path)
+    except FileNotFoundError:
+        raise _fail(f"File not found: {path}") from None
+    except ValidationError as err:
+        raise _fail(f"{path} is not a kasauti result file: {err.error_count()} error(s)") from None
+
+
+def _print_summary(result: RunResult, paths: list[Path]) -> None:
     meta, cfg = result.metadata, result.config
     table = Table(title=f"kasauti results: {cfg.model}", title_justify="left")
     table.add_column("Task")
@@ -157,7 +179,7 @@ def _print_summary(result: RunResult, path: Path) -> None:
             f"Model id reported: {meta.provider_model_id or 'not reported'}\n"
             f"Date (UTC): {meta.started_at:%Y-%m-%d %H:%M}  |  temperature={s.temperature} "
             f"seed={s.seed} top_p={s.top_p} max_tokens={s.max_tokens}\n"
-            f"Saved: {path}\n"
+            "Saved: " + ", ".join(str(p) for p in paths) + "\n"
             "Note: small samples; differences of a few points are often noise. "
             "See LIMITATIONS.md.",
             style="dim",
@@ -171,6 +193,59 @@ def _print_summary(result: RunResult, path: Path) -> None:
                 style="bold yellow",
             )
         )
+
+
+@app.command()
+def report(
+    result_file: Path = typer.Argument(..., help="A result JSON saved by `kasauti run`."),
+    out_dir: Path | None = typer.Option(None, help="Folder for the reports (default: same)."),
+) -> None:
+    """Rebuild the HTML and Markdown reports from a saved result."""
+    result = _load_result(result_file)
+    md_path, html_path = write_reports(result, out_dir or result_file.parent)
+    console.print(Text(f"Wrote {md_path} and {html_path}"))
+
+
+@app.command()
+def reproduce(
+    result_file: Path = typer.Argument(..., help="A result JSON saved by `kasauti run`."),
+    output_dir: Path = typer.Option(Path("runs"), help="Where to save the new result."),
+    use_cache: bool = typer.Option(
+        False, "--use-cache", help="Reuse cached replies (checks prompts only, not the model)."
+    ),
+    env_file: Path | None = typer.Option(None, help="Path to a .env file with API keys."),
+) -> None:
+    """Rerun a saved result with the exact same config and compare."""
+    load_env(env_file)
+    old = _load_result(result_file)
+    new = _execute(old.config, rpm=None, use_cache=use_cache)
+    paths = _save_all(new, output_dir)
+    cmp = compare_runs(old, new)
+
+    table = Table(title="Reproduction check", title_justify="left")
+    table.add_column("Task")
+    table.add_column("Old score", justify="right")
+    table.add_column("New score", justify="right")
+    table.add_column("Changed outputs", justify="right")
+    for row in cmp.rows:
+        table.add_row(
+            row.task,
+            "-" if row.old_score is None else f"{row.old_score:.1%}",
+            "-" if row.new_score is None else f"{row.new_score:.1%}",
+            str(row.changed_outputs),
+        )
+    console.print(table)
+    console.print(Text(f"Prompts identical: {'yes' if cmp.prompts_identical else 'NO'}"))
+    console.print(Text(f"Settings identical: {'yes' if cmp.settings_identical else 'NO'}"))
+    if old.metadata.kasauti_version != new.metadata.kasauti_version:
+        console.print(
+            Text(
+                f"kasauti version changed: {old.metadata.kasauti_version} -> "
+                f"{new.metadata.kasauti_version}",
+                style="yellow",
+            )
+        )
+    console.print(Text("Saved: " + ", ".join(str(p) for p in paths), style="dim"))
 
 
 @app.command("list-tasks")

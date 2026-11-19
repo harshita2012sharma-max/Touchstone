@@ -120,3 +120,51 @@ def test_list_models_mock() -> None:
     assert result.exit_code == 0
     assert "echo" in result.output
     assert "fixed" in result.output
+
+
+def _mock_run(data_dir: Path, out: Path) -> Path:
+    result = runner.invoke(
+        app,
+        [
+            "run",
+            "--model",
+            "mock/fixed",
+            "--tasks",
+            "hindi_reasoning",
+            "--data-dir",
+            str(data_dir),
+            "--output-dir",
+            str(out),
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    return next(out.glob("*.json"))
+
+
+def test_run_writes_html_and_markdown(data_dir: Path, tmp_path: Path) -> None:
+    saved = _mock_run(data_dir, tmp_path / "out")
+    assert saved.with_suffix(".html").is_file()
+    assert saved.with_suffix(".md").is_file()
+
+
+def test_report_command_rebuilds(data_dir: Path, tmp_path: Path) -> None:
+    saved = _mock_run(data_dir, tmp_path / "out")
+    result = runner.invoke(app, ["report", str(saved), "--out-dir", str(tmp_path / "r")])
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "r" / saved.with_suffix(".html").name).is_file()
+
+
+def test_reproduce_command(data_dir: Path, tmp_path: Path) -> None:
+    saved = _mock_run(data_dir, tmp_path / "out")
+    result = runner.invoke(app, ["reproduce", str(saved), "--output-dir", str(tmp_path / "re")])
+    assert result.exit_code == 0, result.output
+    assert "Prompts identical: yes" in result.output
+    assert "Settings identical: yes" in result.output
+
+
+def test_report_on_bad_file(tmp_path: Path) -> None:
+    bad = tmp_path / "x.json"
+    bad.write_text("{}", encoding="utf-8")
+    result = runner.invoke(app, ["report", str(bad)])
+    assert result.exit_code == 1
+    assert "not a kasauti result" in result.output

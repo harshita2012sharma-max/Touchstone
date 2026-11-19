@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kasauti report: {{ cfg.model }}</title>
+<style>
+:root {
+  --bg: #fbfaf7; --surface: #ffffff; --text: #1d1b16; --muted: #625d52; --border: #e3ded3;
+  --accent: #8a5a12; --bar: #c9963f; --bar-bg: #efe8da; --warn-bg: #fff3d6; --warn-text: #6b4500;
+  --code-bg: #f4f0e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15140f; --surface: #1e1c16; --text: #ece7dc; --muted: #a9a294; --border: #36322a;
+    --accent: #e0b25e; --bar: #c9963f; --bar-bg: #2d2a22; --warn-bg: #3a2c0c; --warn-text: #f5d58a;
+    --code-bg: #26231c;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans",
+    "Noto Sans Devanagari", "Nirmala UI", "Mangal", sans-serif;
+}
+main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; }
+h2 { font-size: 1.2rem; margin: 40px 0 12px; }
+h3 { font-size: 1.05rem; margin: 0; }
+.sub { color: var(--muted); margin: 0 0 24px; }
+.warn {
+  background: var(--warn-bg); color: var(--warn-text); border-radius: 8px;
+  padding: 12px 16px; font-weight: 600; margin-bottom: 24px;
+}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.meta { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; }
+.meta dt { color: var(--muted); }
+.meta dd { margin: 0; overflow-wrap: anywhere; }
+code, pre { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.9em; }
+pre {
+  background: var(--code-bg); padding: 10px 12px; border-radius: 6px;
+  white-space: pre-wrap; overflow-wrap: anywhere; margin: 6px 0;
+}
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 0.9rem; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar { display: inline-block; width: 120px; height: 8px; background: var(--bar-bg); border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+.bar > span { display: block; height: 100%; background: var(--bar); border-radius: 4px; }
+details.task { margin: 12px 0; }
+details.task > summary { cursor: pointer; padding: 12px 16px; list-style-position: inside; }
+details.task[open] > summary { border-bottom: 1px solid var(--border); }
+.task-body { padding: 12px 16px; }
+.controls { margin: 8px 0 12px; color: var(--muted); }
+.controls label { cursor: pointer; }
+body.only-wrong tr.right { display: none; }
+.tag { font-size: 0.8rem; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border); color: var(--muted); }
+ul.limits { padding-left: 20px; }
+footer { color: var(--muted); font-size: 0.85rem; margin-top: 48px; }
+@media (max-width: 640px) {
+  .meta { grid-template-columns: 1fr; }
+  .meta dt { margin-top: 6px; }
+  .bar { display: none; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>kasauti report</h1>
+  <p class="sub"><code>{{ cfg.model }}</code> &middot; {{ meta.started_at.strftime("%Y-%m-%d %H:%M") }} UTC</p>
+
+  {% if cfg.allow_unreviewed %}
+  <div class="warn" role="alert">UNREVIEWED DATA: these items were not checked by two reviewers. Do not publish these numbers.</div>
+  {% endif %}
+
+  <section class="card" aria-label="Run details">
+    <dl class="meta">
+      <dt>Model (requested)</dt><dd><code>{{ cfg.model }}</code></dd>
+      <dt>Model id reported</dt><dd><code>{{ meta.provider_model_id or "not reported" }}</code></dd>
+      <dt>Settings</dt><dd>temperature={{ s.temperature }}, top_p={{ s.top_p }}, seed={{ s.seed }}, max_tokens={{ s.max_tokens }}</dd>
+      <dt>Samples</dt><dd>{{ total_n }} across {{ r.tasks | length }} task(s){% if cfg.limit %} (limit {{ cfg.limit }} per task){% endif %}</dd>
+      <dt>kasauti</dt><dd>{{ meta.kasauti_version }}{% if meta.git_sha %} ({{ meta.git_sha }}){% endif %} &middot; Python {{ meta.python_version }}</dd>
+      <dt>Run id</dt><dd><code>{{ meta.run_id }}</code></dd>
+    </dl>
+  </section>
+
+  <h2>Scores</h2>
+  <div class="card table-wrap">
+    <table>
+      <thead><tr><th>Task</th><th class="num">n</th><th class="num">Score</th><th class="num">Unparsed</th></tr></thead>
+      <tbody>
+      {% for t in r.tasks %}
+        <tr>
+          <td>{{ t.task }}</td>
+          <td class="num">{{ t.n }}</td>
+          <td class="num">{{ t.score | pct }}<span class="bar" aria-hidden="true"><span style="width: {{ '%.1f' | format(t.score * 100) }}%"></span></span></td>
+          <td class="num">{{ t.unparsed_rate | pct(0) }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="sub">Score is the share of items answered correctly (translation: mean chrF). Small samples: treat small differences as noise.</p>
+
+  <h2>Limitations</h2>
+  <ul class="limits">
+  {% for line in limitations %}
+    <li>{{ line }}</li>
+  {% endfor %}
+  </ul>
+
+  <h2>Items</h2>
+  <div class="controls"><label><input type="checkbox" id="only-wrong"> Show only items that did not score full marks</label></div>
+  {% for t in r.tasks %}
+  <details class="task card">
+    <summary><h3 style="display:inline">{{ t.task }}</h3> <span class="tag">v{{ t.task_version }}</span> &middot; {{ t.score | pct }} of {{ t.n }}</summary>
+    <div class="task-body">
+      <p><strong>Prompt template</strong></p>
+      <pre>{{ t.prompt_template }}</pre>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Item</th><th>Prompt and output</th><th>Expected</th><th>Parsed</th><th class="num">Score</th></tr></thead>
+        <tbody>
+        {% for smp in t.samples %}
+          <tr class="{{ 'right' if smp.score >= 1 else 'wrong' }}">
+            <td><code>{{ smp.sample_id }}</code></td>
+            <td>
+              <details><summary>Prompt</summary><pre>{{ smp.prompt }}</pre></details>
+              <pre>{{ smp.output }}</pre>
+            </td>
+            <td>{{ smp.expected if smp.expected is string else smp.expected | join(" / ") }}</td>
+            <td>{{ smp.parsed if smp.parsed is not none else ("unparsed" if smp.unparsed else "-") }}</td>
+            <td class="num">{{ "%.2f" | format(smp.score) }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </details>
+  {% endfor %}
+
+  <footer>Generated by kasauti {{ version }}. This page loads nothing from the internet.</footer>
+</main>
+<script>
+document.getElementById("only-wrong").addEventListener("change", function (e) {
+  document.body.classList.toggle("only-wrong", e.target.checked);
+});
+</script>
+</body>
+</html>

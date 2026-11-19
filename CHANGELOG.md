@@ -19,4 +19,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - `kasauti list-tasks` and `kasauti list-models <provider>` (live model ids from the provider).
 - `--data-dir` and `--allow-unreviewed` for trying draft items; such runs are clearly marked "UNREVIEWED".
 - `contains_any` rule check; dataset test that trivial replies ("A", "ok", "I don't know.") never pass an instruction item.
+- Reports: every run also writes a self-contained HTML page (offline, light/dark, all prompts and outputs, "only wrong items" filter) and a Markdown summary. Model output is HTML-escaped. `kasauti report <result.json>` rebuilds them.
+- `kasauti reproduce <result.json>`: reruns the exact config and checks that prompts and settings are identical, then compares scores and outputs.
 - Result schema (`RunResult`) that saves every prompt, output, score and setting as readable UTF-8 JSON.

@@ -129,7 +129,7 @@ class RunResult(BaseModel):
         out_dir = Path(directory)
         out_dir.mkdir(parents=True, exist_ok=True)
         path = out_dir / f"{self.metadata.run_id}.json"
-        path.write_text(self.model_dump_json(indent=2), encoding="utf-8")
+        path.write_text(self.model_dump_json(indent=2) + "\n", encoding="utf-8", newline="\n")
         return path
 
     @classmethod

@@ -59,7 +59,9 @@ jobs:
           names = zipfile.ZipFile(glob.glob("dist/*.whl")[0]).namelist()
           assert "touchstone_llm/server/static/index.html" in names, "UI missing from wheel"
           assert not any(".env" in n for n in names), ".env must never ship"
-          assert not any("pending" in n for n in names), "unreviewed data must not ship"
+          drafts = [n for n in names if n.startswith("touchstone_llm/tasks/data/drafts/")]
+          assert len(drafts) == 6, f"expected 6 draft files, got {drafts}"
+          assert not any(n.endswith(".csv") for n in names), "review sheets must never ship"
           print("wheel OK:", len(names), "files")
           PY
       - name: Smoke test in a clean venv (core install, no UI extra)
@@ -68,3 +70,4 @@ jobs:
           /tmp/v/bin/touchstone --version
           /tmp/v/bin/touchstone list-tasks
           /tmp/v/bin/touchstone ui --no-open 2>&1 | grep -q 'pip install "touchstone-llm\[ui\]"'
+          cd /tmp && /tmp/v/bin/touchstone run --model mock/fixed --tasks all --drafts --limit 1 | grep -q "practice\|UNREVIEWED"

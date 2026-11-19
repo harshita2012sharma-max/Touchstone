@@ -76,3 +76,53 @@ def test_redact_secrets_masks_known_keys(monkeypatch: pytest.MonkeyPatch) -> Non
 def test_redact_secrets_ignores_short_values(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GROQ_API_KEY", "a")
     assert redact_secrets("a cat") == "a cat"
+
+
+def test_save_api_key_writes_private_file_and_sets_env(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from touchstone_llm.env import save_api_key, user_env_path
+
+    monkeypatch.setenv("TOUCHSTONE_HOME", str(tmp_path))
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    path = save_api_key("groq", "  " + FAKE_KEY + "  ")
+    assert path == user_env_path() == tmp_path / ".env"
+    assert get_api_key("groq") == FAKE_KEY
+    save_api_key("gemini", "AIza_other_key_value_123")
+    save_api_key("groq", "gsk_replaced_key_value_456")
+    lines = path.read_text("utf-8").splitlines()
+    assert lines.count("GROQ_API_KEY=gsk_replaced_key_value_456") == 1
+    assert not any(FAKE_KEY in line for line in lines)
+    assert "GEMINI_API_KEY=AIza_other_key_value_123" in lines
+
+
+@pytest.mark.parametrize("bad", ["", "   ", "has space", "line\nbreak", "x" * 401])
+def test_save_api_key_rejects_bad_values(
+    bad: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from touchstone_llm.env import save_api_key
+
+    monkeypatch.setenv("TOUCHSTONE_HOME", str(tmp_path))
+    with pytest.raises(ValueError):
+        save_api_key("groq", bad)
+    assert not (tmp_path / ".env").exists()
+
+
+def test_save_api_key_rejects_keyless_or_unknown_provider(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from touchstone_llm.env import save_api_key
+
+    monkeypatch.setenv("TOUCHSTONE_HOME", str(tmp_path))
+    with pytest.raises(ValueError):
+        save_api_key("ollama", FAKE_KEY)
+    with pytest.raises(ValueError):
+        save_api_key("nope", FAKE_KEY)
+
+
+def test_load_env_reads_user_key_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("TOUCHSTONE_HOME", str(tmp_path))
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / ".env").write_text(f"GROQ_API_KEY={FAKE_KEY}\n", encoding="utf-8")
+    load_env()
+    assert get_api_key("groq") == FAKE_KEY

@@ -42,7 +42,12 @@ def test_status_shows_key_presence_not_value(client: TestClient) -> None:
     body = res.json()
     assert KEY not in res.text
     groq = next(p for p in body["providers"] if p["name"] == "groq")
-    assert groq == {"name": "groq", "needs_key": True, "key_set": True}
+    assert groq == {
+        "name": "groq",
+        "needs_key": True,
+        "key_set": True,
+        "signup_url": "https://console.groq.com/keys",
+    }
     assert {t["name"] for t in body["tasks"]} >= {"hindi_reasoning", "cultural_context"}
     assert body["settings"]["temperature"] == 0.0
     assert body["drafts_available"] is True
@@ -154,3 +159,40 @@ def test_helpful_page_when_ui_not_built(runs_dir: Path, tmp_path: Path) -> None:
     app = create_app(runs_dir=runs_dir, static_dir=tmp_path / "missing", use_cache=False)
     c = TestClient(app, base_url="http://127.0.0.1:7860")
     assert "not built" in c.get("/").text
+
+
+def test_save_key_endpoint(
+    client: TestClient, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("TOUCHSTONE_HOME", str(tmp_path / "home"))
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    secret = "AIza_saved_from_ui_123456"
+    res = client.post("/api/keys", json={"provider": "gemini", "key": secret})
+    assert res.status_code == 200, res.text
+    assert secret not in res.text
+    status = client.get("/api/status")
+    assert secret not in status.text
+    gemini = next(p for p in status.json()["providers"] if p["name"] == "gemini")
+    assert gemini["key_set"] is True
+    assert gemini["signup_url"].startswith("https://")
+    assert (tmp_path / "home" / ".env").read_text("utf-8").strip() == f"GEMINI_API_KEY={secret}"
+
+
+def test_save_key_rejects_bad_input_and_cross_origin(
+    client: TestClient, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("TOUCHSTONE_HOME", str(tmp_path / "home"))
+    assert (
+        client.post("/api/keys", json={"provider": "ollama", "key": "abcdefgh123"}).status_code
+        == 400
+    )
+    assert (
+        client.post("/api/keys", json={"provider": "groq", "key": "has space"}).status_code == 400
+    )
+    evil = client.post(
+        "/api/keys",
+        json={"provider": "groq", "key": "gsk_evil_123456"},
+        headers={"Origin": "https://evil.example"},
+    )
+    assert evil.status_code == 403
+    assert not (tmp_path / "home" / ".env").exists()

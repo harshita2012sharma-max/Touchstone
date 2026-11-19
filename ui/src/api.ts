@@ -4,6 +4,7 @@ export interface Provider {
   name: string;
   needs_key: boolean;
   key_set: boolean;
+  signup_url: string | null;
 }
 
 export interface TaskInfo {
@@ -132,6 +133,12 @@ export const api = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
+    }),
+  saveKey: (provider: string, key: string) =>
+    request<{ provider: string; key_set: boolean }>("/api/keys", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ provider, key }),
     }),
   job: (id: string) => request<Job>(`/api/jobs/${encodeURIComponent(id)}`),
   reportUrl: (id: string) => `/api/runs/${encodeURIComponent(id)}/report`,

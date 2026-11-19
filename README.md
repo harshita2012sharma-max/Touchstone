@@ -7,13 +7,14 @@ One command. A clear report. Every prompt and reply saved.
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
-[![Status: pre-release](https://img.shields.io/badge/status-pre--release-orange)](CHANGELOG.md)
+[![PyPI](https://img.shields.io/pypi/v/touchstone-llm)](https://pypi.org/project/touchstone-llm/)
+[![Status: alpha](https://img.shields.io/badge/status-alpha-orange)](CHANGELOG.md)
 [![Data: CC-BY-4.0](https://img.shields.io/badge/data-CC--BY--4.0-green)](DATASETS.md)
 
 </div>
 
 > [!NOTE]
-> **Pre-release (0.1.0.dev).** Not on PyPI yet. The questions are still being reviewed by people, so no official results are published.
+> **Early release (0.1).** Install with `pip install "touchstone-llm[ui]"`. The questions are still being reviewed by people, so no official results are published yet.
 
 ---
 
@@ -52,55 +53,71 @@ flowchart TD
 
 </details>
 
-## Quickstart
+## Quickstart (2 steps)
 
-Pick the way that suits you:
-
-<details open>
-<summary><b>Option A: command line</b></summary>
+You need Python 3.10 or newer. Nothing else.
 
 ```bash
-pip install "touchstone-llm[ui]"   # after the first release; until then, from a clone: pip install -e ".[ui]"
-cp .env.example .env               # put ONE free API key in .env (Gemini, Groq or OpenRouter)
-touchstone list-models groq        # model ids change often, so pick from the live list
-touchstone run --model groq/<model-id> --tasks all
-```
-
-</details>
-
-<details>
-<summary><b>Option B: web UI (no commands after starting it)</b></summary>
-
-```bash
+pip install "touchstone-llm[ui]"
 touchstone ui
 ```
 
-Your browser opens at `http://127.0.0.1:7860`. Choose a provider, a model and tasks, then press **Start run**. You see live progress and then a results page. The **Compare** page shows up to three runs side by side. The UI only runs on your own computer.
+Your browser opens at `http://127.0.0.1:7860`. Then:
 
-</details>
+1. Open **New test** and pick a provider. If it says "needs a key", click the link to get a free key, paste it into the box and press **Save key**.
+2. Pick a model and tick some topics, then press **Start test**.
+3. Watch the progress bar. The result opens by itself.
+
+No key at all? Choose **Practice (mock)**, a pretend model that needs no key.
+
+> [!NOTE]
+> The questions are still being reviewed, so tests use the **draft questions** that ship with touchstone and results are marked as practice runs. Please do not publish those numbers yet.
 
 <details>
-<summary><b>Option C: try it without any API key</b></summary>
+<summary><b>Prefer the terminal? (click to open)</b></summary>
 
 ```bash
-touchstone run --model mock/fixed --tasks all
+touchstone list-models groq                       # model ids change often, so pick from the live list
+touchstone run --model groq/<model-id> --tasks all --drafts --limit 2
+touchstone run --model mock/fixed --tasks all --drafts   # practice, no key needed
+touchstone reproduce runs/<result>.json           # rerun the exact same test
+touchstone --help                                 # every command
 ```
 
-`mock/fixed` is a fake model that always answers "A". It is only for seeing how the tool works.
+Keys for the terminal can be saved once from the web UI, or put in a `.env` file (see `.env.example`), or set as environment variables.
 
 </details>
 
 <details>
 <summary><b>Where do I get a free API key?</b></summary>
 
-| Provider | Get a key | Put this line in `.env` |
+| Provider | Get a key | Environment variable |
 |---|---|---|
-| Gemini | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | `GEMINI_API_KEY=...` |
-| Groq | [console.groq.com/keys](https://console.groq.com/keys) | `GROQ_API_KEY=...` |
-| OpenRouter | [openrouter.ai/keys](https://openrouter.ai/keys) | `OPENROUTER_API_KEY=...` |
-| Ollama (local) | no key needed | uses `http://localhost:11434` |
+| Gemini | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | `GEMINI_API_KEY` |
+| Groq | [console.groq.com/keys](https://console.groq.com/keys) | `GROQ_API_KEY` |
+| OpenRouter | [openrouter.ai/keys](https://openrouter.ai/keys) | `OPENROUTER_API_KEY` |
+| Ollama (local) | no key needed | runs at `http://localhost:11434` |
 
-Free-tier limits and terms change, so check the provider's page. Never paste keys into issues or chats.
+Keys you save in the web UI are stored only on your computer, in `~/.touchstone/.env`. Free-tier limits and terms change, so check the provider's page. Never paste keys into issues or chats.
+
+</details>
+
+<details>
+<summary><b>For contributors: run from the source code</b></summary>
+
+You also need Node.js 20+ to build the web UI once.
+
+```bash
+git clone https://github.com/harshita2012sharma-max/Touchstone.git
+cd Touchstone
+python -m venv .venv
+.venv/Scripts/activate            # macOS/Linux: source .venv/bin/activate
+cd ui && npm ci && npm run build && cd ..
+pip install -e ".[dev,ui]"
+pytest
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 </details>
 

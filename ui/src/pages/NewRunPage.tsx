@@ -5,12 +5,6 @@ import { api, type Provider } from "../api";
 import { Card, CardTitle, ErrorBox, Hint, InfoBox, Loading, PageTitle, buttonPrimary, buttonSecondary, inputClass } from "../components";
 import { taskLabel, useLoad } from "../lib";
 
-const KEY_VARS: Record<string, string> = {
-  groq: "GROQ_API_KEY",
-  gemini: "GEMINI_API_KEY",
-  openrouter: "OPENROUTER_API_KEY",
-};
-
 const PROVIDER_NOTES: Record<string, string> = {
   gemini: "Google's models. Free key from Google AI Studio.",
   groq: "Very fast. Runs open models like Llama, Qwen and GPT-OSS.",
@@ -24,7 +18,7 @@ function usable(p: Provider) {
 }
 
 export function NewRunPage() {
-  const { data: status, error } = useLoad(api.status);
+  const { data: status, error, reload } = useLoad(api.status);
   const navigate = useNavigate();
   const [provider, setProvider] = useState("");
   const [models, setModels] = useState<string[] | null>(null);
@@ -147,14 +141,7 @@ export function NewRunPage() {
               })}
             </div>
             {current && !usable(current) && (
-              <div className="mt-4">
-                <InfoBox title="This provider needs an API key">
-                  Add the line <code className="font-mono">{KEY_VARS[current.name] ?? "API_KEY"}=your-key</code> to the{" "}
-                  <code className="font-mono">.env</code> file in the folder where you started touchstone, then restart{" "}
-                  <code className="font-mono">touchstone ui</code>. The key stays on your computer.
-                  <KeyRound aria-hidden className="ml-1 inline size-4" />
-                </InfoBox>
-              </div>
+              <KeyForm provider={current} onSaved={reload} />
             )}
           </Card>
 
@@ -273,6 +260,79 @@ export function NewRunPage() {
           </Card>
         </div>
       </div>
+    </div>
+  );
+}
+
+function KeyForm({ provider, onSaved }: { provider: Provider; onSaved: () => void }) {
+  const [value, setValue] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [problem, setProblem] = useState<string | null>(null);
+  const save = async () => {
+    setProblem(null);
+    if (!value.trim()) {
+      setProblem("Paste your key first.");
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.saveKey(provider.name, value);
+      setValue("");
+      onSaved();
+    } catch (e) {
+      setProblem(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <div className="mt-5 rounded-xl border border-line bg-surface-2 p-5">
+      <p className="flex items-center gap-2 text-sm font-semibold text-primary">
+        <KeyRound aria-hidden className="size-4" /> Add your {provider.name} API key
+      </p>
+      <p className="mt-1 text-sm text-muted">
+        {provider.signup_url ? (
+          <>
+            Get a free key at{" "}
+            <a className="font-medium text-link underline" href={provider.signup_url} target="_blank" rel="noreferrer">
+              {provider.signup_url.replace("https://", "")}
+            </a>
+            , copy it, and paste it here.
+          </>
+        ) : (
+          "Paste your key here."
+        )}
+      </p>
+      <form
+        className="mt-4 flex flex-col gap-3 sm:flex-row"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void save();
+        }}
+      >
+        <label className="sr-only" htmlFor="api-key">{provider.name} API key</label>
+        <input
+          id="api-key"
+          type="password"
+          autoComplete="off"
+          spellCheck={false}
+          className={`${inputClass} w-full font-mono`}
+          placeholder="Paste key here"
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+            setProblem(null);
+          }}
+        />
+        <button type="submit" className={buttonPrimary} disabled={saving}>
+          {saving ? "Saving…" : "Save key"}
+        </button>
+      </form>
+      {problem && <p className="mt-2 text-sm text-danger">{problem}</p>}
+      <Hint>
+        Saved only on this computer, in a private file in your home folder (.touchstone/.env). It is never shown again
+        and is sent only to {provider.name}.
+      </Hint>
     </div>
   );
 }

@@ -8,7 +8,7 @@
 
 No item is copied from exams, books, websites or other datasets.
 
-**How items are made.** Some first drafts were written with help from an AI assistant (Claude). Every item is then edited and fact-checked by its human author and approved by at least two other human reviewers before it ships. Items waiting for review live in `datasets/pending/` and are never scored. See [datasets/README.md](datasets/README.md) for the review process.
+**How items are made.** Some first drafts were written with help from an AI assistant (Claude). Every item is then edited and fact-checked by its human author and approved by at least two other human reviewers before it ships. Items waiting for review live in `datasets/pending/`. They also ship inside the package as a separate **drafts** set so new users have something to try, but they are used only when the user asks for them, and every result made with them is marked as a practice run. Official results use reviewed items only. See [datasets/README.md](datasets/README.md) for the review process.
 
 ## External datasets
 

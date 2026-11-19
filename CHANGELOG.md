@@ -5,7 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-19
+
+First public release (alpha). Questions are still drafts under review, so no official results are published.
+
 ### Added
+- Two-step start for users: `pip install "touchstone-llm[ui]"` then `touchstone ui`.
+- Draft questions (150, 25 per task) ship inside the package as a separate "drafts" set. They are used only on request (`--drafts`, or "Use draft questions" in the UI), and every result made with them is marked as a practice run.
+- API keys can be pasted into the web UI. They are saved only on this computer in `~/.touchstone/.env` (owner-only permissions where supported), never shown again, and never logged.
+- Web UI redesign: warm beige and navy theme, clear buttons, even spacing, and plain-language help on every page (how-it-works steps, hints under each option, glossary, friendly topic names).
 - Project scaffold: packaging, CLI entry point with `--version`, lint/type/test tooling, CI, and community files.
 - `RunConfig` with fixed defaults (temperature 0, seed 42) and `provider/model` parsing.
 - API key loading from env or `.env`, with step-by-step messages when a key is missing and masking of keys in any shown text.

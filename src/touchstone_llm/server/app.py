@@ -27,7 +27,7 @@ from touchstone_llm import __version__
 from touchstone_llm.backends import available_backends, get_backend
 from touchstone_llm.backends.base import Backend
 from touchstone_llm.config import GenerationSettings, RunConfig
-from touchstone_llm.env import PROVIDER_KEYS, key_status, redact_secrets
+from touchstone_llm.env import PROVIDER_KEYS, key_status, redact_secrets, save_api_key
 from touchstone_llm.errors import TouchstoneError
 from touchstone_llm.report import render_html
 from touchstone_llm.results import RunResult
@@ -55,6 +55,13 @@ class JobRequest(BaseModel):
     limit: int | None = Field(default=None, ge=1)
     max_tokens: int = Field(default=512, ge=1, le=8192)
     drafts: bool = False
+
+
+class KeyRequest(BaseModel):
+    """Body of ``POST /api/keys``. The key is saved locally and never sent back."""
+
+    provider: str
+    key: str = Field(min_length=1, max_length=400)
 
 
 def _count(task_name: str, path: Path | None = None, *, drafts: bool = False) -> int:
@@ -124,6 +131,7 @@ def create_app(
                     "name": name,
                     "needs_key": PROVIDER_KEYS.get(name) is not None,
                     "key_set": keys.get(name, False),
+                    "signup_url": (pk.signup_url if (pk := PROVIDER_KEYS.get(name)) else None),
                 }
                 for name in available_backends()
             ],
@@ -142,6 +150,14 @@ def create_app(
             "settings": GenerationSettings().model_dump(),
             "drafts_available": has_drafts,
         }
+
+    @app.post("/api/keys")
+    def save_key(body: KeyRequest) -> dict[str, Any]:
+        try:
+            save_api_key(body.provider, body.key)
+        except ValueError as err:
+            raise HTTPException(400, str(err)) from None
+        return {"provider": body.provider, "key_set": True}
 
     @app.get("/api/models/{provider}")
     def models(provider: str) -> dict[str, Any]:

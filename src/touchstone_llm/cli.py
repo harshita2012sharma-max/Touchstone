@@ -23,6 +23,7 @@ from touchstone_llm import __version__
 from touchstone_llm.backends import available_backends, get_backend
 from touchstone_llm.cache import ResponseCache
 from touchstone_llm.config import GenerationSettings, RunConfig
+from touchstone_llm.drafts import default_drafts_dir
 from touchstone_llm.env import load_env, redact_secrets
 from touchstone_llm.errors import TouchstoneError
 from touchstone_llm.report import write_reports
@@ -86,6 +87,11 @@ def run(
     allow_unreviewed: bool = typer.Option(
         False, help="Accept items without two reviews (for trying drafts; never publish)."
     ),
+    drafts: bool = typer.Option(
+        False,
+        "--drafts",
+        help="Use the draft questions that ship with touchstone (marked unreviewed).",
+    ),
     no_cache: bool = typer.Option(False, "--no-cache", help="Ignore cached replies."),
     env_file: Path | None = typer.Option(None, help="Path to a .env file with API keys."),
 ) -> None:
@@ -95,6 +101,11 @@ def run(
     """
     load_env(env_file)
     names = available_tasks() if tasks.strip().lower() == "all" else tasks.split(",")
+    if drafts:
+        found = default_drafts_dir()
+        if found is None:
+            raise _fail("No draft questions were found in this installation.")
+        data_dir, allow_unreviewed = found, True
     try:
         config = RunConfig(
             model=model,
@@ -255,8 +266,8 @@ def reproduce(
 def ui(
     port: int = typer.Option(7860, min=1024, max=65535, help="Port on 127.0.0.1."),
     runs_dir: Path = typer.Option(Path("runs"), help="Folder with saved runs."),
-    drafts_dir: Path = typer.Option(
-        Path("datasets/pending"), help="Draft items folder (offered as 'unreviewed')."
+    drafts_dir: Path | None = typer.Option(
+        None, help="Draft questions folder (default: the drafts that ship with touchstone)."
     ),
     open_browser: bool = typer.Option(True, "--open/--no-open", help="Open a browser tab."),
     env_file: Path | None = typer.Option(None, help="Path to a .env file with API keys."),
@@ -270,7 +281,8 @@ def ui(
         raise _fail('The web UI needs extra packages: pip install "touchstone-llm[ui]"') from None
     load_env(env_file)
     runs_dir.mkdir(parents=True, exist_ok=True)
-    app_ = create_app(runs_dir=runs_dir, drafts_dir=drafts_dir if drafts_dir.is_dir() else None)
+    drafts = drafts_dir if drafts_dir and drafts_dir.is_dir() else default_drafts_dir()
+    app_ = create_app(runs_dir=runs_dir, drafts_dir=drafts)
     url = f"http://127.0.0.1:{port}"
     console.print(Text(f"touchstone UI running at {url}  (Ctrl+C to stop)"))
     if open_browser:

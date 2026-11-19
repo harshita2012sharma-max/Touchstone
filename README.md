@@ -55,20 +55,35 @@ flowchart TD
 
 ## Quickstart (2 steps)
 
-You need Python 3.10 or newer. Nothing else.
+You need [Python 3.10 or newer](https://www.python.org/downloads/). Nothing else. Open a terminal (on Windows: PowerShell) and run:
 
 ```bash
-pip install "touchstone-llm[ui]"
-touchstone ui
+python -m pip install "touchstone-llm[ui]"
+python -m touchstone_llm ui
 ```
 
-Your browser opens at `http://127.0.0.1:7860`. Then:
+Keep that terminal window open. Your browser opens at `http://127.0.0.1:7860` (if that port is busy, the terminal shows the address it used instead). Then:
 
 1. Open **New test** and pick a provider. If it says "needs a key", click the link to get a free key, paste it into the box and press **Save key**.
 2. Pick a model and tick some topics, then press **Start test**.
 3. Watch the progress bar. The result opens by itself.
 
 No key at all? Choose **Practice (mock)**, a pretend model that needs no key.
+
+<details>
+<summary><b>Something went wrong? (click to open)</b></summary>
+
+| What you see | What to do |
+|---|---|
+| `python` is not recognized (Windows) | Use `py` instead of `python` in both commands, or install Python from python.org and tick **"Add python.exe to PATH"**. |
+| `No matching distribution found for touchstone-llm` | Your Python is older than 3.10. Check with `python --version` and install a newer one. |
+| Browser says "refused to connect" | The server is not running. Run `python -m touchstone_llm ui` again and keep the window open. |
+| `touchstone` is not recognized | Normal on many Windows setups. Use `python -m touchstone_llm ui` (the short `touchstone` command only works if pip's Scripts folder is on PATH). |
+| macOS/Linux says `pip` or `python` not found | Use `python3 -m pip install "touchstone-llm[ui]"` and `python3 -m touchstone_llm ui`. |
+
+To update later: `python -m pip install -U "touchstone-llm[ui]"`.
+
+</details>
 
 > [!NOTE]
 > The questions are still being reviewed, so tests use the **draft questions** that ship with touchstone and results are marked as practice runs. Please do not publish those numbers yet.
@@ -77,12 +92,14 @@ No key at all? Choose **Practice (mock)**, a pretend model that needs no key.
 <summary><b>Prefer the terminal? (click to open)</b></summary>
 
 ```bash
-touchstone list-models groq                       # model ids change often, so pick from the live list
-touchstone run --model groq/<model-id> --tasks all --drafts --limit 2
-touchstone run --model mock/fixed --tasks all --drafts   # practice, no key needed
-touchstone reproduce runs/<result>.json           # rerun the exact same test
-touchstone --help                                 # every command
+python -m touchstone_llm list-models groq                  # model ids change often, pick from the live list
+python -m touchstone_llm run --model groq/<model-id> --tasks all --drafts --limit 2
+python -m touchstone_llm run --model mock/fixed --tasks all --drafts   # practice, no key needed
+python -m touchstone_llm reproduce runs/<result>.json      # rerun the exact same test
+python -m touchstone_llm --help                            # every command
 ```
+
+If the `touchstone` command works on your machine, you can use it as a shortcut, e.g. `touchstone run ...`.
 
 Keys for the terminal can be saved once from the web UI, or put in a `.env` file (see `.env.example`), or set as environment variables.
 

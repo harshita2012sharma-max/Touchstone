@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-19
+
+### Added
+- `python -m touchstone_llm ui` (and every other command via `python -m touchstone_llm ...`). It works even when pip's Scripts folder is not on PATH, which is common on Windows and caused "touchstone is not recognized".
+- README quickstart now uses `python -m`, plus a "Something went wrong?" table for the usual setup problems (Python missing or too old, command not recognized, browser cannot connect).
+- CI checks the documented start command on Windows and Linux.
+
 ## [0.1.1] - 2026-11-19
 
 ### Fixed

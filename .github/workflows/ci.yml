@@ -31,6 +31,8 @@ jobs:
         run: mypy
       - name: Tests (no network)
         run: pytest
+      - name: The documented start command works on this OS
+        run: python -m touchstone_llm --version
 
   package:
     # Builds the web UI and the wheel, then checks the wheel works without the UI extra.
@@ -68,6 +70,7 @@ jobs:
         run: |
           python -m venv /tmp/v && /tmp/v/bin/pip install dist/*.whl
           /tmp/v/bin/touchstone --version
+          /tmp/v/bin/python -m touchstone_llm --version
           /tmp/v/bin/touchstone list-tasks
           /tmp/v/bin/touchstone ui --no-open 2>&1 | grep -q 'pip install "touchstone-llm\[ui\]"'
           cd /tmp && /tmp/v/bin/touchstone run --model mock/fixed --tasks all --drafts --limit 1 | grep -q "practice\|UNREVIEWED"

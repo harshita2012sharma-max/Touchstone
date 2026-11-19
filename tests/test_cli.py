@@ -196,3 +196,16 @@ def test_find_free_port_returns_none_when_all_busy() -> None:
         busy.bind(("127.0.0.1", 0))
         busy.listen(1)
         assert find_free_port(busy.getsockname()[1], tries=1) is None
+
+
+def test_python_dash_m_entry_point() -> None:
+    import subprocess
+    import sys
+
+    out = subprocess.run(
+        [sys.executable, "-m", "touchstone_llm", "--version"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert out.stdout.strip() == f"touchstone {__version__}"

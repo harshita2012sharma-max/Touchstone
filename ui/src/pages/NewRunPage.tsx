@@ -1,5 +1,5 @@
-import { CheckCircle2, KeyRound, Play, RefreshCw, Server } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { CheckCircle2, KeyRound, Play, RefreshCw, Server, Star } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, type Provider } from "../api";
 import { Card, CardTitle, ErrorBox, Hint, InfoBox, Loading, PageTitle, buttonPrimary, buttonSecondary, inputClass } from "../components";
@@ -19,6 +19,8 @@ export function NewRunPage() {
   const navigate = useNavigate();
   const [provider, setProvider] = useState("");
   const [models, setModels] = useState<string[] | null>(null);
+  const [recommended, setRecommended] = useState<string[]>([]);
+  const modelsRequest = useRef(0);
   const [modelsAsOf, setModelsAsOf] = useState("");
   const [modelsError, setModelsError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
@@ -47,16 +49,27 @@ export function NewRunPage() {
 
   const loadModels = () => {
     setModels(null);
+    setRecommended([]);
     setModelsError(null);
     setPicked("");
+    setTyped("");
+    setFilter("");
+    const request = ++modelsRequest.current;
     if (!current?.ready) return;
     api
       .models(provider)
       .then((r) => {
+        // Ignore a slow answer for a provider the user has already switched away from.
+        if (request !== modelsRequest.current) return;
         setModels(r.models);
+        setRecommended(r.recommended);
         setModelsAsOf(r.as_of);
+        // Pre-select the top suggestion so the user can start right away.
+        if (r.recommended.length > 0) setPicked(r.recommended[0]);
       })
-      .catch((e: Error) => setModelsError(e.message));
+      .catch((e: Error) => {
+        if (request === modelsRequest.current) setModelsError(e.message);
+      });
   };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(loadModels, [provider, current?.ready, current?.custom_url]);
@@ -162,7 +175,26 @@ export function NewRunPage() {
             {current?.ready && (
               <div className="grid gap-8 md:grid-cols-2">
                 <div>
-                  <label className={labelClass} htmlFor="model-filter">From the list</label>
+                  {recommended.length > 0 && (
+                    <div className="mb-6">
+                      <p className={`${labelClass} flex items-center gap-2`}><Star aria-hidden className="size-4 text-accent" /> Recommended for {current.label}</p>
+                      <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label={`Recommended ${current.label} models`}>
+                        {recommended.map((m) => (
+                          <button
+                            key={m}
+                            type="button"
+                            aria-pressed={model === m}
+                            className={`max-w-full truncate rounded-lg border px-3 py-1.5 font-mono text-xs transition-colors duration-150 ${model === m ? "border-accent bg-info-bg text-info" : "border-line hover:bg-surface-2"}`}
+                            onClick={() => { setPicked(m); setTyped(""); }}
+                          >
+                            {m}
+                          </button>
+                        ))}
+                      </div>
+                      <Hint>Good starting points picked from {current.label}'s live list. The first one is selected for you.</Hint>
+                    </div>
+                  )}
+                  <label className={labelClass} htmlFor="model-filter">All {current.label} models</label>
                   {modelsError && <div className="mt-2"><ErrorBox message={`Could not load the list: ${modelsError}`} /></div>}
                   {!models && !modelsError && <div className="mt-3"><Loading label="Loading models" /></div>}
                   {models && models.length === 0 && (
@@ -184,7 +216,7 @@ export function NewRunPage() {
                 </div>
                 <div>
                   <label className={labelClass} htmlFor="model-typed">Or type a model name</label>
-                  <input id="model-typed" className={`${inputClass} mt-2 w-full font-mono`} placeholder="e.g. gpt-4o-mini" spellCheck={false} value={typed} onChange={(e) => setTyped(e.target.value)} />
+                  <input id="model-typed" className={`${inputClass} mt-2 w-full font-mono`} placeholder={current.example_model ? `e.g. ${current.example_model}` : "Model name"} spellCheck={false} value={typed} onChange={(e) => setTyped(e.target.value)} />
                   <Hint>Use this when a model is not in the list, or for your own server. The name must match the provider's model id exactly.</Hint>
                   <div className="mt-6 rounded-xl bg-surface-2 p-4 text-sm">
                     <span className="text-muted">Selected model</span>

@@ -39,7 +39,7 @@ from touchstone_llm.env import (
     save_custom_server,
 )
 from touchstone_llm.errors import TouchstoneError
-from touchstone_llm.providers import BY_NAME
+from touchstone_llm.providers import BY_NAME, recommend
 from touchstone_llm.report import render_html
 from touchstone_llm.results import RunResult
 from touchstone_llm.server.jobs import JobBusyError, JobManager
@@ -93,6 +93,7 @@ def _provider_status(name: str, keys: dict[str, bool]) -> dict[str, Any]:
         "ready": ready,
         "signup_url": (pk.signup_url if (pk := PROVIDER_KEYS.get(name)) else None),
         "custom_url": url,
+        "example_model": info.example_model if info else "",
     }
 
 
@@ -219,7 +220,12 @@ def create_app(
                 backend.close()
         except TouchstoneError as err:
             raise HTTPException(400, redact_secrets(str(err))) from None
-        return {"provider": provider, "models": ids, "as_of": date.today().isoformat()}
+        return {
+            "provider": provider,
+            "models": ids,
+            "recommended": recommend(provider, ids),
+            "as_of": date.today().isoformat(),
+        }
 
     @app.get("/api/runs")
     def list_runs() -> dict[str, Any]:

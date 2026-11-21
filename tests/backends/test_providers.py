@@ -203,3 +203,28 @@ def test_custom_server_uses_saved_address_and_optional_key() -> None:
 def test_custom_server_rejects_bad_address(bad: str) -> None:
     with pytest.raises(ValueError):
         save_custom_server(bad)
+
+
+def test_recommend_picks_live_models_per_provider() -> None:
+    from touchstone_llm.providers import recommend
+
+    live = [
+        "google/gemma-3-27b-it:free",
+        "google/gemma-2-9b-it:free",
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "openai/gpt-4o",
+        "openai/text-embedding-3-small",
+    ]
+    picks = recommend("openrouter", live)
+    assert picks[0] == "google/gemma-3-27b-it:free"
+    assert picks[1] == "meta-llama/llama-3.3-70b-instruct:free"
+    assert "openai/gpt-4o" not in picks  # paid model, not suggested
+    assert all(p in live for p in picks)
+
+
+def test_recommend_skips_non_chat_and_unknown() -> None:
+    from touchstone_llm.providers import recommend
+
+    assert recommend("ollama", ["nomic-embed-text", "qwen2.5:7b"]) == ["qwen2.5:7b"]
+    assert recommend("nope", ["x"]) == []
+    assert recommend("openai", []) == []

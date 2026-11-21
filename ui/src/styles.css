@@ -12,57 +12,57 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Theme "warm paper and navy": a soft beige page, cream cards, navy text and
- * a royal-blue/navy accent. Plain and calm on purpose: no gradients, glow or
- * decorative motion. Contrast of every text pair is at least 5:1 (see
- * design-system/touchstone/MASTER.md). Components use these tokens, never raw hex.
+ * Theme "graphite and teal": neutral off-white page, white cards, near-black
+ * text and a deep teal accent. Neutral, international and calm on purpose: no
+ * gradients, glow or decorative motion. Every text pair keeps at least 4.5:1
+ * contrast. Components use these tokens, never raw hex.
  */
 :root {
-  --bg: #f6efe7;
-  --surface: #fffcf8;
-  --surface-2: #f1e8dd;
-  --text: #1b2433;
-  --text-muted: #5b6474;
-  --border: #e4d8c8;
-  --border-strong: #cdbfac;
-  --primary: #14213d;
-  --accent: #1d3a8a;
-  --accent-hover: #16307a;
+  --bg: #f6f6f4;
+  --surface: #ffffff;
+  --surface-2: #efefec;
+  --text: #18181b;
+  --text-muted: #52525b;
+  --border: #e3e3df;
+  --border-strong: #c9c9c3;
+  --primary: #111113;
+  --accent: #0f766e;
+  --accent-hover: #115e59;
   --on-accent: #ffffff;
-  --link: #1d4ed8;
-  --info-bg: #e8eefb;
-  --info-text: #1e3a8a;
-  --warn-bg: #fdf0d5;
+  --link: #0f766e;
+  --info-bg: #e7f3f1;
+  --info-text: #115e59;
+  --warn-bg: #fbf1db;
   --warn-text: #8a4b08;
   --danger: #b91c1c;
-  --series-1: #2a78d6;
-  --series-2: #eb6834;
-  --series-3: #1baf7a;
-  --focus: #1d4ed8;
+  --series-1: #0f766e;
+  --series-2: #d97706;
+  --series-3: #7c3aed;
+  --focus: #0f766e;
   color-scheme: light;
 }
 .dark {
-  --bg: #0e1626;
-  --surface: #16213a;
-  --surface-2: #1f2c48;
-  --text: #f3eee7;
-  --text-muted: #a9b3c4;
-  --border: #2b3a5c;
-  --border-strong: #3b4d74;
-  --primary: #e8eef9;
-  --accent: #8db0f8;
-  --accent-hover: #a8c3fa;
-  --on-accent: #0e1626;
-  --link: #9cbcfa;
-  --info-bg: #1c2b4d;
-  --info-text: #c7d7fb;
-  --warn-bg: #3a2a10;
+  --bg: #0c0d0f;
+  --surface: #151719;
+  --surface-2: #1d2023;
+  --text: #ededec;
+  --text-muted: #a1a1aa;
+  --border: #2a2d31;
+  --border-strong: #3a3e44;
+  --primary: #f4f4f5;
+  --accent: #2dd4bf;
+  --accent-hover: #5eead4;
+  --on-accent: #0c0d0f;
+  --link: #5eead4;
+  --info-bg: #0f2a27;
+  --info-text: #99f6e4;
+  --warn-bg: #33260d;
   --warn-text: #fcd58a;
   --danger: #f87171;
-  --series-1: #3987e5;
-  --series-2: #d95926;
-  --series-3: #199e70;
-  --focus: #9cbcfa;
+  --series-1: #2dd4bf;
+  --series-2: #f59e0b;
+  --series-3: #a78bfa;
+  --focus: #5eead4;
   color-scheme: dark;
 }
 

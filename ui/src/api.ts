@@ -11,6 +11,7 @@ export interface Provider {
   ready: boolean;
   signup_url: string | null;
   custom_url: string | null;
+  example_model: string;
 }
 
 export interface TaskInfo {
@@ -129,7 +130,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   status: () => request<Status>("/api/status"),
   models: (provider: string) =>
-    request<{ provider: string; models: string[]; as_of: string }>(
+    request<{ provider: string; models: string[]; recommended: string[]; as_of: string }>(
       `/api/models/${encodeURIComponent(provider)}`,
     ),
   runs: () => request<{ runs: RunSummary[] }>("/api/runs").then((r) => r.runs),

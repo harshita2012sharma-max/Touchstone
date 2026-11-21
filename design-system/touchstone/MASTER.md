@@ -28,26 +28,26 @@ Chosen from ui-ux-pro-max results: **Data-Dense Dashboard** + **Comparative Anal
 - Code, ids, numbers in tables: `Fira Code` (tabular figures)
 - Base 14px for dense tables, 16px for body text, line-height 1.5. Devanagari needs line-height of at least 1.6.
 
-**Theme: "warm paper and navy"** (v3, chosen by the maintainer: soft beige instead of pure white, royal blue / navy accent, simple, must not look like a generic "AI app", clear buttons, even spacing and symmetry)
+**Theme: "graphite and teal"** (v4, chosen by the maintainer: replaces v3 "warm paper and navy"; no blue, neutral and professional for an international audience, must not look like a generic "AI app", clear buttons, even spacing and symmetry)
 - No gradients, glow, sparkle icons or decorative motion. Only bar-width and colour transitions (300 ms or less), all off under reduced motion.
 - Spacing scale 8 / 16 / 24 / 32 px; cards 24 px padding and 16 px radius; sections 24-32 px apart; rows of cards use equal-width grids.
-- Buttons are 40 px tall: primary = solid navy with white text; secondary = outlined on cream. One primary action per area.
+- Buttons are 40 px tall: primary = solid teal with white text; secondary = outlined on white. One primary action per area.
 - Every page explains itself in plain language: a one-line intro, an "info" box where numbers need reading, a hint under every form field, and a glossary (Score, n, Mean score, Unparsed, Draft questions, Model id reported). Task ids are shown with friendly names (e.g. "Hindi reading"); rule-check ids are shown in plain English.
 
-**Color tokens** (source of truth: `ui/src/styles.css`; every text pair is at least 5:1 contrast)
+**Color tokens** (source of truth: `ui/src/styles.css`; every text pair is at least 4.5:1 contrast)
 
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| `--bg` | `#f6efe7` | `#0e1626` | page (warm beige / deep navy) |
-| `--surface` / `--surface-2` | `#fffcf8` / `#f1e8dd` | `#16213a` / `#1f2c48` | cards / table heads, muted fills |
-| `--text` / `--text-muted` | `#1b2433` / `#5b6474` | `#f3eee7` / `#a9b3c4` | body / help text |
-| `--accent` / `--on-accent` | `#1d3a8a` / `#ffffff` | `#8db0f8` / `#0e1626` | primary buttons, selected cards, progress |
-| `--link` | `#1d4ed8` | `#9cbcfa` | links |
-| `--info-bg` / `--info-text` | `#e8eefb` / `#1e3a8a` | `#1c2b4d` / `#c7d7fb` | explanation boxes, "ready" and "Correct" badges |
-| `--warn-bg` / `--warn-text` | `#fdf0d5` / `#8a4b08` | `#3a2a10` / `#fcd58a` | draft-question banner, "needs a key", "Wrong" |
-| `--series-1..3` | `#2a78d6`, `#eb6834`, `#1baf7a` | `#3987e5`, `#d95926`, `#199e70` | score bars; compare runs 1-3 |
+| `--bg` | `#f6f6f4` | `#0c0d0f` | page (neutral off-white / graphite) |
+| `--surface` / `--surface-2` | `#ffffff` / `#efefec` | `#151719` / `#1d2023` | cards / table heads, muted fills |
+| `--text` / `--text-muted` | `#18181b` / `#52525b` | `#ededec` / `#a1a1aa` | body / help text |
+| `--accent` / `--on-accent` | `#0f766e` / `#ffffff` | `#2dd4bf` / `#0c0d0f` | primary buttons, selected cards, progress |
+| `--link` | `#0f766e` | `#5eead4` | links |
+| `--info-bg` / `--info-text` | `#e7f3f1` / `#115e59` | `#0f2a27` / `#99f6e4` | explanation boxes, "ready" and "Correct" badges |
+| `--warn-bg` / `--warn-text` | `#fbf1db` / `#8a4b08` | `#33260d` / `#fcd58a` | draft-question banner, "needs a key", "Wrong" |
+| `--series-1..3` | `#0f766e`, `#d97706`, `#7c3aed` | `#2dd4bf`, `#f59e0b`, `#a78bfa` | score bars; compare runs 1-3 |
 
-Series colors re-validated with the dataviz validator (`--pairs all`) on the cream and navy cards: all checks pass; light series-3 is below 3:1 contrast, so every bar keeps a visible value label and Compare has a table view. A 4th color fails, so Compare stays capped at 3 runs.
+Series colors for v4 not yet re-run through the dataviz validator; every bar keeps a visible value label and Compare has a table view. A 4th color fails, so Compare stays capped at 3 runs.
 
 **Layout**
 - Top bar (56px): logo wordmark, nav (Runs, New run, Compare, About), theme toggle. Max width 1200px, 16px gutter on mobile.

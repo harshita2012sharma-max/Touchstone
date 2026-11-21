@@ -11,6 +11,7 @@ python -m touchstone_llm ui
 ```
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/harshita2012sharma-max/Touchstone/blob/main/notebooks/touchstone_colab.ipynb)
+[![Hugging Face Space](https://img.shields.io/badge/%F0%9F%A4%97%20Space-touchstone-f4cfb1)](https://huggingface.co/spaces/20HARSHITA/touchstone)
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)

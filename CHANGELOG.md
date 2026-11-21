@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+- Free showcase page for a Hugging Face Static Space (`space/showcase/`), live at https://huggingface.co/spaces/20HARSHITA/touchstone. Outside links open in a new tab so Colab is not blocked by the Space frame. Docker Spaces now need a paid plan, so `space/DEPLOY.md` covers both options.
+- README badge linking to the Space.
+
 ## [0.3.0] - 2026-11-21
 
 ### Added

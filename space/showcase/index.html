@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>touchstone</title>
+<meta name="description" content="Find out how well any AI model understands Hindi and Hinglish. Small, reproducible tests with a clear report. Free and open source.">
+<style>
+  :root {
+    --bg: #fdf7f2; --surface: #ffffff; --surface-2: #fbeee3;
+    --text: #111111; --muted: #6b5a55; --border: #f1e2d6;
+    --maroon: #56161a; --peach: #f4cfb1; --mid: #936053;
+    --accent: #56161a; --on-accent: #ffffff;
+    --chip-bg: #f4cfb1; --chip-text: #56161a;
+    --satin: linear-gradient(180deg, #7a3a36 0%, #5f1b1f 45%, #56161a 60%, #43100f 100%);
+    --shadow: 0 1px 2px rgb(17 17 17 / .04), 0 10px 30px rgb(86 22 26 / .07);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000; --surface: #111111; --surface-2: #1b1615;
+      --text: #ffffff; --muted: #c2b1a6; --border: #2a2120;
+      --accent: #f4cfb1; --on-accent: #56161a;
+      --chip-bg: #56161a; --chip-text: #f4cfb1;
+      --satin: linear-gradient(180deg, #fbe3cf 0%, #f4cfb1 50%, #e8bfa4 100%);
+      --shadow: 0 1px 2px rgb(0 0 0 / .5);
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); color: var(--text); }
+  body { margin: 0; font: 16px/1.65 "Segoe UI", system-ui, -apple-system, "Noto Sans", "Noto Sans Devanagari", sans-serif; }
+  a { color: inherit; }
+  .rule { height: 4px; background: linear-gradient(90deg, #56161a, #936053 45%, #f4cfb1); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px 0; }
+  .brand { font-weight: 700; font-size: 22px; letter-spacing: -.01em; text-decoration: none; }
+  .nav a { color: var(--muted); text-decoration: none; margin-left: 24px; font-size: 15px; }
+  .nav a:hover { color: var(--text); }
+  .hero { padding: 72px 0 56px; display: grid; gap: 48px; grid-template-columns: 1.05fr 1fr; align-items: center; }
+  .eyebrow { display: inline-block; background: var(--chip-bg); color: var(--chip-text); font-weight: 600; font-size: 13px; padding: 6px 14px; border-radius: 999px; }
+  h1 { font-size: clamp(36px, 5.2vw, 58px); line-height: 1.08; letter-spacing: -.025em; margin: 20px 0 20px; }
+  h1 em { font-style: normal; background: linear-gradient(90deg, var(--maroon), var(--mid)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  @media (prefers-color-scheme: dark) { h1 em { background: linear-gradient(90deg, #f4cfb1, #e8bfa4); -webkit-background-clip: text; background-clip: text; } }
+  .lead { font-size: 19px; color: var(--muted); max-width: 34em; margin: 0 0 32px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 14px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; padding: 0 28px; border-radius: 14px; font-weight: 600; font-size: 16px; text-decoration: none; transition: filter .15s, background .15s; }
+  .btn-primary { background-image: var(--satin); color: var(--on-accent); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 10px 24px -10px rgb(86 22 26 / .6); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost { border: 1px solid var(--border); background: var(--surface); }
+  .btn-ghost:hover { background: var(--surface-2); }
+  .hero > *, .try > *, .grid3 > *, .tasks > * { min-width: 0; }
+  .shot { max-width: 100%; border-radius: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); width: 100%; height: auto; display: block; background: var(--surface); }
+  section { padding: 56px 0; }
+  h2 { font-size: clamp(26px, 3.2vw, 34px); letter-spacing: -.02em; margin: 0 0 12px; }
+  .sub { color: var(--muted); margin: 0 0 36px; max-width: 40em; }
+  .grid3 { display: grid; gap: 20px; grid-template-columns: repeat(3, 1fr); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 30px; box-shadow: var(--shadow); }
+  .card h3 { margin: 16px 0 8px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .num { width: 40px; height: 40px; border-radius: 999px; display: grid; place-items: center; font-weight: 700; background-image: var(--satin); color: var(--on-accent); }
+  .tasks { display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); }
+  .task { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 22px 24px; }
+  .task b { display: block; margin-bottom: 4px; }
+  .task span { color: var(--muted); font-size: 14px; }
+  .task .ex { display: block; margin-top: 10px; font-size: 14px; color: var(--text); background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
+  .promises { display: grid; gap: 16px; grid-template-columns: repeat(2, 1fr); }
+  .promise { display: flex; gap: 14px; align-items: flex-start; }
+  .tick { flex: none; width: 26px; height: 26px; border-radius: 999px; background: var(--chip-bg); color: var(--chip-text); display: grid; place-items: center; font-weight: 700; font-size: 14px; margin-top: 2px; }
+  .promise p { margin: 0; color: var(--muted); }
+  .promise b { color: var(--text); }
+  pre { margin: 0; background: #111111; color: #f4cfb1; border-radius: 16px; padding: 22px 24px; overflow-x: auto; font: 15px/1.7 "Cascadia Mono", Consolas, ui-monospace, monospace; }
+  pre .c { color: #a9978d; }
+  .try { display: grid; gap: 24px; grid-template-columns: 1fr 1fr; align-items: start; }
+  .note { margin-top: 14px; font-size: 14px; color: var(--muted); }
+  footer { padding: 40px 0 56px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; }
+  footer a { color: var(--muted); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  @media (max-width: 900px) {
+    .hero, .try { grid-template-columns: 1fr; }
+    .grid3, .tasks { grid-template-columns: 1fr 1fr; }
+    .promises { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .wrap { padding: 0 16px; }
+    .grid3, .tasks { grid-template-columns: 1fr; }
+    .nav a:not(:last-child) { display: none; }
+    .hero { padding-top: 40px; }
+    .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="rule" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#">touchstone</a>
+    <nav class="nav" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#tests">What it tests</a>
+      <a target="_blank" rel="noopener" href="https://github.com/harshita2012sharma-max/Touchstone">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <span class="eyebrow">Free and open source · Apache-2.0</span>
+        <h1>How well does your AI understand <em>Hindi and Hinglish?</em></h1>
+        <p class="lead">touchstone gives any AI model a short exam in Hindi and Hinglish, checks every answer with fixed rules, and shows a clear report. Same questions and settings for every model, so results are fair.</p>
+        <div class="ctas">
+          <a class="btn btn-primary" target="_blank" rel="noopener" href="https://colab.research.google.com/github/harshita2012sharma-max/Touchstone/blob/main/notebooks/touchstone_colab.ipynb">▶ Try it free in Colab</a>
+          <a class="btn btn-ghost" target="_blank" rel="noopener" href="https://github.com/harshita2012sharma-max/Touchstone">View on GitHub</a>
+        </div>
+        <p class="note">No install needed in Colab. Bring your own free key (Gemini, Groq, OpenRouter) or use the practice model.</p>
+      </div>
+      <img class="shot" src="https://raw.githubusercontent.com/harshita2012sharma-max/Touchstone/main/docs/images/ui-new-test.png" alt="touchstone web UI: choose a provider and model, tick topics, start a test" width="1440" height="1000">
+    </div>
+
+    <section id="how">
+      <h2>Three steps, one clear answer</h2>
+      <p class="sub">Works with Gemini, Groq, OpenRouter, Hugging Face, OpenAI, Claude, Mistral, DeepSeek, xAI, Together AI, Ollama, or your own server. Your key stays on your computer.</p>
+      <div class="grid3">
+        <div class="card"><div class="num">1</div><h3>Pick a model and topics</h3><p>Choose a provider, paste your own key, and pick from suggested models or type any model name.</p></div>
+        <div class="card"><div class="num">2</div><h3>It answers the questions</h3><p>Every model gets the exact same prompts at temperature 0. Replies are saved as they arrive, so a run can resume.</p></div>
+        <div class="card"><div class="num">3</div><h3>See the result</h3><p>A score per topic, every question and answer to check, side-by-side comparison, and a leaderboard chart to share.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <img class="shot" src="https://raw.githubusercontent.com/harshita2012sharma-max/Touchstone/main/docs/images/ui-results.png" alt="Past tests with overall scores, ready to compare" width="1440" height="1000">
+    </section>
+
+    <section id="tests">
+      <h2>What it tests</h2>
+      <p class="sub">Six small tasks, written for this project and reviewed by people. Scoring uses fixed rules, never another AI as judge.</p>
+      <div class="tasks">
+        <div class="task"><b>Hindi reading</b><span>Read a short passage, answer a question.</span><span class="ex" lang="hi">मीना अपनी दादी के साथ बाज़ार कब जाती है?</span></div>
+        <div class="task"><b>Hinglish chat</b><span>Understand Roman-script chat, including sarcasm.</span><span class="ex">"Wah, kya perfect timing hai meri!" — bus chhootne ke baad</span></div>
+        <div class="task"><b>Hindi to English</b><span>Translate, scored with chrF.</span><span class="ex" lang="hi">कृपया दरवाज़ा बंद कर दीजिए।</span></div>
+        <div class="task"><b>Hinglish instructions</b><span>Follow an instruction exactly.</span><span class="ex">Teen Indian sweets ke naam batao, comma se alag karke.</span></div>
+        <div class="task"><b>Hindi maths</b><span>Solve a word problem; ६०० and 1,00,000 understood.</span><span class="ex" lang="hi">800 रुपये की कमीज़ पर 25% छूट, कितने की पड़ेगी?</span></div>
+        <div class="task"><b>Everyday India</b><span>Neutral facts: food, festivals, geography.</span><span class="ex" lang="hi">इडली बनाने में किन चीज़ों का इस्तेमाल होता है?</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Built to be fair</h2>
+      <p class="sub">A benchmark is only useful if people can trust it.</p>
+      <div class="promises">
+        <div class="promise"><span class="tick">✓</span><p><b>Same test for every model.</b> Fixed temperature, seed and prompts.</p></div>
+        <div class="promise"><span class="tick">✓</span><p><b>Nothing hidden.</b> Every prompt, reply, date and model id is saved.</p></div>
+        <div class="promise"><span class="tick">✓</span><p><b>Anyone can check.</b> <code>touchstone reproduce</code> reruns a saved test.</p></div>
+        <div class="promise"><span class="tick">✓</span><p><b>No hype.</b> Sample sizes always shown, ties shown as ties.</p></div>
+      </div>
+    </section>
+
+    <section id="install">
+      <h2>Run it on your computer</h2>
+      <p class="sub">Python 3.10 or newer. No GPU needed; built on an 8 GB laptop.</p>
+      <div class="try">
+        <pre><span class="c"># install, then open the web UI</span>
+python -m pip install "touchstone-llm[ui]"
+python -m touchstone_llm ui</pre>
+        <pre><span class="c"># or from the terminal</span>
+python -m touchstone_llm run --model groq/&lt;model&gt; --tasks all
+python -m touchstone_llm leaderboard runs/*.json</pre>
+      </div>
+      <p class="note">Questions are still being reviewed by people, so official results are not published yet. Fluent Hindi or Hinglish speaker? <a target="_blank" rel="noopener" href="https://github.com/harshita2012sharma-max/Touchstone/blob/main/datasets/README.md">Help review questions</a>, no coding needed.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span>touchstone · code Apache-2.0 · questions CC-BY-4.0</span>
+    <span><a target="_blank" rel="noopener" href="https://github.com/harshita2012sharma-max/Touchstone">GitHub</a> · <a target="_blank" rel="noopener" href="https://pypi.org/project/touchstone-llm/">PyPI</a> · <a target="_blank" rel="noopener" href="https://github.com/harshita2012sharma-max/Touchstone/blob/main/LIMITATIONS.md">Limitations</a></span>
+  </footer>
+</div>
+</body>
+</html>

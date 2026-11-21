@@ -5,9 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-21
+
 ### Added
-- Free showcase page for a Hugging Face Static Space (`space/showcase/`), live at https://huggingface.co/spaces/20HARSHITA/touchstone. Outside links open in a new tab so Colab is not blocked by the Space frame. Docker Spaces now need a paid plan, so `space/DEPLOY.md` covers both options.
-- README badge linking to the Space.
+- **Five new tasks**, so there are now eleven: `hindi_grammar` (agreement, ने/को, संधि, समास, spelling), `idioms_proverbs` (मुहावरे and लोकोक्तियाँ in context), `hindi_logic` (family riddles, seating, calendars, directions, syllogisms), `translation_en_hi` (English to Hindi, chrF) and `hinglish_to_hindi` (Roman Hinglish to standard Devanagari Hindi, chrF).
+- **200 hard draft questions**: 100 new ones for the five new tasks and 100 harder ones added to the original six (sarcasm, idioms, fraction words like सवा and पौने, Indian number grouping, kinship terms, multi-constraint Hinglish instructions). Each was tested against free models before shipping, and its notes record which models got it wrong. All are still drafts until two human reviewers approve them.
+- Free showcase page for a Hugging Face Static Space (`space/showcase/`), live at https://huggingface.co/spaces/20HARSHITA/touchstone, and a README badge linking to it.
+
+### Changed
+- New look: light theme in deep teal (`#0E2931`, `#12484C`, `#287574`) with a red accent (`#861211`) on `#E2E2E0`; dark theme in black and gold (`#090909`, `#C9A579`, `#B08E57`). Same palette on the showcase page and the leaderboard chart.
+- Multiple-choice answers in the new questions rotate evenly across A to D, so a model that always picks one letter cannot score well.
 
 ## [0.3.0] - 2026-11-21
 

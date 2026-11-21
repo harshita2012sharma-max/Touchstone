@@ -183,7 +183,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## What it tests
 
-Six small tasks. Click a task to see a real example question.
+Eleven tasks, from everyday reading to grammar, idioms and logic. Every task has hard items written to trip models up. Click a task to see a real example question.
 
 <details>
 <summary><b>hindi_comprehension</b>: read a short Hindi passage, answer a question</summary>
@@ -240,6 +240,49 @@ Scoring: the final number must match. Devanagari digits (६००) and Indian g
 Only neutral facts: festivals, food, geography, institutions. No religion comparisons, caste, politics or stereotypes.
 </details>
 
+<details>
+<summary><b>hindi_grammar</b>: agreement, case markers, संधि, समास, spelling</summary>
+
+> **सीता ने तीन किताबें ___।** पढ़ा · पढ़ी · **पढ़ीं** · पढ़े
+
+Scoring: the chosen letter must match exactly.
+</details>
+
+<details>
+<summary><b>idioms_proverbs</b>: मुहावरे and लोकोक्तियाँ used in a sentence</summary>
+
+> बीस लोगों के परिवार के लिए एक किलो चावल तो **'ऊँट के मुँह में जीरा'** है।
+> **ज़रूरत से बहुत कम** · ऊँट को जीरा पसंद है · बहुत ज़्यादा · खाना बेकार जाना
+
+Scoring: the chosen letter must match exactly.
+</details>
+
+<details>
+<summary><b>hindi_logic</b>: family riddles, seating, calendars, directions, syllogisms</summary>
+
+> सुबह सूरज उगने के कुछ देर बाद राजू की परछाईं ठीक उसके बाईं ओर पड़ रही है। राजू किस दिशा में मुँह करके खड़ा है? **उत्तर**
+
+Scoring: the chosen letter must match exactly.
+</details>
+
+<details>
+<summary><b>translation_en_hi</b>: translate English into Hindi</summary>
+
+> **English:** No sooner had he left than it started raining.
+> **Accepted Hindi:** "उसके निकलते ही बारिश शुरू हो गई।" / "जैसे ही वह गया, बारिश शुरू हो गई।"
+
+Scoring: chrF against the references, from 0 to 100%.
+</details>
+
+<details>
+<summary><b>hinglish_to_hindi</b>: rewrite Roman Hinglish as standard Devanagari Hindi</summary>
+
+> **Hinglish:** Weather bahut pleasant hai, chalo walk pe chalte hain.
+> **Accepted Hindi:** "मौसम बहुत सुहावना है, चलो टहलने चलते हैं।"
+
+Scoring: chrF against the references, from 0 to 100%.
+</details>
+
 ## How the questions are made
 
 Trust in a benchmark starts with its questions. Every question goes through this path, and the code enforces it:
@@ -293,7 +336,7 @@ This writes `leaderboard/leaderboard.md` (a table for a README or blog), `leader
 
 > [!WARNING]
 > Please read these before using any number from touchstone.
-> - **Small dataset** (about 25 questions per task). A few points of difference is often noise.
+> - **Small dataset** (about 20 to 45 questions per task). A few points of difference is often noise.
 > - **Hindi is not all of India.** Other Indian languages and many dialects are not covered.
 > - **Hinglish has no standard spelling**, so rule-based scoring can miss valid answers.
 > - **chrF is a rough signal** for translation and can penalise good paraphrases.

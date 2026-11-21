@@ -91,3 +91,30 @@ class CulturalContext(MCQTask):
         "Neutral, factual questions on Indian festivals, food, geography and institutions; "
         "multiple choice."
     )
+
+
+class HindiGrammar(MCQTask):
+    """Choose the grammatically correct Hindi form or sentence."""
+
+    name = "hindi_grammar"
+    description = (
+        "Hindi grammar: gender and number agreement, ने/को and other case markers, "
+        "verb forms and correct sentences; multiple choice."
+    )
+
+
+class IdiomsProverbs(MCQTask):
+    """Understand Hindi idioms (मुहावरे) and proverbs (लोकोक्तियाँ) in context."""
+
+    name = "idioms_proverbs"
+    description = "Meaning of Hindi idioms and proverbs used in context; multiple choice."
+
+
+class HindiLogic(MCQTask):
+    """Logic puzzles written in Hindi."""
+
+    name = "hindi_logic"
+    description = (
+        "Logic puzzles in Hindi: family relations, seating and order, calendars, "
+        "directions and syllogisms; multiple choice."
+    )

@@ -7,23 +7,29 @@
 <meta name="description" content="Find out how well any AI model understands Hindi and Hinglish. Small, reproducible tests with a clear report. Free and open source.">
 <style>
   :root {
-    --bg: #fdf7f2; --surface: #ffffff; --surface-2: #fbeee3;
-    --text: #111111; --muted: #6b5a55; --border: #f1e2d6;
-    --maroon: #56161a; --peach: #f4cfb1; --mid: #936053;
-    --accent: #56161a; --on-accent: #ffffff;
-    --chip-bg: #f4cfb1; --chip-text: #56161a;
-    --satin: linear-gradient(180deg, #7a3a36 0%, #5f1b1f 45%, #56161a 60%, #43100f 100%);
-    --shadow: 0 1px 2px rgb(17 17 17 / .04), 0 10px 30px rgb(86 22 26 / .07);
+    --bg: #e2e2e0; --surface: #f7f7f5; --surface-2: #ececea;
+    --text: #0e2931; --muted: #3f5a5e; --border: #d3d6d3;
+    --maroon: #12484c; --peach: #d6e6e4; --mid: #287574;
+    --accent: #12484c; --on-accent: #ffffff;
+    --chip-bg: #d6e6e4; --chip-text: #0e2931;
+    --hl1: #12484c; --hl2: #861211;
+    --satin: linear-gradient(180deg, #2f7f7d 0%, #1b5a5c 40%, #12484c 60%, #0e2931 100%);
+    --rule: linear-gradient(90deg, #0e2931, #287574 50%, #861211);
+    --code-bg: #0e2931; --code-text: #e2e2e0; --code-dim: #8fb3b1;
+    --shadow: 0 1px 2px rgb(14 41 49 / .05), 0 10px 30px rgb(14 41 49 / .08);
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #000000; --surface: #111111; --surface-2: #1b1615;
-      --text: #ffffff; --muted: #c2b1a6; --border: #2a2120;
-      --accent: #f4cfb1; --on-accent: #56161a;
-      --chip-bg: #56161a; --chip-text: #f4cfb1;
-      --satin: linear-gradient(180deg, #fbe3cf 0%, #f4cfb1 50%, #e8bfa4 100%);
-      --shadow: 0 1px 2px rgb(0 0 0 / .5);
+      --bg: #090909; --surface: #100f0c; --surface-2: #1a1813;
+      --text: #f1e8da; --muted: #a68e71; --border: #262219;
+      --accent: #c9a579; --on-accent: #100600;
+      --chip-bg: #2a2216; --chip-text: #e3c79e;
+      --hl1: #e3c08b; --hl2: #bb9f77;
+      --satin: linear-gradient(180deg, #e8c895 0%, #c9a579 40%, #b08e57 62%, #735226 100%);
+      --rule: linear-gradient(90deg, #735226, #c9a579 50%, #bb9f77);
+      --code-bg: #100f0c; --code-text: #e3c08b; --code-dim: #8c7a63;
+      --shadow: 0 1px 2px rgb(0 0 0 / .6);
       color-scheme: dark;
     }
   }
@@ -31,7 +37,7 @@
   html { background: var(--bg); color: var(--text); }
   body { margin: 0; font: 16px/1.65 "Segoe UI", system-ui, -apple-system, "Noto Sans", "Noto Sans Devanagari", sans-serif; }
   a { color: inherit; }
-  .rule { height: 4px; background: linear-gradient(90deg, #56161a, #936053 45%, #f4cfb1); }
+  .rule { height: 4px; background: var(--rule); }
   .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
   header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px 0; }
   .brand { font-weight: 700; font-size: 22px; letter-spacing: -.01em; text-decoration: none; }
@@ -40,12 +46,11 @@
   .hero { padding: 72px 0 56px; display: grid; gap: 48px; grid-template-columns: 1.05fr 1fr; align-items: center; }
   .eyebrow { display: inline-block; background: var(--chip-bg); color: var(--chip-text); font-weight: 600; font-size: 13px; padding: 6px 14px; border-radius: 999px; }
   h1 { font-size: clamp(36px, 5.2vw, 58px); line-height: 1.08; letter-spacing: -.025em; margin: 20px 0 20px; }
-  h1 em { font-style: normal; background: linear-gradient(90deg, var(--maroon), var(--mid)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  @media (prefers-color-scheme: dark) { h1 em { background: linear-gradient(90deg, #f4cfb1, #e8bfa4); -webkit-background-clip: text; background-clip: text; } }
+  h1 em { font-style: normal; background: linear-gradient(90deg, var(--hl1), var(--hl2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .lead { font-size: 19px; color: var(--muted); max-width: 34em; margin: 0 0 32px; }
   .ctas { display: flex; flex-wrap: wrap; gap: 14px; }
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; padding: 0 28px; border-radius: 14px; font-weight: 600; font-size: 16px; text-decoration: none; transition: filter .15s, background .15s; }
-  .btn-primary { background-image: var(--satin); color: var(--on-accent); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 10px 24px -10px rgb(86 22 26 / .6); }
+  .btn-primary { background-image: var(--satin); color: var(--on-accent); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 10px 24px -10px rgb(14 41 49 / .55); }
   .btn-primary:hover { filter: brightness(1.08); }
   .btn-ghost { border: 1px solid var(--border); background: var(--surface); }
   .btn-ghost:hover { background: var(--surface-2); }
@@ -69,8 +74,8 @@
   .tick { flex: none; width: 26px; height: 26px; border-radius: 999px; background: var(--chip-bg); color: var(--chip-text); display: grid; place-items: center; font-weight: 700; font-size: 14px; margin-top: 2px; }
   .promise p { margin: 0; color: var(--muted); }
   .promise b { color: var(--text); }
-  pre { margin: 0; background: #111111; color: #f4cfb1; border-radius: 16px; padding: 22px 24px; overflow-x: auto; font: 15px/1.7 "Cascadia Mono", Consolas, ui-monospace, monospace; }
-  pre .c { color: #a9978d; }
+  pre { margin: 0; background: var(--code-bg); color: var(--code-text); border-radius: 16px; padding: 22px 24px; overflow-x: auto; font: 15px/1.7 "Cascadia Mono", Consolas, ui-monospace, monospace; }
+  pre .c { color: var(--code-dim); }
   .try { display: grid; gap: 24px; grid-template-columns: 1fr 1fr; align-items: start; }
   .note { margin-top: 14px; font-size: 14px; color: var(--muted); }
   footer { padding: 40px 0 56px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; }
@@ -133,7 +138,7 @@
 
     <section id="tests">
       <h2>What it tests</h2>
-      <p class="sub">Six small tasks, written for this project and reviewed by people. Scoring uses fixed rules, never another AI as judge.</p>
+      <p class="sub">Eleven tasks with hard items written to trip models up, all original to this project. Scoring uses fixed rules, never another AI as judge.</p>
       <div class="tasks">
         <div class="task"><b>Hindi reading</b><span>Read a short passage, answer a question.</span><span class="ex" lang="hi">मीना अपनी दादी के साथ बाज़ार कब जाती है?</span></div>
         <div class="task"><b>Hinglish chat</b><span>Understand Roman-script chat, including sarcasm.</span><span class="ex">"Wah, kya perfect timing hai meri!" — bus chhootne ke baad</span></div>
@@ -141,6 +146,11 @@
         <div class="task"><b>Hinglish instructions</b><span>Follow an instruction exactly.</span><span class="ex">Teen Indian sweets ke naam batao, comma se alag karke.</span></div>
         <div class="task"><b>Hindi maths</b><span>Solve a word problem; ६०० and 1,00,000 understood.</span><span class="ex" lang="hi">800 रुपये की कमीज़ पर 25% छूट, कितने की पड़ेगी?</span></div>
         <div class="task"><b>Everyday India</b><span>Neutral facts: food, festivals, geography.</span><span class="ex" lang="hi">इडली बनाने में किन चीज़ों का इस्तेमाल होता है?</span></div>
+        <div class="task"><b>Hindi grammar</b><span>Agreement, ने/को, संधि, समास, spelling.</span><span class="ex" lang="hi">सीता ने तीन किताबें ___। (पढ़ा / पढ़ी / पढ़ीं)</span></div>
+        <div class="task"><b>Idioms and proverbs</b><span>Meaning in context, not word for word.</span><span class="ex" lang="hi">एक किलो चावल तो 'ऊँट के मुँह में जीरा' है।</span></div>
+        <div class="task"><b>Logic in Hindi</b><span>Family riddles, seating, calendars, syllogisms.</span><span class="ex" lang="hi">सुबह परछाईं बाईं ओर है, तो मुँह किस दिशा में?</span></div>
+        <div class="task"><b>English to Hindi</b><span>Idioms and tricky grammar, scored with chrF.</span><span class="ex">No sooner had he left than it started raining.</span></div>
+        <div class="task"><b>Hinglish to Hindi</b><span>Roman Hinglish to proper Devanagari Hindi.</span><span class="ex">Weather bahut pleasant hai, chalo walk pe chalte hain.</span></div>
       </div>
     </section>
 

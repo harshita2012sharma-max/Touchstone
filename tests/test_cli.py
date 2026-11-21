@@ -59,7 +59,7 @@ def test_run_all_tasks_keyword(data_dir: Path) -> None:
     result = runner.invoke(
         app, ["run", "--model", "mock/fixed", "--tasks", "all", "--data-dir", str(data_dir)]
     )
-    # data_dir has only two of the six tasks, so this must fail clearly
+    # data_dir has only two of the tasks, so this must fail clearly
     assert result.exit_code == 1
     assert "No data found" in result.output
 

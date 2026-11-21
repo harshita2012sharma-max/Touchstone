@@ -46,6 +46,11 @@ export const TASK_LABELS: Record<string, string> = {
   codemixed_instructions: "Following Hinglish instructions",
   hindi_reasoning: "Maths word problems in Hindi",
   cultural_context: "Facts about everyday India",
+  hindi_grammar: "Hindi grammar",
+  idioms_proverbs: "Idioms and proverbs",
+  hindi_logic: "Logic puzzles in Hindi",
+  translation_en_hi: "English to Hindi translation",
+  hinglish_to_hindi: "Hinglish to Devanagari Hindi",
 };
 
 export function taskLabel(id: string): string {

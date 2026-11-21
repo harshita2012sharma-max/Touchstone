@@ -62,7 +62,7 @@ jobs:
           assert "touchstone_llm/server/static/index.html" in names, "UI missing from wheel"
           assert not any(".env" in n for n in names), ".env must never ship"
           drafts = [n for n in names if n.startswith("touchstone_llm/tasks/data/drafts/")]
-          assert len(drafts) == 6, f"expected 6 draft files, got {drafts}"
+          assert len(drafts) == 11, f"expected 11 draft files, got {drafts}"
           assert not any(n.endswith(".csv") for n in names), "review sheets must never ship"
           print("wheel OK:", len(names), "files")
           PY

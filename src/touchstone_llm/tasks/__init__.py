@@ -13,9 +13,16 @@ from typing import Any
 from touchstone_llm.errors import TouchstoneError
 from touchstone_llm.tasks.base import Task
 from touchstone_llm.tasks.instructions import CodemixedInstructions
-from touchstone_llm.tasks.mcq import CulturalContext, HindiComprehension, HinglishUnderstanding
+from touchstone_llm.tasks.mcq import (
+    CulturalContext,
+    HindiComprehension,
+    HindiGrammar,
+    HindiLogic,
+    HinglishUnderstanding,
+    IdiomsProverbs,
+)
 from touchstone_llm.tasks.numeric import HindiReasoning
-from touchstone_llm.tasks.translation import TranslationHiEn
+from touchstone_llm.tasks.translation import HinglishToHindi, TranslationEnHi, TranslationHiEn
 
 __all__ = ["Task", "available_tasks", "get_task"]
 
@@ -28,6 +35,11 @@ _BUILTINS: dict[str, type[Task[Any]]] = {
         CodemixedInstructions,
         HindiReasoning,
         CulturalContext,
+        HindiGrammar,
+        IdiomsProverbs,
+        HindiLogic,
+        TranslationEnHi,
+        HinglishToHindi,
     )
 }
 

@@ -12,68 +12,67 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Theme "maroon and peach", taken exactly from the maintainer's palette:
- *   black #000000 / #111111, white #FFFFFF,
- *   maroon #56161A and peach #F4CFB1 (the two ends of the brand gradient).
- * Light: white cards on a faint peach page, maroon buttons, peach highlights.
- * Dark: black page, peach buttons with maroon text, maroon highlights.
- * Satin finish on main buttons, step badges and progress bars; the maroon to
- * peach gradient runs under the header. Every text pair keeps at least 4.5:1.
+ * Two palettes chosen by the maintainer:
+ * Light "deep teal": #0E2931, #12484C, #287574, #861211 (red), #E2E2E0.
+ * Dark "black and gold": #090909, #100F0C, gold #C9A579 / #B08E57 / #735226,
+ *   beige #BB9F77, muted #A68E71, ink on gold #100600.
+ * Satin finish on main buttons, step badges and progress bars; a thin brand
+ * gradient under the header. Every text pair keeps at least 4.5:1 contrast.
  */
 :root {
-  --bg: #fdf7f2;
-  --surface: #ffffff;
-  --surface-2: #fbeee3;
-  --text: #111111;
-  --text-muted: #6b5a55;
-  --border: #f1e2d6;
-  --border-strong: #e3cbb9;
-  --primary: #000000;
-  --accent: #56161a;
-  --accent-hover: #6b302d;
+  --bg: #e2e2e0;
+  --surface: #f7f7f5;
+  --surface-2: #ececea;
+  --text: #0e2931;
+  --text-muted: #3f5a5e;
+  --border: #d3d6d3;
+  --border-strong: #b9c0bd;
+  --primary: #0e2931;
+  --accent: #12484c;
+  --accent-hover: #0e2931;
   --on-accent: #ffffff;
-  --link: #56161a;
-  --info-bg: #f4cfb1;
-  --info-text: #56161a;
-  --warn-bg: #fbf1db;
-  --warn-text: #7f4507;
-  --danger: #b42318;
-  --series-1: #56161a;
-  --series-2: #c69a84;
-  --series-3: #936053;
-  --focus: #56161a;
-  --shadow: 0 1px 2px rgb(17 17 17 / 0.04), 0 8px 24px rgb(86 22 26 / 0.06);
-  --satin: linear-gradient(180deg, #7a3a36 0%, #5f1b1f 45%, #56161a 60%, #43100f 100%);
-  --satin-glow: 0 8px 22px -8px rgb(86 22 26 / 0.55);
-  --brand-gradient: linear-gradient(90deg, #56161a 0%, #936053 45%, #f4cfb1 100%);
+  --link: #12484c;
+  --info-bg: #d6e6e4;
+  --info-text: #0e2931;
+  --warn-bg: #f6ead4;
+  --warn-text: #7a4a07;
+  --danger: #861211;
+  --series-1: #287574;
+  --series-2: #861211;
+  --series-3: #0e2931;
+  --focus: #861211;
+  --shadow: 0 1px 2px rgb(14 41 49 / 0.05), 0 8px 24px rgb(14 41 49 / 0.07);
+  --satin: linear-gradient(180deg, #2f7f7d 0%, #1b5a5c 40%, #12484c 60%, #0e2931 100%);
+  --satin-glow: 0 8px 22px -8px rgb(14 41 49 / 0.55);
+  --brand-gradient: linear-gradient(90deg, #0e2931 0%, #287574 50%, #861211 100%);
   color-scheme: light;
 }
 .dark {
-  --bg: #000000;
-  --surface: #111111;
-  --surface-2: #1b1615;
-  --text: #ffffff;
-  --text-muted: #c2b1a6;
-  --border: #2a2120;
-  --border-strong: #3f302d;
-  --primary: #ffffff;
-  --accent: #f4cfb1;
-  --accent-hover: #f9dcc4;
-  --on-accent: #56161a;
-  --link: #f4cfb1;
-  --info-bg: #56161a;
-  --info-text: #f4cfb1;
+  --bg: #090909;
+  --surface: #100f0c;
+  --surface-2: #1a1813;
+  --text: #f1e8da;
+  --text-muted: #a68e71;
+  --border: #262219;
+  --border-strong: #3a3326;
+  --primary: #e3c08b;
+  --accent: #c9a579;
+  --accent-hover: #dcbb8d;
+  --on-accent: #100600;
+  --link: #c9a579;
+  --info-bg: #2a2216;
+  --info-text: #e3c79e;
   --warn-bg: #33270f;
   --warn-text: #f5cf87;
   --danger: #f28b82;
-  --series-1: #f4cfb1;
-  --series-2: #c69a84;
-  --series-3: #936053;
-  --focus: #f4cfb1;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.5);
-  --satin: linear-gradient(180deg, #fbe3cf 0%, #f4cfb1 50%, #e8bfa4 100%);
-  --satin-glow: 0 8px 24px -10px rgb(244 207 177 / 0.35);
-  --brand-gradient: linear-gradient(90deg, #56161a 0%, #936053 45%, #f4cfb1 100%);
+  --series-1: #c9a579;
+  --series-2: #f1e8da;
+  --series-3: #8c6d3f;
+  --focus: #e3c08b;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.6), 0 10px 30px rgb(0 0 0 / 0.5);
+  --satin: linear-gradient(180deg, #e8c895 0%, #c9a579 40%, #b08e57 62%, #735226 100%);
+  --satin-glow: 0 8px 24px -10px rgb(201 165 121 / 0.45);
+  --brand-gradient: linear-gradient(90deg, #735226 0%, #c9a579 50%, #bb9f77 100%);
   color-scheme: dark;
 }
 

@@ -1,4 +1,9 @@
-"""Hindi to English translation, scored with chrF against reference translations."""
+"""Translation tasks, scored with chrF against reference translations.
+
+- ``translation_hi_en``: Hindi to English.
+- ``translation_en_hi``: English to Hindi (Devanagari).
+- ``hinglish_to_hindi``: rewrite Roman-script Hinglish as standard Hindi in Devanagari.
+"""
 
 from __future__ import annotations
 
@@ -16,7 +21,9 @@ TRANSLATION_TEMPLATE = (
     "Hindi: {source}\nEnglish:"
 )
 
-_LABEL = re.compile(r"^\s*(?:english\s*(?:translation)?\s*:)\s*", re.IGNORECASE)
+_LABEL = re.compile(
+    r"^\s*(?:(?:english|hindi)\s*(?:translation)?\s*:|हिंदी\s*:|हिन्दी\s*:)\s*", re.IGNORECASE
+)
 
 
 class TranslationSample(ItemMeta):
@@ -49,3 +56,35 @@ class TranslationHiEn(Task[TranslationSample]):
     def expected(self, sample: TranslationSample) -> list[str]:
         """Return the reference translations."""
         return sample.references
+
+
+EN_HI_TEMPLATE = (
+    "Translate the following English text into Hindi, written in Devanagari script. "
+    "Reply with only the Hindi translation.\n\n"
+    "English: {source}\nHindi:"
+)
+
+HINGLISH_HI_TEMPLATE = (
+    "The following text is Hinglish written in Roman script. Rewrite it as natural, "
+    "standard Hindi in Devanagari script, keeping the meaning. Use Hindi words in place "
+    "of English ones where a common Hindi word exists. Reply with only the Hindi text.\n\n"
+    "Hinglish: {source}\nHindi:"
+)
+
+
+class TranslationEnHi(TranslationHiEn):
+    """Translate English sentences into Hindi."""
+
+    name = "translation_en_hi"
+    description = "Translate English into Hindi (Devanagari); chrF against references (rough)."
+    prompt_template = EN_HI_TEMPLATE
+
+
+class HinglishToHindi(TranslationHiEn):
+    """Rewrite Roman-script Hinglish as standard Devanagari Hindi."""
+
+    name = "hinglish_to_hindi"
+    description = (
+        "Rewrite Roman-script Hinglish as standard Hindi in Devanagari; chrF against references."
+    )
+    prompt_template = HINGLISH_HI_TEMPLATE

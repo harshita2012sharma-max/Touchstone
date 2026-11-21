@@ -31,6 +31,11 @@ TASK_LABELS = {
     "codemixed_instructions": "Hinglish instructions",
     "hindi_reasoning": "Hindi maths",
     "cultural_context": "Everyday India",
+    "hindi_grammar": "Hindi grammar",
+    "idioms_proverbs": "Idioms",
+    "hindi_logic": "Hindi logic",
+    "translation_en_hi": "English to Hindi",
+    "hinglish_to_hindi": "Hinglish to Hindi",
 }
 PRACTICE_NOTE = "PRACTICE: draft questions not yet reviewed by two people. Do not publish."
 NOISE_NOTE = (
@@ -108,21 +113,22 @@ class Leaderboard:
         return "\n".join(lines) + "\n"
 
     def to_svg(self, title: str = "Which AI understands Hindi and Hinglish best?") -> str:
-        """Draw a shareable horizontal bar chart in the maroon and peach brand colours."""
+        """Draw a shareable horizontal bar chart in the deep teal brand colours."""
         width, left, right, top, bar_h, gap = 1000, 420, 90, 150, 34, 14
         rows = self.entries
         height = top + len(rows) * (bar_h + gap) + 90
         span = width - left - right
-        muted, ink, maroon = "#6b5a55", "#111111", "#56161a"
+        muted, ink, maroon = "#3f5a5e", "#0e2931", "#12484c"
         out = [
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
             f'viewBox="0 0 {width} {height}" role="img" aria-label="{escape(title)}">',
             "<defs><linearGradient id='g' x1='0' x2='1'>"
-            "<stop offset='0' stop-color='#56161a'/><stop offset='1' stop-color='#936053'/>"
+            "<stop offset='0' stop-color='#0e2931'/><stop offset='1' stop-color='#287574'/>"
             "</linearGradient><linearGradient id='rule' x1='0' x2='1'>"
-            "<stop offset='0' stop-color='#56161a'/><stop offset='1' stop-color='#f4cfb1'/>"
+            "<stop offset='0' stop-color='#0e2931'/><stop offset='0.5' stop-color='#287574'/>"
+            "<stop offset='1' stop-color='#861211'/>"
             "</linearGradient></defs>",
-            f'<rect width="{width}" height="{height}" fill="#fdf7f2"/>',
+            f'<rect width="{width}" height="{height}" fill="#f7f7f5"/>',
             f'<rect width="{width}" height="6" fill="url(#rule)"/>',
             '<g font-family="Segoe UI, Helvetica, Arial, sans-serif">',
             _text(40, 62, 30, ink, title, bold=True),
@@ -145,7 +151,7 @@ class Leaderboard:
             out += [
                 _text(40, base, 17, muted, e.rank),
                 _text(80, base, 17, ink, label, bold=True),
-                f'<rect x="{left}" y="{y}" width="{span}" height="{bar_h}" rx="8" fill="#fbeee3"/>',
+                f'<rect x="{left}" y="{y}" width="{span}" height="{bar_h}" rx="8" fill="#e2e2e0"/>',
                 f'<rect x="{left}" y="{y}" width="{w:.1f}" height="{bar_h}" rx="8" '
                 'fill="url(#g)"/>',
                 _text(left + w + 10, base, 17, maroon, _pct(e.mean), bold=True),

@@ -6,7 +6,7 @@ import { TASK_LABELS, useLoad } from "../lib";
 export function AboutPage() {
   const { data: status } = useLoad(api.status);
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       <PageTitle
         title="Help"
         sub={`What touchstone is, how to use it, and what the results mean.${status ? ` Version ${status.version}.` : ""}`}
@@ -22,18 +22,18 @@ export function AboutPage() {
         </p>
       </Card>
 
-      <section aria-label="How to use it" className="grid gap-6 md:grid-cols-3">
+      <section aria-label="How to use it" className="grid gap-8 md:grid-cols-3">
         <StepCard n={1} title="Start a test">Open “New test”, pick a provider and a model, and tick some topics.</StepCard>
         <StepCard n={2} title="Wait a minute">The model answers each question. A progress bar shows how far it has got.</StepCard>
         <StepCard n={3} title="Read the result">See the overall score, a score per topic, and every answer. Compare tests side by side.</StepCard>
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-8 lg:grid-cols-2">
         <Card>
           <CardTitle hint="Each topic is a small set of questions of one kind.">The six topics</CardTitle>
           <ul className="space-y-2 text-sm">
             {Object.entries(TASK_LABELS).map(([id, label]) => (
-              <li key={id} className="flex justify-between gap-4">
+              <li key={id} className="flex justify-between gap-5">
                 <span className="font-medium">{label}</span>
                 <span className="font-mono text-xs text-muted">{id}</span>
               </li>

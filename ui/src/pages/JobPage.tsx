@@ -33,7 +33,7 @@ export function JobPage() {
   const done = entries.reduce((a, [, p]) => a + p.done, 0);
   const total = entries.reduce((a, [, p]) => a + p.total, 0);
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       <PageTitle
         title={job.state === "failed" ? "The test stopped" : "Test in progress"}
         sub={job.state === "failed"
@@ -42,10 +42,10 @@ export function JobPage() {
       />
       <Card>
         {total > 0 && (
-          <p className="mb-5 text-sm font-medium">{done} of {total} questions answered</p>
+          <p className="mb-6 text-sm font-medium">{done} of {total} questions answered</p>
         )}
         {entries.length === 0 && job.state === "running" && <Loading label="Preparing the questions" />}
-        <ul className="space-y-5" aria-live="polite">
+        <ul className="space-y-6" aria-live="polite">
           {entries.map(([task, p]) => (
             <li key={task}>
               <div className="mb-2 flex justify-between text-sm">
@@ -53,7 +53,7 @@ export function JobPage() {
                 <span className="tabular text-muted">{p.done} / {p.total}</span>
               </div>
               <div className="h-2.5 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-label={taskLabel(task)} aria-valuemin={0} aria-valuemax={p.total} aria-valuenow={p.done}>
-                <div className="h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${(p.done / Math.max(p.total, 1)) * 100}%` }} />
+                <div className="satin h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${(p.done / Math.max(p.total, 1)) * 100}%` }} />
               </div>
             </li>
           ))}
@@ -61,7 +61,7 @@ export function JobPage() {
         {job.state === "running" && <Hint>You can leave this page; the test keeps running and appears under Results.</Hint>}
       </Card>
       {job.state === "failed" && job.error && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <ErrorBox message={job.error} />
           <Link to="/new" className={buttonSecondary}>
             <ArrowLeft aria-hidden className="size-4" /> Back to new test

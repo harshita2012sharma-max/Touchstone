@@ -8,6 +8,9 @@ Security for a local tool:
   browser is not on the Colab machine, so DNS rebinding cannot reach it.
 - State-changing requests from another web origin are refused (blocks CSRF).
 - API keys are never returned; only "set / not set".
+- Demo mode (the public Hugging Face Space) is locked to the keyless practice
+  model: saving keys or a custom server is refused, so no visitor's key is
+  ever stored on a shared machine.
 """
 
 from __future__ import annotations
@@ -47,6 +50,10 @@ from touchstone_llm.tasks import available_tasks, get_task
 from touchstone_llm.tasks.base import DatasetError
 
 LOCAL_HOSTS = ("127.0.0.1", "localhost")
+DEMO_PROVIDERS = ("mock",)
+DEMO_REFUSED = (
+    "Disabled in the online demo. Install touchstone to test real models with your own key."
+)
 DEFAULT_STATIC_DIR = Path(__file__).parent / "static"
 _RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 
@@ -138,27 +145,45 @@ def create_app(
     backend_factory: Callable[[str], Backend] | None = None,
     use_cache: bool = True,
     colab_host: str | None = None,
+    demo: bool = False,
+    public_hosts: tuple[str, ...] = (),
 ) -> FastAPI:
     """Build the app. ``backend_factory`` is injectable for tests.
 
     ``colab_host`` is the exact hostname of the Colab proxy link. When set, the
     Host check is skipped (see module docstring) and writes are accepted only
     from that page or from localhost.
+
+    ``demo`` locks the app to the practice model (see module docstring).
+    ``public_hosts`` adds allowed hostnames, e.g. ``"*.hf.space"``; it is only
+    accepted together with ``demo``.
     """
+    if public_hosts and not demo:
+        raise ValueError("public_hosts is only allowed in demo mode.")
     if colab_host is not None and (not colab_host or "*" in colab_host or "/" in colab_host):
         raise ValueError("colab_host must be an exact hostname.")
-    trusted = (*LOCAL_HOSTS, colab_host) if colab_host else LOCAL_HOSTS
+    trusted = (*LOCAL_HOSTS, colab_host) if colab_host else (*LOCAL_HOSTS, *public_hosts)
+
+    def is_trusted(host: str | None) -> bool:
+        if not host:
+            return False
+        return any(host.endswith(t[1:]) if t.startswith("*.") else host == t for t in trusted)
+
+    def allowed_provider(name: str) -> None:
+        if demo and name not in DEMO_PROVIDERS:
+            raise HTTPException(403, DEMO_REFUSED)
+
     make_backend = backend_factory or (lambda provider: get_backend(provider))
     jobs = JobManager(runs_dir, use_cache=use_cache)
     app = FastAPI(title="touchstone", version=__version__, docs_url=None, redoc_url=None)
     if colab_host is None:
-        app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(LOCAL_HOSTS))
+        app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(trusted))
 
     @app.middleware("http")
     async def same_origin_writes(request: Request, call_next: Any) -> Any:
         origin = request.headers.get("origin")
         is_write = request.method not in ("GET", "HEAD", "OPTIONS")
-        if is_write and origin and urlparse(origin).hostname not in trusted:
+        if is_write and origin and not is_trusted(urlparse(origin).hostname):
             return JSONResponse({"detail": "Cross-origin request refused."}, status_code=403)
         return await call_next(request)
 
@@ -176,7 +201,11 @@ def create_app(
         has_drafts = drafts_dir is not None and drafts_dir.is_dir()
         return {
             "version": __version__,
-            "providers": [_provider_status(name, keys) for name in available_backends()],
+            "providers": [
+                _provider_status(name, keys)
+                for name in available_backends()
+                if not demo or name in DEMO_PROVIDERS
+            ],
             "tasks": [
                 {
                     "name": name,
@@ -191,10 +220,13 @@ def create_app(
             ],
             "settings": GenerationSettings().model_dump(),
             "drafts_available": has_drafts,
+            "demo": demo,
         }
 
     @app.post("/api/keys")
     def save_key(body: KeyRequest) -> dict[str, Any]:
+        if demo:
+            raise HTTPException(403, DEMO_REFUSED)
         try:
             save_api_key(body.provider, body.key)
         except ValueError as err:
@@ -203,6 +235,8 @@ def create_app(
 
     @app.post("/api/custom")
     def save_custom(body: CustomRequest) -> dict[str, Any]:
+        if demo:
+            raise HTTPException(403, DEMO_REFUSED)
         try:
             save_custom_server(body.base_url, body.key)
         except ValueError as err:
@@ -212,6 +246,7 @@ def create_app(
 
     @app.get("/api/models/{provider}")
     def models(provider: str) -> dict[str, Any]:
+        allowed_provider(provider)
         try:
             backend = make_backend(provider)
             try:
@@ -265,6 +300,7 @@ def create_app(
         except ValidationError as err:
             msg = "; ".join(str(e["msg"]).removeprefix("Value error, ") for e in err.errors())
             raise HTTPException(400, msg) from None
+        allowed_provider(config.model_ref.provider)
         try:
             backend = make_backend(config.model_ref.provider)
             job_id = jobs.start(config, backend)

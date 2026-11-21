@@ -226,3 +226,56 @@ def test_save_custom_server(
     custom = next(p for p in client.get("/api/status").json()["providers"] if p["name"] == "custom")
     assert custom["ready"] is True and custom["custom_url"] == "http://localhost:1234/v1"
     assert client.post("/api/custom", json={"base_url": "not a url"}).status_code == 400
+
+
+@pytest.fixture
+def demo(runs_dir: Path, data_dir: Path) -> TestClient:
+    app = create_app(
+        runs_dir=runs_dir,
+        drafts_dir=data_dir,
+        backend_factory=lambda provider: CountingMock(),
+        use_cache=False,
+        demo=True,
+        public_hosts=("*.hf.space",),
+    )
+    return TestClient(app, base_url="https://someone-touchstone.hf.space")
+
+
+def test_demo_offers_only_practice_model(demo: TestClient) -> None:
+    body = demo.get("/api/status").json()
+    assert body["demo"] is True
+    assert [p["name"] for p in body["providers"]] == ["mock"]
+    assert demo.get("/api/models/mock").status_code == 200
+    assert demo.get("/api/models/groq").status_code == 403
+
+
+def test_demo_refuses_keys_custom_server_and_real_providers(demo: TestClient) -> None:
+    assert demo.post("/api/keys", json={"provider": "groq", "key": KEY}).status_code == 403
+    assert demo.post("/api/custom", json={"base_url": "https://x.example/v1"}).status_code == 403
+    res = demo.post("/api/jobs", json={"model": "groq/llama", "tasks": ["hindi_reasoning"]})
+    assert res.status_code == 403
+
+
+def test_demo_runs_practice_job_from_space_origin(demo: TestClient) -> None:
+    res = demo.post(
+        "/api/jobs",
+        json={"model": "mock/fixed", "tasks": ["hindi_reasoning"], "drafts": True},
+        headers={"Origin": "https://someone-touchstone.hf.space"},
+    )
+    assert res.status_code == 202
+    evil = demo.post(
+        "/api/jobs",
+        json={"model": "mock/fixed", "tasks": ["hindi_reasoning"]},
+        headers={"Origin": "https://evil.example"},
+    )
+    assert evil.status_code == 403
+
+
+def test_demo_rejects_other_hosts(runs_dir: Path) -> None:
+    app = create_app(runs_dir=runs_dir, demo=True, public_hosts=("*.hf.space",))
+    assert TestClient(app, base_url="http://evil.example").get("/api/status").status_code == 400
+
+
+def test_public_hosts_need_demo_mode(runs_dir: Path) -> None:
+    with pytest.raises(ValueError):
+        create_app(runs_dir=runs_dir, public_hosts=("*.hf.space",))

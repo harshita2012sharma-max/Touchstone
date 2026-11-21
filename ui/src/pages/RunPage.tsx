@@ -41,7 +41,7 @@ export function RunPage() {
   const unparsed = run.tasks.filter((t) => t.unparsed_rate > 0);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       <PageTitle
         title={`Result: ${c.model}`}
         sub={`Tested on ${when(m.started_at)}. Below: the overall score, a score for each topic, and every question with the model's answer.`}
@@ -63,20 +63,20 @@ export function RunPage() {
         )}
       </InfoBox>
 
-      <section aria-label="Test details" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section aria-label="Test details" className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <Meta label="Model you chose"><span className="font-mono text-[13px]">{c.model}</span></Meta>
         <Meta label="Model the provider used"><span className="font-mono text-[13px]">{m.provider_model_id ?? "not reported"}</span></Meta>
         <Meta label="Settings (same for all)">temperature {c.settings.temperature} · seed {c.settings.seed}</Meta>
         <Meta label="Questions asked">{run.tasks.reduce((a, t) => a + t.n, 0)}{c.limit ? ` (up to ${c.limit} per topic)` : ""}</Meta>
       </section>
 
-      <Card className="p-0">
-        <div className="p-6 pb-4">
+      <Card flush>
+        <div className="p-7 pb-5 sm:p-10 sm:pb-6">
           <h2 className="text-base font-semibold text-primary">Every question and answer</h2>
           <p className="mt-1 text-sm text-muted">
             Check any answer yourself. “Expected” is the correct answer, “Read as” is what touchstone understood from the model's reply.
           </p>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div className="mt-4 flex flex-wrap items-center gap-4">
             <label className="sr-only" htmlFor="task-filter">Topic</label>
             <select id="task-filter" className={`${inputClass} w-auto`} value={task} onChange={(e) => setTask(e.target.value)}>
               <option value="all">All topics</option>
@@ -94,30 +94,30 @@ export function RunPage() {
           <table className="w-full min-w-[760px] table-fixed text-sm">
             <thead className="bg-surface-2 text-left text-xs uppercase tracking-wide text-muted">
               <tr>
-                <th className="w-44 px-6 py-3 font-semibold">Topic</th>
-                <th className="px-3 py-3 font-semibold">Model's answer</th>
-                <th className="w-36 px-3 py-3 font-semibold">Expected</th>
-                <th className="w-28 px-3 py-3 font-semibold">Read as</th>
-                <th className="w-24 px-6 py-3 text-right font-semibold">Result</th>
+                <th className="w-44 px-7 sm:px-10 py-4 font-semibold">Topic</th>
+                <th className="px-4 py-4 font-semibold">Model's answer</th>
+                <th className="w-36 px-4 py-4 font-semibold">Expected</th>
+                <th className="w-28 px-4 py-4 font-semibold">Read as</th>
+                <th className="w-24 px-7 sm:px-10 py-4 text-right font-semibold">Result</th>
               </tr>
             </thead>
             <tbody>
               {rows.map(({ task: tn, s }) => (
                 <tr key={`${tn}-${s.sample_id}`} className="border-t border-line align-top">
-                  <td className="px-6 py-4">
+                  <td className="px-7 sm:px-10 py-5">
                     <div className="font-medium">{taskLabel(tn)}</div>
                     <div className="font-mono text-[11px] text-muted break-all">{s.sample_id}</div>
                   </td>
-                  <td className="px-3 py-4">
+                  <td className="px-4 py-5">
                     <details>
                       <summary className="text-xs font-medium text-link">Show the question</summary>
-                      <pre className="mt-2 whitespace-pre-wrap break-words rounded-lg bg-surface-2 p-3 font-mono text-[12px]">{s.prompt}</pre>
+                      <pre className="mt-2 whitespace-pre-wrap break-words rounded-lg bg-surface-2 p-4 font-mono text-[12px]">{s.prompt}</pre>
                     </details>
                     <pre className="mt-2 whitespace-pre-wrap break-words font-sans">{s.output || <span className="text-muted">(no answer)</span>}</pre>
                   </td>
-                  <td className="px-3 py-4 break-words">{plainRules(expectedText(s))}</td>
-                  <td className="px-3 py-4 break-words">{s.parsed ? plainRules(s.parsed) : s.unparsed ? <span className="text-warn">unclear</span> : "-"}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-5 break-words">{plainRules(expectedText(s))}</td>
+                  <td className="px-4 py-5 break-words">{s.parsed ? plainRules(s.parsed) : s.unparsed ? <span className="text-warn">unclear</span> : "-"}</td>
+                  <td className="px-7 sm:px-10 py-5 text-right">
                     <span className={`inline-block rounded-md px-2 py-0.5 text-xs font-semibold ${s.score >= 1 ? "bg-info-bg text-info" : "bg-warn-bg text-warn"}`}>
                       {s.score >= 1 ? "Correct" : s.score > 0 ? pct(s.score, 0) : "Wrong"}
                     </span>

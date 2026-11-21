@@ -25,7 +25,7 @@ export function RunsPage() {
     setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length < MAX_COMPARE ? [...p, id] : p));
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       <PageTitle
         title="Test AI models in Hindi and Hinglish"
         sub="touchstone gives an AI model a short exam, checks every answer with fixed rules, and shows how it did. Everything stays on this computer."
@@ -36,7 +36,7 @@ export function RunsPage() {
         }
       />
 
-      <section aria-label="How it works" className="grid gap-6 md:grid-cols-3">
+      <section aria-label="How it works" className="grid gap-8 md:grid-cols-3">
         <StepCard n={1} title="Pick a model and topics">
           Choose an AI model (for example Gemini or Llama) and which kinds of questions to ask.
         </StepCard>
@@ -48,8 +48,8 @@ export function RunsPage() {
         </StepCard>
       </section>
 
-      <Card className="p-0">
-        <div className="flex flex-wrap items-center justify-between gap-4 p-6 pb-4">
+      <Card flush>
+        <div className="flex flex-wrap items-center justify-between gap-5 p-7 pb-5 sm:p-10 sm:pb-6">
           <div>
             <h2 className="text-base font-semibold text-primary">Your past tests</h2>
             <p className="mt-1 text-sm text-muted">
@@ -77,17 +77,17 @@ export function RunsPage() {
             <table className="w-full min-w-[680px] text-sm">
               <thead className="bg-surface-2 text-left text-xs uppercase tracking-wide text-muted">
                 <tr>
-                  <th className="w-14 px-6 py-3 font-semibold"><span className="sr-only">Tick to compare</span></th>
-                  <th className="px-3 py-3 font-semibold">Model</th>
-                  <th className="px-3 py-3 font-semibold">When</th>
-                  <th className="px-3 py-3 text-right font-semibold">Questions</th>
-                  <th className="px-6 py-3 text-right font-semibold">Overall score</th>
+                  <th className="w-14 px-7 sm:px-10 py-4 font-semibold"><span className="sr-only">Tick to compare</span></th>
+                  <th className="px-4 py-4 font-semibold">Model</th>
+                  <th className="px-4 py-4 font-semibold">When</th>
+                  <th className="px-4 py-4 text-right font-semibold">Questions</th>
+                  <th className="px-7 sm:px-10 py-4 text-right font-semibold">Overall score</th>
                 </tr>
               </thead>
               <tbody>
                 {runs.map((r) => (
                   <tr key={r.run_id} className="border-t border-line hover:bg-surface-2">
-                    <td className="px-6 py-4">
+                    <td className="px-7 sm:px-10 py-5">
                       <input
                         type="checkbox"
                         className="size-4 accent-[var(--accent)]"
@@ -97,15 +97,15 @@ export function RunsPage() {
                         onChange={() => toggle(r.run_id)}
                       />
                     </td>
-                    <td className="px-3 py-4">
+                    <td className="px-4 py-5">
                       <Link to={`/runs/${encodeURIComponent(r.run_id)}`} className="font-mono text-[13px] font-medium text-link hover:underline">
                         {r.model}
                       </Link>
                       {r.allow_unreviewed && <UnreviewedBadge />}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-muted">{when(r.started_at)}</td>
-                    <td className="tabular px-3 py-4 text-right">{r.total_n}</td>
-                    <td className="tabular px-6 py-4 text-right font-semibold">{pct(r.mean_score)}</td>
+                    <td className="whitespace-nowrap px-4 py-5 text-muted">{when(r.started_at)}</td>
+                    <td className="tabular px-4 py-5 text-right">{r.total_n}</td>
+                    <td className="tabular px-7 sm:px-10 py-5 text-right font-semibold">{pct(r.mean_score)}</td>
                   </tr>
                 ))}
               </tbody>

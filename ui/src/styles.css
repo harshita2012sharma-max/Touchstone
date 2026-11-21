@@ -12,57 +12,68 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Theme "graphite and teal": neutral off-white page, white cards, near-black
- * text and a deep teal accent. Neutral, international and calm on purpose: no
- * gradients, glow or decorative motion. Every text pair keeps at least 4.5:1
- * contrast. Components use these tokens, never raw hex.
+ * Theme "maroon and peach", taken exactly from the maintainer's palette:
+ *   black #000000 / #111111, white #FFFFFF,
+ *   maroon #56161A and peach #F4CFB1 (the two ends of the brand gradient).
+ * Light: white cards on a faint peach page, maroon buttons, peach highlights.
+ * Dark: black page, peach buttons with maroon text, maroon highlights.
+ * Satin finish on main buttons, step badges and progress bars; the maroon to
+ * peach gradient runs under the header. Every text pair keeps at least 4.5:1.
  */
 :root {
-  --bg: #f6f6f4;
+  --bg: #fdf7f2;
   --surface: #ffffff;
-  --surface-2: #efefec;
-  --text: #18181b;
-  --text-muted: #52525b;
-  --border: #e3e3df;
-  --border-strong: #c9c9c3;
-  --primary: #111113;
-  --accent: #0f766e;
-  --accent-hover: #115e59;
+  --surface-2: #fbeee3;
+  --text: #111111;
+  --text-muted: #6b5a55;
+  --border: #f1e2d6;
+  --border-strong: #e3cbb9;
+  --primary: #000000;
+  --accent: #56161a;
+  --accent-hover: #6b302d;
   --on-accent: #ffffff;
-  --link: #0f766e;
-  --info-bg: #e7f3f1;
-  --info-text: #115e59;
+  --link: #56161a;
+  --info-bg: #f4cfb1;
+  --info-text: #56161a;
   --warn-bg: #fbf1db;
-  --warn-text: #8a4b08;
-  --danger: #b91c1c;
-  --series-1: #0f766e;
-  --series-2: #d97706;
-  --series-3: #7c3aed;
-  --focus: #0f766e;
+  --warn-text: #7f4507;
+  --danger: #b42318;
+  --series-1: #56161a;
+  --series-2: #c69a84;
+  --series-3: #936053;
+  --focus: #56161a;
+  --shadow: 0 1px 2px rgb(17 17 17 / 0.04), 0 8px 24px rgb(86 22 26 / 0.06);
+  --satin: linear-gradient(180deg, #7a3a36 0%, #5f1b1f 45%, #56161a 60%, #43100f 100%);
+  --satin-glow: 0 8px 22px -8px rgb(86 22 26 / 0.55);
+  --brand-gradient: linear-gradient(90deg, #56161a 0%, #936053 45%, #f4cfb1 100%);
   color-scheme: light;
 }
 .dark {
-  --bg: #0c0d0f;
-  --surface: #151719;
-  --surface-2: #1d2023;
-  --text: #ededec;
-  --text-muted: #a1a1aa;
-  --border: #2a2d31;
-  --border-strong: #3a3e44;
-  --primary: #f4f4f5;
-  --accent: #2dd4bf;
-  --accent-hover: #5eead4;
-  --on-accent: #0c0d0f;
-  --link: #5eead4;
-  --info-bg: #0f2a27;
-  --info-text: #99f6e4;
-  --warn-bg: #33260d;
-  --warn-text: #fcd58a;
-  --danger: #f87171;
-  --series-1: #2dd4bf;
-  --series-2: #f59e0b;
-  --series-3: #a78bfa;
-  --focus: #5eead4;
+  --bg: #000000;
+  --surface: #111111;
+  --surface-2: #1b1615;
+  --text: #ffffff;
+  --text-muted: #c2b1a6;
+  --border: #2a2120;
+  --border-strong: #3f302d;
+  --primary: #ffffff;
+  --accent: #f4cfb1;
+  --accent-hover: #f9dcc4;
+  --on-accent: #56161a;
+  --link: #f4cfb1;
+  --info-bg: #56161a;
+  --info-text: #f4cfb1;
+  --warn-bg: #33270f;
+  --warn-text: #f5cf87;
+  --danger: #f28b82;
+  --series-1: #f4cfb1;
+  --series-2: #c69a84;
+  --series-3: #936053;
+  --focus: #f4cfb1;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5);
+  --satin: linear-gradient(180deg, #fbe3cf 0%, #f4cfb1 50%, #e8bfa4 100%);
+  --satin-glow: 0 8px 24px -10px rgb(244 207 177 / 0.35);
+  --brand-gradient: linear-gradient(90deg, #56161a 0%, #936053 45%, #f4cfb1 100%);
   color-scheme: dark;
 }
 
@@ -87,6 +98,7 @@
   --color-series-1: var(--series-1);
   --color-series-2: var(--series-2);
   --color-series-3: var(--series-3);
+  --shadow-card: var(--shadow);
   --font-sans: "Noto Sans", "Noto Sans Devanagari", system-ui, sans-serif;
   --font-mono: "Fira Code", ui-monospace, "Cascadia Mono", Consolas, monospace;
 }
@@ -105,6 +117,36 @@ body {
 }
 button, a, select, input[type="checkbox"], input[type="radio"], summary, label:has(input) {
   cursor: pointer;
+}
+/* Satin burgundy finish for the main call-to-action and step badges. */
+.satin {
+  position: relative;
+  overflow: hidden;
+  background-image: var(--satin);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    inset 0 -1px 0 rgb(0 0 0 / 0.25),
+    var(--satin-glow);
+  transition: filter 150ms ease, box-shadow 150ms ease;
+}
+.satin::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.32) 46%, rgb(255 255 255 / 0.08) 54%, transparent 64%);
+  transform: translateX(-130%);
+  transition: transform 700ms ease;
+}
+.satin:hover {
+  filter: brightness(1.08) saturate(1.05);
+}
+.satin:hover::after {
+  transform: translateX(130%);
+}
+.brand-rule {
+  height: 3px;
+  background: var(--brand-gradient);
 }
 .tabular {
   font-variant-numeric: tabular-nums;

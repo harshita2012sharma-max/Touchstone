@@ -27,7 +27,7 @@ function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
-      className="flex size-10 items-center justify-center rounded-lg text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text"
+      className="flex size-11 items-center justify-center rounded-xl text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text"
     >
       {dark ? <Sun aria-hidden className="size-5" /> : <Moon aria-hidden className="size-5" />}
     </button>
@@ -41,12 +41,13 @@ export function Layout() {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:m-2 focus:rounded focus:bg-surface focus:p-2">
         Skip to content
       </a>
-      <header className="sticky top-0 z-10 border-b border-line bg-surface">
-        <div className="mx-auto flex h-16 max-w-[1080px] items-center gap-6 px-5 sm:px-8">
-          <Link to="/" className="text-lg font-semibold tracking-tight text-primary">
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
+        <div aria-hidden className="brand-rule" />
+        <div className="mx-auto flex h-20 max-w-[1200px] items-center gap-8 px-5 sm:px-10">
+          <Link to="/" className="text-xl font-semibold tracking-tight text-primary">
             touchstone
           </Link>
-          <nav aria-label="Main" className="flex min-w-0 gap-1 overflow-x-auto">
+          <nav aria-label="Main" className="flex min-w-0 gap-1.5 overflow-x-auto">
             {NAV.map((item) => {
               const active = item.match(pathname);
               return (
@@ -54,7 +55,7 @@ export function Layout() {
                   key={item.to}
                   to={item.to}
                   aria-current={active ? "page" : undefined}
-                  className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-colors duration-150 ${
+                  className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-[15px] transition-colors duration-150 ${
                     active ? "bg-surface-2 font-semibold text-primary" : "text-muted hover:text-text"
                   }`}
                 >
@@ -63,7 +64,7 @@ export function Layout() {
               );
             })}
           </nav>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-3">
             <ThemeToggle />
             <span className="hidden sm:block">
               <Link to="/new" className={buttonPrimary}>
@@ -73,7 +74,7 @@ export function Layout() {
           </div>
         </div>
       </header>
-      <main id="main" className="mx-auto max-w-[1080px] px-5 py-12 sm:px-8 sm:py-16">
+      <main id="main" className="mx-auto max-w-[1200px] px-5 py-14 sm:px-10 sm:py-20">
         <Outlet />
       </main>
     </div>

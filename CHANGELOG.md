@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-21
+
+### Added
+- **Recommended models.** Choosing a provider now suggests up to five good chat models from that provider's live list (for OpenRouter, free `:free` models) and selects the first one. Embedding, speech and image models are never suggested. `/api/models/<provider>` returns them as `recommended`.
+- **`touchstone leaderboard runs/*.json`** writes a ranked Markdown table, JSON and a shareable SVG chart. Only comparable runs are ranked, ties share a rank, sample sizes are shown, and practice runs are stamped "do not publish".
+- **Online demo mode** for a public Hugging Face Space (`python -m touchstone_llm.space`, files in `space/`): only the practice model is offered and saving keys or a custom server is refused, so no visitor's key is ever stored on a shared machine.
+- **Colab notebook** (`notebooks/touchstone_colab.ipynb`) with an "Open in Colab" badge in the README.
+
+### Changed
+- New look: the maintainer's palette (maroon `#56161A`, peach `#F4CFB1`, black and white) in light and dark mode, a satin finish on main buttons, and more generous spacing on every page.
+- README: one-line install at the top, screenshots, and a leaderboard section.
+
 ## [0.2.2] - 2026-11-19
 
 ### Fixed

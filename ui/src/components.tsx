@@ -3,36 +3,38 @@ import type { ReactNode } from "react";
 import { pct } from "./lib";
 
 /*
- * Spacing scale used everywhere: 8 / 16 / 24 / 32 px (Tailwind 2 / 4 / 6 / 8).
- * Cards: 24px padding, 16px radius. Sections: 24px apart. Buttons: 40px tall.
+ * Spacing scale: 8 / 16 / 24 / 32 / 40 / 48 px. Generous on purpose.
+ * Cards: 32-40px padding, 24px radius. Sections: 40-48px apart. Buttons: 48px tall.
  */
 
 export const buttonPrimary =
-  "inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-accent px-5 text-sm font-semibold text-on-accent shadow-sm transition-colors duration-150 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex h-12 items-center justify-center gap-2.5 whitespace-nowrap rounded-xl bg-accent satin px-7 text-[15px] font-semibold text-on-accent shadow-sm transition-colors duration-150 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50";
 export const buttonSecondary =
-  "inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-line-strong bg-surface px-4 text-sm font-medium text-text transition-colors duration-150 hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex h-12 items-center justify-center gap-2.5 whitespace-nowrap rounded-xl border border-line-strong bg-surface px-6 text-[15px] font-medium text-text transition-colors duration-150 hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50";
 export const inputClass =
-  "h-10 rounded-lg border border-line-strong bg-surface px-3 text-sm text-text placeholder:text-muted";
+  "h-12 rounded-xl border border-line-strong bg-surface px-4 text-[15px] text-text placeholder:text-muted transition-colors duration-150 focus:border-accent";
 
-export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-2xl border border-line bg-surface p-6 sm:p-8 ${className}`}>{children}</section>;
+/** A white panel. ``flush`` drops the padding, for cards that hold a full-width table. */
+export function Card({ children, className = "", flush = false }: { children: ReactNode; className?: string; flush?: boolean }) {
+  const pad = flush ? "overflow-hidden" : "p-7 sm:p-10";
+  return <section className={`rounded-3xl border border-line bg-surface shadow-card ${pad} ${className}`}>{children}</section>;
 }
 
 export function CardTitle({ children, hint }: { children: ReactNode; hint?: ReactNode }) {
   return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold text-primary">{children}</h2>
-      {hint && <p className="mt-1.5 text-sm leading-relaxed text-muted">{hint}</p>}
+    <div className="mb-8">
+      <h2 className="text-xl font-semibold text-primary">{children}</h2>
+      {hint && <p className="mt-2 text-[15px] leading-relaxed text-muted">{hint}</p>}
     </div>
   );
 }
 
 export function PageTitle({ title, sub, action }: { title: string; sub?: ReactNode; action?: ReactNode }) {
   return (
-    <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+    <div className="mb-14 flex flex-wrap items-end justify-between gap-8">
       <div className="max-w-2xl">
-        <h1 className="text-3xl font-semibold tracking-tight text-primary">{title}</h1>
-        {sub && <p className="mt-3 text-base leading-relaxed text-muted">{sub}</p>}
+        <h1 className="text-4xl font-semibold tracking-tight text-primary">{title}</h1>
+        {sub && <p className="mt-4 text-lg leading-relaxed text-muted">{sub}</p>}
       </div>
       {action}
     </div>
@@ -42,7 +44,7 @@ export function PageTitle({ title, sub, action }: { title: string; sub?: ReactNo
 /** A plain-language explanation box. Always visible, never hover-only. */
 export function InfoBox({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="flex gap-3 rounded-xl bg-info-bg p-4 text-sm text-info">
+    <div className="flex gap-4 rounded-2xl bg-info-bg p-5 text-sm leading-relaxed sm:p-6 text-info">
       <Info aria-hidden className="mt-0.5 size-4 shrink-0" />
       <div className="space-y-1">
         {title && <p className="font-semibold">{title}</p>}
@@ -54,12 +56,12 @@ export function InfoBox({ title, children }: { title?: string; children: ReactNo
 
 /** Small helper line under a form field or heading. */
 export function Hint({ children }: { children: ReactNode }) {
-  return <p className="mt-1.5 text-xs leading-relaxed text-muted">{children}</p>;
+  return <p className="mt-2 text-[13px] leading-relaxed text-muted">{children}</p>;
 }
 
 export function UnreviewedBanner() {
   return (
-    <div role="alert" className="mb-6 flex items-start gap-3 rounded-xl bg-warn-bg p-4 text-sm text-warn">
+    <div role="alert" className="mb-8 flex items-start gap-4 rounded-2xl bg-warn-bg p-5 sm:p-6 text-sm text-warn">
       <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0" />
       <p>
         <span className="font-semibold">Practice run with draft questions.</span> These questions have not yet been
@@ -71,7 +73,7 @@ export function UnreviewedBanner() {
 
 export function UnreviewedBadge() {
   return (
-    <span className="ml-2 inline-block rounded-md bg-warn-bg px-2 py-0.5 text-xs font-medium text-warn">
+    <span className="ml-2 inline-block rounded-full bg-warn-bg px-2.5 py-0.5 text-xs font-medium text-warn">
       draft questions
     </span>
   );
@@ -79,7 +81,7 @@ export function UnreviewedBadge() {
 
 export function ErrorBox({ message }: { message: string }) {
   return (
-    <div role="alert" className="whitespace-pre-wrap rounded-xl border border-danger/40 bg-surface p-4 text-sm text-danger">
+    <div role="alert" className="whitespace-pre-wrap rounded-2xl border border-danger/40 bg-surface p-5 text-sm text-danger">
       {message}
     </div>
   );
@@ -98,7 +100,7 @@ export function ScoreBar({ value, color = "var(--series-1)", label }: { value: n
   const width = Math.max(0, Math.min(1, value)) * 100;
   return (
     <div className="flex items-center gap-3" title={label ? `${label}: ${pct(value)}` : pct(value)}>
-      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-surface-2" aria-hidden>
+      <div className="h-3 flex-1 overflow-hidden rounded-full bg-surface-2" aria-hidden>
         <div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${width}%`, background: color }} />
       </div>
       <span className="tabular w-14 text-right text-sm font-medium">{pct(value)}</span>
@@ -108,9 +110,9 @@ export function ScoreBar({ value, color = "var(--series-1)", label }: { value: n
 
 export function Meta({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-line bg-surface p-4">
+    <div className="rounded-2xl border border-line bg-surface p-5">
       <div className="text-xs font-medium text-muted">{label}</div>
-      <div className="mt-1 break-words text-sm">{children}</div>
+      <div className="mt-1.5 break-words text-sm">{children}</div>
     </div>
   );
 }
@@ -118,13 +120,13 @@ export function Meta({ label, children }: { label: string; children: ReactNode }
 /** Numbered step card, used for "how it works" rows. */
 export function StepCard({ n, title, children }: { n: number; title: string; children: ReactNode }) {
   return (
-    <div className="flex h-full gap-4 rounded-2xl border border-line bg-surface p-5">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-on-accent">
+    <div className="flex h-full gap-5 rounded-3xl border border-line bg-surface p-7 shadow-card">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent satin text-sm font-semibold text-on-accent">
         {n}
       </span>
       <div>
-        <h3 className="text-sm font-semibold text-primary">{title}</h3>
-        <p className="mt-1 text-sm text-muted">{children}</p>
+        <h3 className="text-base font-semibold text-primary">{title}</h3>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted">{children}</p>
       </div>
     </div>
   );
@@ -141,7 +143,7 @@ export const GLOSSARY: { term: string; meaning: string }[] = [
 
 export function Glossary() {
   return (
-    <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+    <dl className="grid gap-x-10 gap-y-5 text-sm sm:grid-cols-2">
       {GLOSSARY.map((g) => (
         <div key={g.term}>
           <dt className="font-semibold text-primary">{g.term}</dt>

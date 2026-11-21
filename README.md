@@ -2,8 +2,15 @@
 
 # touchstone
 
-**Small, reproducible tests for LLMs in Hindi and Hinglish.**<br>
-One command. A clear report. Every prompt and reply saved.
+**Find out how well any AI model understands Hindi and Hinglish.**<br>
+Small, reproducible tests. One command. A clear report. Every prompt and reply saved.
+
+```bash
+python -m pip install "touchstone-llm[ui]"
+python -m touchstone_llm ui
+```
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/harshita2012sharma-max/Touchstone/blob/main/notebooks/touchstone_colab.ipynb)
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
@@ -11,10 +18,12 @@ One command. A clear report. Every prompt and reply saved.
 [![Status: alpha](https://img.shields.io/badge/status-alpha-orange)](CHANGELOG.md)
 [![Data: CC-BY-4.0](https://img.shields.io/badge/data-CC--BY--4.0-green)](DATASETS.md)
 
+<img src="https://raw.githubusercontent.com/harshita2012sharma-max/Touchstone/main/docs/images/ui-new-test.png" alt="The touchstone web UI: pick a provider and model, tick topics, start a test" width="860">
+
 </div>
 
 > [!NOTE]
-> **Early release (0.1).** Install with `pip install "touchstone-llm[ui]"`. The questions are still being reviewed by people, so no official results are published yet.
+> **Early release.** The questions are still being reviewed by people, so no official results are published yet. Everything else works today: test any model with your own key, in the browser, the terminal or Colab.
 
 ---
 
@@ -91,7 +100,9 @@ To update later: `python -m pip install -U "touchstone-llm[ui]"`.
 <details>
 <summary><b>Using Google Colab? (click to open)</b></summary>
 
-`touchstone ui` cannot be reached from a Colab notebook, so start the same web UI from a Python cell instead:
+Fastest: open the ready-made notebook [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/harshita2012sharma-max/Touchstone/blob/main/notebooks/touchstone_colab.ipynb) and press **Runtime → Run all**.
+
+Or, in any notebook: `touchstone ui` cannot be reached from Colab, so start the same web UI from a Python cell instead:
 
 ```python
 !pip install -q "touchstone-llm[ui]"
@@ -264,6 +275,18 @@ Want to help review? See the [review guide](datasets/README.md). No coding neede
 ## Results
 
 No official results yet. They will be published here only after every question has been reviewed, and each result will show the date, the model id, settings, the number of items and the prompts.
+
+<img src="https://raw.githubusercontent.com/harshita2012sharma-max/Touchstone/main/docs/images/ui-results.png" alt="Past tests with scores, ready to compare" width="860">
+
+### Make your own leaderboard
+
+Run several models, then turn the saved results into a ranked table and a chart you can share:
+
+```bash
+python -m touchstone_llm leaderboard runs/*.json
+```
+
+This writes `leaderboard/leaderboard.md` (a table for a README or blog), `leaderboard.json` and `leaderboard.svg` (an image for social posts). Only runs with the same settings and task versions are compared, the latest run of each model is used, equal scores share a rank, and sample sizes are always shown. If any run used draft questions, every file is stamped **PRACTICE, do not publish**.
 
 ## Limitations
 

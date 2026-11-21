@@ -28,24 +28,24 @@ Chosen from ui-ux-pro-max results: **Data-Dense Dashboard** + **Comparative Anal
 - Code, ids, numbers in tables: `Fira Code` (tabular figures)
 - Base 14px for dense tables, 16px for body text, line-height 1.5. Devanagari needs line-height of at least 1.6.
 
-**Theme: "graphite and teal"** (v4, chosen by the maintainer: replaces v3 "warm paper and navy"; no blue, neutral and professional for an international audience, must not look like a generic "AI app", clear buttons, even spacing and symmetry)
-- No gradients, glow, sparkle icons or decorative motion. Only bar-width and colour transitions (300 ms or less), all off under reduced motion.
-- Spacing scale 8 / 16 / 24 / 32 px; cards 24 px padding and 16 px radius; sections 24-32 px apart; rows of cards use equal-width grids.
-- Buttons are 40 px tall: primary = solid teal with white text; secondary = outlined on white. One primary action per area.
+**Theme: "maroon and peach"** (v7, exact colours from the maintainer's palette: black #000000 / #111111, white #FFFFFF, maroon #56161A, peach #F4CFB1; replaces v6 burgundy. Light = maroon buttons and peach highlights; dark = black page, peach buttons, maroon highlights. Satin finish, generous spacing, professional for an international audience)
+- Gradients only in two places: the satin finish (`.satin`: primary buttons, step badges, progress bars, with a sheen that sweeps on hover) and the 3 px maroon-to-peach rule under the header. No sparkle icons. All motion is off under reduced motion.
+- Spacing scale 8 / 16 / 24 / 32 / 40 / 48 px; cards 28-40 px padding, 24 px radius and a faint shadow; sections 40-64 px apart; content width 1200 px; rows of cards use equal-width grids.
+- Buttons and inputs are 48 px tall with 12 px radius: primary = satin maroon with white text (dark mode: satin peach with maroon text); secondary = outlined on white. One primary action per area.
 - Every page explains itself in plain language: a one-line intro, an "info" box where numbers need reading, a hint under every form field, and a glossary (Score, n, Mean score, Unparsed, Draft questions, Model id reported). Task ids are shown with friendly names (e.g. "Hindi reading"); rule-check ids are shown in plain English.
 
 **Color tokens** (source of truth: `ui/src/styles.css`; every text pair is at least 4.5:1 contrast)
 
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| `--bg` | `#f6f6f4` | `#0c0d0f` | page (neutral off-white / graphite) |
-| `--surface` / `--surface-2` | `#ffffff` / `#efefec` | `#151719` / `#1d2023` | cards / table heads, muted fills |
-| `--text` / `--text-muted` | `#18181b` / `#52525b` | `#ededec` / `#a1a1aa` | body / help text |
-| `--accent` / `--on-accent` | `#0f766e` / `#ffffff` | `#2dd4bf` / `#0c0d0f` | primary buttons, selected cards, progress |
-| `--link` | `#0f766e` | `#5eead4` | links |
-| `--info-bg` / `--info-text` | `#e7f3f1` / `#115e59` | `#0f2a27` / `#99f6e4` | explanation boxes, "ready" and "Correct" badges |
-| `--warn-bg` / `--warn-text` | `#fbf1db` / `#8a4b08` | `#33260d` / `#fcd58a` | draft-question banner, "needs a key", "Wrong" |
-| `--series-1..3` | `#0f766e`, `#d97706`, `#7c3aed` | `#2dd4bf`, `#f59e0b`, `#a78bfa` | score bars; compare runs 1-3 |
+| `--bg` | `#fdf7f2` | `#000000` | page (faint peach / black) |
+| `--surface` / `--surface-2` | `#ffffff` / `#fbeee3` | `#111111` / `#1b1615` | cards / table heads, muted fills |
+| `--text` / `--text-muted` | `#111111` / `#6b5a55` | `#ffffff` / `#c2b1a6` | body / help text |
+| `--accent` / `--on-accent` | `#56161a` / `#ffffff` | `#f4cfb1` / `#56161a` | primary buttons (satin), selected cards, progress |
+| `--link` | `#56161a` | `#f4cfb1` | links |
+| `--info-bg` / `--info-text` | `#f4cfb1` / `#56161a` | `#56161a` / `#f4cfb1` | selected cards, explanation boxes, "ready" and "Correct" badges |
+| `--warn-bg` / `--warn-text` | `#fbf1db` / `#7f4507` | `#33270f` / `#f5cf87` | draft-question banner, "needs a key", "Wrong" |
+| `--series-1..3` | `#56161a`, `#c69a84`, `#936053` | `#f4cfb1`, `#c69a84`, `#936053` | score bars; compare runs 1-3 |
 
 Series colors for v4 not yet re-run through the dataviz validator; every bar keeps a visible value label and Compare has a table view. A 4th color fails, so Compare stays capped at 3 runs.
 

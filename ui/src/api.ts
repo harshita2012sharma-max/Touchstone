@@ -35,6 +35,7 @@ export interface Status {
   tasks: TaskInfo[];
   settings: Settings;
   drafts_available: boolean;
+  demo?: boolean;
 }
 
 export interface TaskSummary {

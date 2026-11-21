@@ -39,7 +39,7 @@ export function ComparePage() {
   const score = (r: RunSummary, task: string) => r.tasks.find((t) => t.task === task);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       <PageTitle
         title="Compare tests"
         sub={`Put up to ${MAX_COMPARE} tests side by side, topic by topic. Each test gets its own colour, and every bar shows its number.`}
@@ -48,11 +48,11 @@ export function ComparePage() {
       <Card>
         <CardTitle hint={`Tick 2 or ${MAX_COMPARE} tests (${ids.length} ticked).`}>Choose tests</CardTitle>
         {all.length === 0 && <p className="text-sm text-muted">No tests yet. <Link className="text-link underline" to="/new">Start one</Link>.</p>}
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           {all.map((r) => {
             const idx = ids.indexOf(r.run_id);
             return (
-              <label key={r.run_id} className={`flex items-center gap-3 rounded-xl border p-4 text-sm transition-colors duration-150 ${idx >= 0 ? "border-accent bg-info-bg" : "border-line hover:bg-surface-2"}`}>
+              <label key={r.run_id} className={`flex items-center gap-4 rounded-xl border p-5 text-sm transition-colors duration-150 ${idx >= 0 ? "border-accent bg-info-bg" : "border-line hover:bg-surface-2"}`}>
                 <input type="checkbox" className="accent-[var(--accent)]" checked={idx >= 0} disabled={idx < 0 && ids.length >= MAX_COMPARE} onChange={() => toggle(r.run_id)} />
                 {idx >= 0 && <span aria-hidden className="inline-block size-3 shrink-0 rounded-sm" style={{ background: SERIES[idx] }} />}
                 <span className="min-w-0">
@@ -73,14 +73,14 @@ export function ComparePage() {
         <>
           {runs.some((r) => r.allow_unreviewed) && <UnreviewedBanner />}
           {warnings(runs).map((w) => (
-            <p key={w} className="flex items-start gap-3 rounded-xl bg-warn-bg p-4 text-sm text-warn">
+            <p key={w} className="flex items-start gap-4 rounded-xl bg-warn-bg p-5 text-sm text-warn">
               <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0" /> {w}
             </p>
           ))}
 
           <Card>
             <CardTitle hint="Longer bar = more questions correct in that topic. The colour shows which test it is.">Scores by topic</CardTitle>
-            <ul className="mb-6 flex flex-wrap gap-6 text-sm" aria-label="Legend">
+            <ul className="mb-8 flex flex-wrap gap-8 text-sm" aria-label="Legend">
               {runs.map((r, i) => (
                 <li key={r.run_id} className="flex items-center gap-2">
                   <span aria-hidden className="inline-block size-3 rounded-sm" style={{ background: SERIES[i] }} />
@@ -88,7 +88,7 @@ export function ComparePage() {
                 </li>
               ))}
             </ul>
-            <div className="space-y-6">
+            <div className="space-y-8">
               {taskNames.map((task) => (
                 <figure key={task}>
                   <figcaption className="mb-2 text-sm font-medium">{taskLabel(task)}</figcaption>
@@ -96,7 +96,7 @@ export function ComparePage() {
                     {runs.map((r, i) => {
                       const t = score(r, task);
                       return (
-                        <div key={r.run_id} className="flex items-center gap-3" title={`${r.model} · ${taskLabel(task)}: ${t ? pct(t.score) : "not tested"}`}>
+                        <div key={r.run_id} className="flex items-center gap-4" title={`${r.model} · ${taskLabel(task)}: ${t ? pct(t.score) : "not tested"}`}>
                           <div className="h-3 flex-1 overflow-hidden rounded-full bg-surface-2" aria-hidden>
                             <div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${(t?.score ?? 0) * 100}%`, background: SERIES[i] }} />
                           </div>
@@ -110,25 +110,25 @@ export function ComparePage() {
             </div>
           </Card>
 
-          <Card className="p-0">
-            <div className="p-6 pb-4">
+          <Card flush>
+            <div className="p-7 pb-5 sm:p-10 sm:pb-6">
               <h2 className="text-base font-semibold text-primary">Same numbers as a table</h2>
             </div>
             <div className="overflow-x-auto border-t border-line">
               <table className="w-full min-w-[560px] text-sm">
                 <thead className="bg-surface-2 text-left text-xs uppercase tracking-wide text-muted">
                   <tr>
-                    <th className="px-6 py-3 font-semibold">Topic</th>
-                    {runs.map((r) => <th key={r.run_id} className="px-6 py-3 text-right font-mono text-[11px] font-semibold normal-case">{r.model}</th>)}
+                    <th className="px-7 sm:px-10 py-4 font-semibold">Topic</th>
+                    {runs.map((r) => <th key={r.run_id} className="px-7 sm:px-10 py-4 text-right font-mono text-[11px] font-semibold normal-case">{r.model}</th>)}
                   </tr>
                 </thead>
                 <tbody>
                   {taskNames.map((task) => (
                     <tr key={task} className="border-t border-line">
-                      <td className="px-6 py-3 font-medium">{taskLabel(task)}</td>
+                      <td className="px-7 sm:px-10 py-5 font-medium">{taskLabel(task)}</td>
                       {runs.map((r) => {
                         const t = score(r, task);
-                        return <td key={r.run_id} className="tabular px-6 py-3 text-right">{t ? `${pct(t.score)} (n=${t.n})` : "-"}</td>;
+                        return <td key={r.run_id} className="tabular px-7 sm:px-10 py-5 text-right">{t ? `${pct(t.score)} (n=${t.n})` : "-"}</td>;
                       })}
                     </tr>
                   ))}

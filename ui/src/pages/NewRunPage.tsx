@@ -117,27 +117,36 @@ export function NewRunPage() {
   };
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       <PageTitle
         title="New test"
         sub="Choose any provider and model, using your own API key. Every model receives the same questions and settings, so results are comparable."
       />
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-10">
+      {status.demo && (
+        <div className="mb-10">
+          <InfoBox title="Online demo">
+            Only the practice model is available here, and keys cannot be saved. To test real models with your own key, run{" "}
+            <code className="font-mono">python -m pip install "touchstone-llm[ui]"</code> then{" "}
+            <code className="font-mono">python -m touchstone_llm ui</code> on your computer.
+          </InfoBox>
+        </div>
+      )}
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="space-y-12">
           <Card>
             <CardTitle hint="Your key is used only for your tests and stays on this computer.">1. Provider</CardTitle>
-            <div className="space-y-8">
+            <div className="space-y-10">
               {GROUPS.map((g) => {
                 const items = status.providers.filter((p) => p.group === g.id);
                 if (items.length === 0) return null;
                 return (
                   <fieldset key={g.id}>
-                    <legend className="mb-3 flex items-baseline gap-3">
+                    <legend className="mb-4 flex items-baseline gap-4">
                       <span className="text-xs font-semibold uppercase tracking-wider text-muted">{g.title}</span>
                       <span className="text-xs text-muted">{g.hint}</span>
                     </legend>
-                    <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       {items.map((p) => (
                         <ProviderCard key={p.name} p={p} selected={provider === p.name} onSelect={() => setProvider(p.name)} />
                       ))}
@@ -147,7 +156,7 @@ export function NewRunPage() {
               })}
             </div>
             {current && (
-              <div className="mt-8 border-t border-line pt-8">
+              <div className="mt-10 border-t border-line pt-10">
                 {current.name === "custom" ? (
                   <CustomForm provider={current} onSaved={reload} />
                 ) : current.needs_key && !current.key_set ? (
@@ -160,7 +169,7 @@ export function NewRunPage() {
           </Card>
 
           <Card>
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+            <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
               <div>
                 <h2 className="text-lg font-semibold text-primary">2. Model</h2>
                 <p className="mt-1.5 text-sm text-muted">Pick from the provider's live list, or type the exact model name.</p>
@@ -173,10 +182,10 @@ export function NewRunPage() {
             </div>
             {!current?.ready && <p className="text-sm text-muted">Set up the provider in step 1 first.</p>}
             {current?.ready && (
-              <div className="grid gap-8 md:grid-cols-2">
+              <div className="grid gap-10 md:grid-cols-2">
                 <div>
                   {recommended.length > 0 && (
-                    <div className="mb-6">
+                    <div className="mb-8">
                       <p className={`${labelClass} flex items-center gap-2`}><Star aria-hidden className="size-4 text-accent" /> Recommended for {current.label}</p>
                       <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label={`Recommended ${current.label} models`}>
                         {recommended.map((m) => (
@@ -218,7 +227,7 @@ export function NewRunPage() {
                   <label className={labelClass} htmlFor="model-typed">Or type a model name</label>
                   <input id="model-typed" className={`${inputClass} mt-2 w-full font-mono`} placeholder={current.example_model ? `e.g. ${current.example_model}` : "Model name"} spellCheck={false} value={typed} onChange={(e) => setTyped(e.target.value)} />
                   <Hint>Use this when a model is not in the list, or for your own server. The name must match the provider's model id exactly.</Hint>
-                  <div className="mt-6 rounded-xl bg-surface-2 p-4 text-sm">
+                  <div className="mt-8 rounded-xl bg-surface-2 p-5 text-sm">
                     <span className="text-muted">Selected model</span>
                     <p className="mt-1 break-all font-mono font-medium">{model ? `${provider}/${model}` : "None yet"}</p>
                   </div>
@@ -228,7 +237,7 @@ export function NewRunPage() {
           </Card>
 
           <Card>
-            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+            <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
               <div>
                 <h2 className="text-lg font-semibold text-primary">3. Topics</h2>
                 <p className="mt-1.5 text-sm text-muted">Each topic is a short set of questions of one kind.</p>
@@ -238,14 +247,14 @@ export function NewRunPage() {
               </button>
             </div>
             {status.drafts_available && (
-              <label className="mb-6 flex items-start gap-3 rounded-xl bg-warn-bg p-4 text-sm text-warn">
+              <label className="mb-8 flex items-start gap-4 rounded-xl bg-warn-bg p-5 text-sm text-warn">
                 <input type="checkbox" className="mt-1" aria-label="Use draft questions" checked={drafts} onChange={(e) => setDrafts(e.target.checked)} />
                 <span><span className="font-semibold">Use draft questions.</span> Not yet approved by two reviewers. Suitable for practice; results must not be published.</span>
               </label>
             )}
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               {status.tasks.map((t) => (
-                <label key={t.name} className={`flex gap-3 rounded-xl border p-4 transition-colors duration-150 ${tasks.includes(t.name) ? "border-accent bg-info-bg" : "border-line hover:bg-surface-2"}`}>
+                <label key={t.name} className={`flex gap-4 rounded-xl border p-5 transition-colors duration-150 ${tasks.includes(t.name) ? "border-accent bg-info-bg" : "border-line hover:bg-surface-2"}`}>
                   <input type="checkbox" className="mt-1 accent-[var(--accent)]" aria-label={`${taskLabel(t.name)}, ${count(t.name)} questions`} checked={tasks.includes(t.name)} onChange={() => toggleTask(t.name)} />
                   <span className="min-w-0">
                     <span className="block font-semibold">{taskLabel(t.name)}</span>
@@ -257,15 +266,15 @@ export function NewRunPage() {
           </Card>
         </div>
 
-        <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
           <Card>
             <CardTitle>Summary</CardTitle>
-            <dl className="space-y-3 text-sm">
+            <dl className="space-y-4 text-sm">
               <div><dt className="text-muted">Provider</dt><dd className="font-medium">{current?.label ?? "None"}</dd></div>
               <div><dt className="text-muted">Model</dt><dd className="break-all font-mono">{model || "None"}</dd></div>
               <div><dt className="text-muted">Topics</dt><dd>{tasks.length} selected · {tasks.length ? questions : 0} questions</dd></div>
             </dl>
-            <div className="mt-6 space-y-5 border-t border-line pt-6">
+            <div className="mt-8 space-y-6 border-t border-line pt-8">
               <div>
                 <label className={labelClass} htmlFor="limit">Questions per topic</label>
                 <input id="limit" inputMode="numeric" className={`${inputClass} mt-2 w-full`} placeholder="all" value={limit} onChange={(e) => setLimit(e.target.value)} />
@@ -276,12 +285,12 @@ export function NewRunPage() {
                 <input id="max-tokens" inputMode="numeric" className={`${inputClass} mt-2 w-full`} value={maxTokens} onChange={(e) => setMaxTokens(e.target.value)} />
                 <Hint>In tokens (about ¾ of a word each). 512 suits most models.</Hint>
               </div>
-              <p className="rounded-xl bg-surface-2 p-4 text-xs leading-relaxed text-muted">
+              <p className="rounded-xl bg-surface-2 p-5 text-xs leading-relaxed text-muted">
                 Temperature {status.settings.temperature} and seed {status.settings.seed} are fixed for every model. If a provider rejects a setting, the result records it.
               </p>
             </div>
-            {submitError && <div className="mt-6"><ErrorBox message={submitError} /></div>}
-            <button type="button" className={`${buttonPrimary} mt-6 w-full`} onClick={start} disabled={submitting}>
+            {submitError && <div className="mt-8"><ErrorBox message={submitError} /></div>}
+            <button type="button" className={`${buttonPrimary} mt-8 w-full`} onClick={start} disabled={submitting}>
               <Play aria-hidden className="size-4" /> {submitting ? "Starting…" : "Start test"}
             </button>
           </Card>
@@ -294,7 +303,7 @@ export function NewRunPage() {
 function ProviderCard({ p, selected, onSelect }: { p: Provider; selected: boolean; onSelect: () => void }) {
   const status = p.ready ? "Ready" : p.name === "custom" ? "Address needed" : "Key needed";
   return (
-    <label className={`flex h-full gap-3 rounded-xl border p-4 transition-colors duration-150 ${selected ? "border-accent bg-info-bg" : "border-line hover:bg-surface-2"}`}>
+    <label className={`flex h-full gap-4 rounded-xl border p-5 transition-colors duration-150 ${selected ? "border-accent bg-info-bg" : "border-line hover:bg-surface-2"}`}>
       <input type="radio" name="provider" className="mt-1 accent-[var(--accent)]" aria-label={`${p.label}, ${status}`} checked={selected} onChange={onSelect} />
       <span className="min-w-0 flex-1">
         <span className="flex flex-wrap items-center gap-2">
@@ -312,7 +321,7 @@ function ReadyNote({ provider, onSaved }: { provider: Provider; onSaved: () => v
   const [replacing, setReplacing] = useState(false);
   if (replacing && provider.needs_key) return <KeyForm provider={provider} onSaved={() => { setReplacing(false); onSaved(); }} />;
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="flex flex-wrap items-center justify-between gap-5">
       <p className="flex items-center gap-2 text-sm">
         <CheckCircle2 aria-hidden className="size-5 text-info" />
         <span><span className="font-semibold">{provider.label}</span> is ready{provider.needs_key ? " with your saved key." : "."}</span>
@@ -355,7 +364,7 @@ function KeyForm({ provider, onSaved }: { provider: Provider; onSaved: () => voi
           <>Create a key at{" "}<a className="font-medium text-link underline" href={provider.signup_url} target="_blank" rel="noreferrer">{provider.signup_url.replace("https://", "")}</a>, then paste it below.</>
         ) : "Paste your key below."}
       </p>
-      <form className="mt-4 flex flex-col gap-3 sm:flex-row" onSubmit={(e) => { e.preventDefault(); void save(); }}>
+      <form className="mt-4 flex flex-col gap-4 sm:flex-row" onSubmit={(e) => { e.preventDefault(); void save(); }}>
         <label className="sr-only" htmlFor="api-key">{provider.label} API key</label>
         <input id="api-key" type="password" autoComplete="off" spellCheck={false} className={`${inputClass} w-full font-mono`} placeholder="Paste key" value={value} onChange={(e) => { setValue(e.target.value); setProblem(null); }} />
         <button type="submit" className={buttonPrimary} disabled={saving}>{saving ? "Saving…" : "Save key"}</button>
@@ -397,7 +406,7 @@ function CustomForm({ provider, onSaved }: { provider: Provider; onSaved: () => 
       <p className="mt-1.5 text-sm text-muted">
         Works with any service that offers an OpenAI-compatible API: a company endpoint, LM Studio, vLLM, or another provider. The address usually ends in <code className="font-mono">/v1</code>.
       </p>
-      <form className="mt-5 grid gap-4" onSubmit={(e) => { e.preventDefault(); void save(); }}>
+      <form className="mt-5 grid gap-5" onSubmit={(e) => { e.preventDefault(); void save(); }}>
         <div>
           <label className={labelClass} htmlFor="custom-url">Server address</label>
           <input id="custom-url" className={`${inputClass} mt-2 w-full font-mono`} placeholder="https://api.example.com/v1" spellCheck={false} value={url} onChange={(e) => { setUrl(e.target.value); setProblem(null); setSaved(false); }} />
@@ -406,7 +415,7 @@ function CustomForm({ provider, onSaved }: { provider: Provider; onSaved: () => 
           <label className={labelClass} htmlFor="custom-key">API key <span className="font-normal text-muted">(optional)</span></label>
           <input id="custom-key" type="password" autoComplete="off" spellCheck={false} className={`${inputClass} mt-2 w-full font-mono`} placeholder={provider.custom_url ? "Leave empty to keep the saved key" : "Paste key, if the server needs one"} value={key} onChange={(e) => setKey(e.target.value)} />
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           <button type="submit" className={buttonPrimary} disabled={saving}>{saving ? "Saving…" : "Save server"}</button>
           {saved && <span className="text-sm text-info">Saved.</span>}
         </div>

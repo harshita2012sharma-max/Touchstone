@@ -344,6 +344,36 @@ def _open_when_ready(url: str, port: int, timeout: float = 15.0) -> None:
     threading.Thread(target=wait_then_open, daemon=True).start()
 
 
+@app.command()
+def leaderboard(
+    result_files: list[Path] = typer.Argument(
+        ..., help="Result JSON files from `touchstone run` (e.g. runs/*.json)."
+    ),
+    out_dir: Path = typer.Option(Path("leaderboard"), help="Folder for the leaderboard files."),
+    include_mock: bool = typer.Option(False, help="Also rank the practice (mock) model."),
+) -> None:
+    """Rank models from saved runs: writes a Markdown table, JSON and a shareable SVG chart."""
+    from touchstone_llm.leaderboard import LeaderboardError, build, write
+
+    results = [_load_result(p) for p in result_files if p.suffix == ".json"]
+    try:
+        board = build(results, include_mock=include_mock)
+    except LeaderboardError as err:
+        raise _fail(str(err)) from None
+    paths = write(board, out_dir)
+    table = Table(title="Leaderboard", title_justify="left")
+    for col in ("Rank", "Model", "Mean", "n", "Date"):
+        table.add_column(col, justify="right" if col in ("Mean", "n") else "left")
+    for e in board.entries:
+        table.add_row(e.rank, e.model, f"{e.mean:.1%}", str(e.n), e.date)
+    console.print(table)
+    if board.practice:
+        console.print(Text("PRACTICE: draft questions. Do not publish.", style="bold yellow"))
+    for note in board.skipped:
+        console.print(Text(f"Not included: {note}", style="dim"))
+    console.print(Text("Saved: " + ", ".join(str(p) for p in paths), style="dim"), soft_wrap=True)
+
+
 @app.command("list-tasks")
 def list_tasks() -> None:
     """Show available tasks and how many reviewed items each has."""

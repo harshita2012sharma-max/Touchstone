@@ -5,11 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-23
+
 ### Added
 - `NOTICE` file with the copyright line (Copyright 2026 Harshita Sharma), shipped in the package next to `LICENSE`.
 - Contributor setup: "Volunteer to review questions" and "Feature or new task idea" issue forms, links to the Space and the review guide, a Ways to help / Good first issues / Adding a new task guide in `CONTRIBUTING.md`, a Contributors section and CI and downloads badges in the README, and a `ROADMAP.md`.
 - Releases now also create a GitHub Release page with notes from this changelog; a manual workflow can create pages for earlier tags.
 - Dependabot keeps Python, npm and GitHub Actions dependencies up to date. Zenodo metadata (`.zenodo.json`) for a citable DOI per release.
+- PyPI page links to the online demo (Hugging Face Space), the Colab notebook, the source, the roadmap and the contributing guide.
 
 ### Fixed
 - `CONTRIBUTING.md` pointed to `data/pending/`; the folder is `datasets/pending/`.

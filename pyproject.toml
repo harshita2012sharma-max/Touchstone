@@ -53,6 +53,11 @@ touchstone = "touchstone_llm.cli:app"
 Homepage = "https://github.com/harshita2012sharma-max/Touchstone"
 Issues = "https://github.com/harshita2012sharma-max/Touchstone/issues"
 Changelog = "https://github.com/harshita2012sharma-max/Touchstone/blob/main/CHANGELOG.md"
+Source = "https://github.com/harshita2012sharma-max/Touchstone"
+Demo = "https://huggingface.co/spaces/20HARSHITA/touchstone"
+"Try in Colab" = "https://colab.research.google.com/github/harshita2012sharma-max/Touchstone/blob/main/notebooks/touchstone_colab.ipynb"
+Roadmap = "https://github.com/harshita2012sharma-max/Touchstone/blob/main/ROADMAP.md"
+Contributing = "https://github.com/harshita2012sharma-max/Touchstone/blob/main/CONTRIBUTING.md"
 
 [tool.hatch.version]
 path = "src/touchstone_llm/__init__.py"

@@ -1,0 +1,8 @@
+{
+  "title": "touchstone: small, reproducible LLM evaluation in Hindi and Hinglish",
+  "upload_type": "software",
+  "description": "A free, open-source tool that gives any AI model a short exam in Hindi and Hinglish (reading, Hinglish chat and sarcasm, grammar, idioms, logic, maths, everyday India facts, instructions and translation) and reports the results. Same prompts and settings for every model; every answer is saved so results can be reproduced.",
+  "creators": [{ "name": "Sharma, Harshita" }],
+  "license": "Apache-2.0",
+  "keywords": ["llm", "evaluation", "benchmark", "hindi", "hinglish", "indic", "nlp"]
+}

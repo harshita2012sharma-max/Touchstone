@@ -1,0 +1,24 @@
+name: Feature or new task idea
+description: Suggest an improvement, a new provider, or a new kind of test
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like touchstone to do?
+      description: Describe the problem or the idea in plain words.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: An example
+      description: For a new task, give one example question and its expected answer (written by you, not copied).
+  - type: dropdown
+    id: help
+    attributes:
+      label: Would you like to work on it?
+      options:
+        - "Yes, I can open a pull request"
+        - "Maybe, with some guidance"
+        - "No, just suggesting"

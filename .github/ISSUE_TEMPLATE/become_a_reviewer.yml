@@ -1,0 +1,35 @@
+name: Volunteer to review questions
+description: Help check Hindi and Hinglish questions (no coding needed)
+labels: [reviewer, dataset]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you! Every question needs two reviewers before its results can be published.
+        You will get a spreadsheet; mark each row ok, fix or reject. See datasets/README.md.
+        Please do not post your email or phone number here; the maintainer will reply in this issue.
+  - type: dropdown
+    id: languages
+    attributes:
+      label: Which can you review?
+      multiple: true
+      options:
+        - Hindi (Devanagari)
+        - Hinglish (Roman script)
+        - English to Hindi translation
+    validations:
+      required: true
+  - type: dropdown
+    id: amount
+    attributes:
+      label: How many questions can you review?
+      options:
+        - "About 20"
+        - "About 50"
+        - "100 or more"
+  - type: checkboxes
+    id: agree
+    attributes:
+      label: Credit
+      options:
+        - label: I am happy to be credited by name or GitHub handle in the README.

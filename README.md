@@ -13,6 +13,8 @@ python -m touchstone_llm ui
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/harshita2012sharma-max/Touchstone/blob/main/notebooks/touchstone_colab.ipynb)
 [![Hugging Face Space](https://img.shields.io/badge/%F0%9F%A4%97%20Space-touchstone-f4cfb1)](https://huggingface.co/spaces/20HARSHITA/touchstone)
 
+[![CI](https://github.com/harshita2012sharma-max/Touchstone/actions/workflows/ci.yml/badge.svg)](https://github.com/harshita2012sharma-max/Touchstone/actions/workflows/ci.yml)
+[![Downloads](https://static.pepy.tech/badge/touchstone-llm)](https://pepy.tech/project/touchstone-llm)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
 [![PyPI](https://img.shields.io/pypi/v/touchstone-llm)](https://pypi.org/project/touchstone-llm/)
@@ -385,8 +387,18 @@ touchstone is a small, laptop-first tool, not a replacement for these larger eff
 - **indic_eval** (GitHub: adithya-s-k): an Indic LLM evaluation suite built on Hugging Face LightEval. [github.com/adithya-s-k/indic_eval](https://github.com/adithya-s-k/indic_eval). This project was first planned as "indic-eval" and renamed so the two are not confused.
 - **HinglishEval**: code-generation models on Hinglish prompts, COMPUTE 2024. [github.com/mrigankpawagi/HinglishEval](https://github.com/mrigankpawagi/HinglishEval)
 
+## Contributors
+
+touchstone is created and maintained by [Harshita Sharma](https://github.com/harshita2012sharma-max).
+
+Every merged contribution and every question reviewer is listed here. Want to be next? Reviewing questions needs no coding: [volunteer here](https://github.com/harshita2012sharma-max/Touchstone/issues/new?template=become_a_reviewer.yml), or see [CONTRIBUTING.md](CONTRIBUTING.md) for other ways to help.
+
+| Who | What |
+|---|---|
+| [Harshita Sharma](https://github.com/harshita2012sharma-max) | Creator and maintainer |
+
 ## Cite, contribute, license
 
 - **Cite:** use [CITATION.cff](CITATION.cff), or GitHub's "Cite this repository" button.
 - **Contribute:** see [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Reviews from fluent Hindi and Hinglish speakers are the most valuable help right now.
-- **License:** code under [Apache-2.0](LICENSE), dataset items under CC-BY-4.0.
+- **License:** code under [Apache-2.0](LICENSE) (see also [NOTICE](NOTICE)), dataset items under CC-BY-4.0. Copyright 2026 Harshita Sharma and contributors.

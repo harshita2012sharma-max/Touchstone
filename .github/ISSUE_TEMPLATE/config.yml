@@ -1,1 +1,8 @@
 blank_issues_enabled: true
+contact_links:
+  - name: Try touchstone online
+    url: https://huggingface.co/spaces/20HARSHITA/touchstone
+    about: Showcase page with a link to the free Colab notebook.
+  - name: Review guide (no coding needed)
+    url: https://github.com/harshita2012sharma-max/Touchstone/blob/main/datasets/README.md
+    about: How to review questions in a spreadsheet.

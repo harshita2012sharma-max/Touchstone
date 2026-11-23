@@ -1,0 +1,30 @@
+name: Release page for an existing tag
+
+# Run by hand (Actions tab -> "Release page for an existing tag" -> Run workflow)
+# to create a GitHub Release page for a version that was published before the
+# release workflow did this automatically. Notes come from CHANGELOG.md.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag, for example v0.4.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release-page:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create GitHub release from CHANGELOG
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          case "$TAG" in v[0-9]*.[0-9]*.[0-9]*) ;; *) echo "Tag must look like v1.2.3"; exit 1;; esac
+          version="${TAG#v}"
+          awk -v v="$version" 'index($0, "## [" v "]") == 1 {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "No CHANGELOG section for $version"; exit 1; }
+          gh release create "$TAG" --title "touchstone $version" --notes-file notes.md --verify-tag

@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+- DOI badge and citation: [10.5281/zenodo.24456378](https://doi.org/10.5281/zenodo.24456378) (all versions; 0.5.0 is 10.5281/zenodo.24456379).
+
 ## [0.5.0] - 2026-11-23
 
 ### Added

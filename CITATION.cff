@@ -8,6 +8,7 @@ authors:
 license: Apache-2.0
 version: "0.5.0"
 date-released: "2026-11-23"
+doi: "10.5281/zenodo.24456378"
 repository-code: "https://github.com/harshita2012sharma-max/Touchstone"
 keywords:
   - llm

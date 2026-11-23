@@ -15,6 +15,7 @@ python -m touchstone_llm ui
 
 [![CI](https://github.com/harshita2012sharma-max/Touchstone/actions/workflows/ci.yml/badge.svg)](https://github.com/harshita2012sharma-max/Touchstone/actions/workflows/ci.yml)
 [![Downloads](https://static.pepy.tech/badge/touchstone-llm)](https://pepy.tech/project/touchstone-llm)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24456378.svg)](https://doi.org/10.5281/zenodo.24456378)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
 [![PyPI](https://img.shields.io/pypi/v/touchstone-llm)](https://pypi.org/project/touchstone-llm/)
@@ -399,6 +400,6 @@ Every merged contribution and every question reviewer is listed here. Want to be
 
 ## Cite, contribute, license
 
-- **Cite:** use [CITATION.cff](CITATION.cff), or GitHub's "Cite this repository" button.
+- **Cite:** DOI [10.5281/zenodo.24456378](https://doi.org/10.5281/zenodo.24456378) (always the latest version; each release also has its own DOI on Zenodo). Or use [CITATION.cff](CITATION.cff) and GitHub's "Cite this repository" button.
 - **Contribute:** see [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Reviews from fluent Hindi and Hinglish speakers are the most valuable help right now.
 - **License:** code under [Apache-2.0](LICENSE) (see also [NOTICE](NOTICE)), dataset items under CC-BY-4.0. Copyright 2026 Harshita Sharma and contributors.
